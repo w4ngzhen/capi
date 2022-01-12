@@ -14,8 +14,13 @@ class ScreenShotWidget : public QWidget
 public:
     ScreenShotWidget(QWidget *parent = nullptr);
     ~ScreenShotWidget();
+    // QWidget interface
+protected:
+    virtual void paintEvent(QPaintEvent *event) override;
 
 private:
     Ui::ScreenShotWidget *ui;
+
+
 };
 #endif // SCREENSHOTWIDGET_H
