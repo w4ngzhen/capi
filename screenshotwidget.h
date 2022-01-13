@@ -23,6 +23,12 @@ protected:
 private:
     Ui::ScreenShotWidget *ui;
     QPixmap screen_pic_;
+    QPoint mouse_pos_;
 
+    // QWidget interface
+protected:
+    virtual void mousePressEvent(QMouseEvent *event) override;
+    virtual void mouseReleaseEvent(QMouseEvent *event) override;
+    virtual void mouseMoveEvent(QMouseEvent *event) override;
 };
 #endif // SCREENSHOTWIDGET_H
