@@ -26,20 +26,13 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 find_package(Qt5 COMPONENTS Widgets REQUIRED)
 
-if(ANDROID)
-  add_library(QtScreenShot SHARED
-    main.cpp
-    screenshotwidget.cpp
-    screenshotwidget.h
-    screenshotwidget.ui
-  )
-else()
-  add_executable(QtScreenShot
-    main.cpp
-    screenshotwidget.cpp
-    screenshotwidget.h
-    screenshotwidget.ui
-  )
-endif()
+add_executable(QtScreenShot
+  main.cpp
+  screenshotwidget.cpp
+  screenshotwidget.h
+  screenshotwidget.ui
+  screenshotstatus.h
+  screenshotutils.h
+)
 
 target_link_libraries(QtScreenShot PRIVATE Qt5::Widgets)
