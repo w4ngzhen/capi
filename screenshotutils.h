@@ -3,6 +3,8 @@
 
 
 #include <QRect>
+#include <QFont>
+#include <QFontMetrics>
 
 namespace ScreenShotUtils
 {
@@ -37,6 +39,38 @@ QRect calcRect(int x1, int y1, int x2, int y2)
     return QRect(leftTopX, leftTopY, rightBottomX - leftTopX, rightBottomY - leftTopY);
 }
 
+/**
+ * @brief calcTextSize 计算在给定字体下的文本像素尺寸
+ * @param text
+ * @param font
+ * @param size
+ */
+bool calcTextSize(const QString &text, const QFont &font, QSize *size)
+{
+    QFontMetrics fm(font);
+    const QRect tempRect = fm.boundingRect(text);
+    if (size == nullptr)
+    {
+        return false;
+    }
+    size->setWidth(tempRect.width());
+    size->setHeight(tempRect.height());
+    return true;
+}
+
+
+const int MIN_EFFECTIVE_SIZE = 3;
+
+/**
+ * @brief effectiveSize Size的宽度和高度是否超过指定的长度
+ * 例如 (w = 10, h = 2) 就没超过length = 3
+ * @param size
+ * @return
+ */
+bool sizeLengthOver(const QSize &size, const int length = MIN_EFFECTIVE_SIZE)
+{
+    return size.width() >= length && size.height() >= length;
+}
 }
 
 

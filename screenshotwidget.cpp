@@ -5,6 +5,7 @@
 #include <QPainter>
 #include <QScreen>
 #include "screenshotutils.h"
+#include "screenshotpainthelper.h"
 
 
 ScreenShotWidget::ScreenShotWidget(QWidget *parent)
@@ -49,6 +50,12 @@ void ScreenShotWidget::paintCapturingRect(QPainter &painter)
     int dY = this->mouse_down_pos_.y();
     QRect rect = ScreenShotUtils::calcRect(mX, mY, dX, dY);
     painter.drawRect(rect);
+
+    ScreenShotPaintHelper::paintCapturingRectSizeTip(
+                painter,
+                this->mouse_pos_,
+                this->mouse_down_pos_,
+                rect.size());
 }
 
 void ScreenShotWidget::paintCapturedRect(QPainter &painter)
@@ -118,7 +125,7 @@ void ScreenShotWidget::mouseReleaseEvent(QMouseEvent *event)
     QRect capturedRect = ScreenShotUtils::calcRect(
                 currentPos.x(), currentPos.y(), downPos.x(), downPos.y());
 
-    if (capturedRect.width() <= 3 || capturedRect.height() <= 3)
+    if (!ScreenShotUtils::sizeLengthOver(capturedRect.size()))
     {
         // 截图区域过于小，不予捕获，回到Explore状态
         this->status_ = ScreenShotStatus::Explore;

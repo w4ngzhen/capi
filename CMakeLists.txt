@@ -33,6 +33,7 @@ add_executable(QtScreenShot
   screenshotwidget.ui
   screenshotstatus.h
   screenshotutils.h
+  screenshotpainthelper.h
 )
 
 target_link_libraries(QtScreenShot PRIVATE Qt5::Widgets)
