@@ -87,14 +87,17 @@ void ScreenShotWidget::paintEvent(QPaintEvent *)
 
     if (this->status_ == ScreenShotStatus::Explore)
     {
+        this->setCursor(QCursor(Qt::CrossCursor));
         this->paintMousePositionLine(painter);
     }
     else if (this->status_ == ScreenShotStatus::Capturing)
     {
+        this->setCursor(QCursor(Qt::CrossCursor));
         this->paintCapturingRect(painter);
     }
     else if (this->status_ == ScreenShotStatus::Captured)
     {
+        this->setCursor(QCursor(Qt::ArrowCursor));
         this->paintCapturedRect(painter);
     }
 }
