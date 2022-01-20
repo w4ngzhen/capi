@@ -36,6 +36,9 @@ ScreenShotWidget::ScreenShotWidget(QWidget *parent)
             &CapturingLayer::capturingFinishedSignal,
             this,
             &ScreenShotWidget::handleCapturingFinished);
+
+    // 无边框显示
+    this->setWindowFlag(Qt::WindowType::FramelessWindowHint);
 }
 
 ScreenShotWidget::~ScreenShotWidget()
