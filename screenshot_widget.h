@@ -2,6 +2,8 @@
 #define SCREENSHOT_WIDGET_H
 
 #include <QWidget>
+
+#include "layer/explore_layer.h"
 #include "screenshot_status.h"
 
 QT_BEGIN_NAMESPACE
@@ -16,7 +18,6 @@ public:
     ScreenShotWidget(QWidget *parent = nullptr);
     ~ScreenShotWidget();
 private:
-    void paintMousePositionLine(QPainter &);
     void paintCapturingRect(QPainter &);
     void paintCapturedRect(QPainter &);
     // QWidget interface
@@ -32,11 +33,15 @@ private:
     QRect captured_rect_;
 
     ScreenShotStatus status_;
+    // 鼠标在捕获截取操作前的移动探索
+    ExploreLayer *explore_layer_;
 
     // QWidget interface
 protected:
     virtual void mousePressEvent(QMouseEvent *event) override;
     virtual void mouseReleaseEvent(QMouseEvent *event) override;
     virtual void mouseMoveEvent(QMouseEvent *event) override;
+    virtual void resizeEvent(QResizeEvent *event) override;
+
 };
 #endif // SCREENSHOT_WIDGET_H

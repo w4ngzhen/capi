@@ -4,8 +4,10 @@
 #include <QMouseEvent>
 #include <QPainter>
 #include <QScreen>
+
 #include "screenshot_utils.h"
 #include "screenshot_paint_helper.h"
+#include "layer/explore_layer.h"
 
 
 ScreenShotWidget::ScreenShotWidget(QWidget *parent)
@@ -22,23 +24,16 @@ ScreenShotWidget::ScreenShotWidget(QWidget *parent)
     // 获取当前屏幕图像
     QScreen *screen = QGuiApplication::primaryScreen();
     this->screen_pic_ = screen->grabWindow(0);
+
+    // 初始状态
+    this->status_ = ScreenShotStatus::Explore;
+    this->explore_layer_ = new ExploreLayer(this->size());
 }
 
 ScreenShotWidget::~ScreenShotWidget()
 {
     delete ui;
-}
-
-void ScreenShotWidget::paintMousePositionLine(QPainter &painter)
-{
-    // 绘制鼠标所在的位置垂直和水平线
-    painter.setPen(QPen(Qt::red, 1));
-    int mX = this->mouse_pos_.x();
-    int mY = this->mouse_pos_.y();
-    // 垂直线
-    painter.drawLine(mX, 0, mX, this->height());
-    // 水平线
-    painter.drawLine(0, mY, this->width(), mY);
+    delete this->explore_layer_;
 }
 
 void ScreenShotWidget::paintCapturingRect(QPainter &painter)
@@ -95,7 +90,7 @@ void ScreenShotWidget::paintEvent(QPaintEvent *)
     if (this->status_ == ScreenShotStatus::Explore)
     {
         this->setCursor(QCursor(Qt::CrossCursor));
-        this->paintMousePositionLine(painter);
+        this->explore_layer_->paint(painter);
     }
     else if (this->status_ == ScreenShotStatus::Capturing)
     {
@@ -108,7 +103,6 @@ void ScreenShotWidget::paintEvent(QPaintEvent *)
         this->paintCapturedRect(painter);
     }
 }
-
 
 void ScreenShotWidget::mousePressEvent(QMouseEvent *event)
 {
@@ -144,5 +138,11 @@ void ScreenShotWidget::mouseMoveEvent(QMouseEvent *event)
 {
     this->mouse_pos_ = event->pos();
     // 调用update，触发QT的绘制事件
+    this->explore_layer_->mouseMoveEvent(event);
     this->update();
+}
+
+void ScreenShotWidget::resizeEvent(QResizeEvent *event)
+{
+    this->explore_layer_->setScreenSize(event->size());
 }
