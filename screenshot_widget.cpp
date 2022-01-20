@@ -5,10 +5,9 @@
 #include <QPainter>
 #include <QScreen>
 
-#include "screenshot_utils.h"
-#include "screenshot_paint_helper.h"
 #include "layer/explore_layer.h"
-
+#include "helper/math_helper.h"
+#include "helper/paint_helper.h"
 
 ScreenShotWidget::ScreenShotWidget(QWidget *parent)
     : QWidget(parent)
@@ -43,10 +42,10 @@ void ScreenShotWidget::paintCapturingRect(QPainter &painter)
     int mY = this->mouse_pos_.y();
     int dX = this->mouse_down_pos_.x();
     int dY = this->mouse_down_pos_.y();
-    QRect rect = ScreenShotUtils::calcRect(mX, mY, dX, dY);
+    QRect rect = math_helper::calcRect(mX, mY, dX, dY);
     painter.drawRect(rect);
 
-    ScreenShotPaintHelper::paintCapturingRectSizeTip(
+    paint_helper::paintCapturingRectSizeTip(
                 painter,
                 this->mouse_pos_,
                 this->mouse_down_pos_,
@@ -116,10 +115,10 @@ void ScreenShotWidget::mouseReleaseEvent(QMouseEvent *event)
     // 根据鼠标按下的位置和此时抬起的位置，计算捕获的矩形
     QPoint &downPos = this->mouse_down_pos_;
     QPoint currentPos = event->pos();
-    QRect capturedRect = ScreenShotUtils::calcRect(
+    QRect capturedRect = math_helper::calcRect(
                 currentPos.x(), currentPos.y(), downPos.x(), downPos.y());
 
-    if (!ScreenShotUtils::sizeLengthOver(capturedRect.size()))
+    if (!math_helper::sizeLengthOver(capturedRect.size()))
     {
         // 截图区域过于小，不予捕获，回到Explore状态
         this->status_ = ScreenShotStatus::Explore;

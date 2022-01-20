@@ -1,12 +1,7 @@
-#ifndef SCREENSHOT_UTILS_H
-#define SCREENSHOT_UTILS_H
 
+#include "helper/math_helper.h"
 
-#include <QRect>
-#include <QFont>
-#include <QFontMetrics>
-
-namespace ScreenShotUtils
+namespace math_helper
 {
 
 /**
@@ -59,7 +54,6 @@ bool calcTextSize(const QString &text, const QFont &font, QSize *size)
 }
 
 
-const int MIN_EFFECTIVE_SIZE = 3;
 
 /**
  * @brief effectiveSize Size的宽度和高度是否超过指定的长度
@@ -67,11 +61,9 @@ const int MIN_EFFECTIVE_SIZE = 3;
  * @param size
  * @return
  */
-bool sizeLengthOver(const QSize &size, const int length = MIN_EFFECTIVE_SIZE)
+bool sizeLengthOver(const QSize &size, int length)
 {
     return size.width() >= length && size.height() >= length;
 }
 }
 
-
-#endif // SCREENSHOT_UTILS_H

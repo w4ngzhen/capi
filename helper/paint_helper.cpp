@@ -1,10 +1,7 @@
-#ifndef SCREENSHOT_PAINT_HELPER_H
-#define SCREENSHOT_PAINT_HELPER_H
+#include "helper/paint_helper.h"
+#include "helper/math_helper.h"
 
-#include <QPainter>
-#include "screenshot_utils.h"
-
-namespace ScreenShotPaintHelper {
+namespace paint_helper {
 
 /**
  * @brief paintCapturingRectSizeTip 绘制图片捕获的过程中正在捕获的图片的size
@@ -23,7 +20,7 @@ void paintCapturingRectSizeTip(QPainter &painter,
     // 根据字体计算文本的size
     QFont font("SimHei", 10);
     QSize textSize;
-    if (!ScreenShotUtils::calcTextSize(rectSizeTip, font, &textSize))
+    if (!math_helper::calcTextSize(rectSizeTip, font, &textSize))
     {
         return;
     };
@@ -88,5 +85,3 @@ void paintCapturingRectSizeTip(QPainter &painter,
 }
 
 }
-
-#endif // SCREENSHOT_PAINT_HELPER_H

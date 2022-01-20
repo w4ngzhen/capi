@@ -32,8 +32,10 @@ add_executable(QtScreenShot
   screenshot_widget.h
   screenshot_widget.ui
   screenshot_status.h
-  screenshot_utils.h
-  screenshot_paint_helper.h
+  helper/math_helper.h
+  helper/math_helper.cpp
+  helper/paint_helper.h
+  helper/paint_helper.cpp
   layer/explore_layer.h
   layer/explore_layer.cpp
 )
