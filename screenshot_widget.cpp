@@ -1,11 +1,11 @@
-#include "screenshotwidget.h"
-#include "./ui_screenshotwidget.h"
+#include "screenshot_widget.h"
+#include "./ui_screenshot_widget.h"
 
 #include <QMouseEvent>
 #include <QPainter>
 #include <QScreen>
-#include "screenshotutils.h"
-#include "screenshotpainthelper.h"
+#include "screenshot_utils.h"
+#include "screenshot_paint_helper.h"
 
 
 ScreenShotWidget::ScreenShotWidget(QWidget *parent)

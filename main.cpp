@@ -1,4 +1,4 @@
-#include "screenshotwidget.h"
+#include "screenshot_widget.h"
 
 #include <QApplication>
 

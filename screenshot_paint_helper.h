@@ -1,8 +1,8 @@
-#ifndef SCREENSHOTPAINTHELPER_H
-#define SCREENSHOTPAINTHELPER_H
+#ifndef SCREENSHOT_PAINT_HELPER_H
+#define SCREENSHOT_PAINT_HELPER_H
 
 #include <QPainter>
-#include "screenshotutils.h"
+#include "screenshot_utils.h"
 
 namespace ScreenShotPaintHelper {
 
@@ -89,4 +89,4 @@ void paintCapturingRectSizeTip(QPainter &painter,
 
 }
 
-#endif // SCREENSHOTPAINTHELPER_H
+#endif // SCREENSHOT_PAINT_HELPER_H

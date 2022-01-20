@@ -1,8 +1,8 @@
-#ifndef SCREENSHOTWIDGET_H
-#define SCREENSHOTWIDGET_H
+#ifndef SCREENSHOT_WIDGET_H
+#define SCREENSHOT_WIDGET_H
 
 #include <QWidget>
-#include "screenshotstatus.h"
+#include "screenshot_status.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class ScreenShotWidget; }
@@ -39,4 +39,4 @@ protected:
     virtual void mouseReleaseEvent(QMouseEvent *event) override;
     virtual void mouseMoveEvent(QMouseEvent *event) override;
 };
-#endif // SCREENSHOTWIDGET_H
+#endif // SCREENSHOT_WIDGET_H

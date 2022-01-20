@@ -1,5 +1,5 @@
-#ifndef SCREENSHOTSTATUS_H
-#define SCREENSHOTSTATUS_H
+#ifndef SCREENSHOT_STATUS_H
+#define SCREENSHOT_STATUS_H
 
 enum  ScreenShotStatus
 {
@@ -12,4 +12,4 @@ enum  ScreenShotStatus
     Captured
 };
 
-#endif // SCREENSHOTSTATUS_H
+#endif // SCREENSHOT_STATUS_H

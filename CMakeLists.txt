@@ -28,12 +28,12 @@ find_package(Qt5 COMPONENTS Widgets REQUIRED)
 
 add_executable(QtScreenShot
   main.cpp
-  screenshotwidget.cpp
-  screenshotwidget.h
-  screenshotwidget.ui
-  screenshotstatus.h
-  screenshotutils.h
-  screenshotpainthelper.h
+  screenshot_widget.cpp
+  screenshot_widget.h
+  screenshot_widget.ui
+  screenshot_status.h
+  screenshot_utils.h
+  screenshot_paint_helper.h
 )
 
 target_link_libraries(QtScreenShot PRIVATE Qt5::Widgets)

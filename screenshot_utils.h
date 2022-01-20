@@ -1,5 +1,5 @@
-#ifndef SCREENSHOTUTILS_H
-#define SCREENSHOTUTILS_H
+#ifndef SCREENSHOT_UTILS_H
+#define SCREENSHOT_UTILS_H
 
 
 #include <QRect>
@@ -74,4 +74,4 @@ bool sizeLengthOver(const QSize &size, const int length = MIN_EFFECTIVE_SIZE)
 }
 
 
-#endif // SCREENSHOTUTILS_H
+#endif // SCREENSHOT_UTILS_H
