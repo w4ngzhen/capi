@@ -5,11 +5,8 @@
 #include <QPainter>
 #include <QScreen>
 
-#include "layer/explore_layer.h"
 #include "helper/math_helper.h"
 #include "helper/paint_helper.h"
-
-#include <layer/capturing_layer.h>
 
 ScreenShotWidget::ScreenShotWidget(QWidget *parent)
     : QWidget(parent)
@@ -28,9 +25,13 @@ ScreenShotWidget::ScreenShotWidget(QWidget *parent)
 
     // 初始状态
     this->status_ = ScreenShotStatus::Explore;
+
+    // 初始化各个层
     this->explore_layer_ = new ExploreLayer(this->size());
     this->capturing_layer_ = new CapturingLayer(this->size());
+    this->captured_layer_ = new CapturedLayer(this->size());
 
+    // 信号连接
     connect(this->capturing_layer_,
             &CapturingLayer::capturingFinishedSignal,
             this,
@@ -42,6 +43,7 @@ ScreenShotWidget::~ScreenShotWidget()
     delete ui;
     delete this->explore_layer_;
     delete this->capturing_layer_;
+    delete this->captured_layer_;
 }
 
 /**
@@ -57,40 +59,17 @@ void ScreenShotWidget::handleCapturingFinished(
     if(!sizeValid)
     {
         this->status_ = ScreenShotStatus::Explore;
-        this->captured_rect_ = QRect();
+        this->captured_layer_->setCapturedRect(QRect());
     }
     else
     {
         this->status_ = ScreenShotStatus::Captured;
-        this->captured_rect_ = QRect(capturedRect->x(),
-                                     capturedRect->y(),
-                                     capturedRect->width(),
-                                     capturedRect->height());
+        QRect rect = QRect(capturedRect->x(),
+                           capturedRect->y(),
+                           capturedRect->width(),
+                           capturedRect->height());
+        this->captured_layer_->setCapturedRect(rect);
     }
-}
-
-void ScreenShotWidget::paintCapturedRect(QPainter &painter)
-{
-    // 将截图矩形的周围都添加灰色蒙版
-    int rX = this->captured_rect_.x();
-    int rY = this->captured_rect_.y();
-    int rW = this->captured_rect_.width();
-    int rH = this->captured_rect_.height();
-    // 得到捕获区域左侧的矩形
-    QRect leftMaskRect(0, 0, rX, this->height());
-    QRect rightMaskRect(rX + rW, 0, this->width() - (rX + rW), this->height());
-    QRect topMaskRect(rX, 0, rW, rY);
-    QRect bottomMaskRect(rX, (rY + rH), rW, this->height() - (rY + rH));
-
-    QBrush grayBrush = QBrush(QColor(0, 0, 0, 50)); // 50% Alpha的灰色
-    painter.fillRect(leftMaskRect, grayBrush);
-    painter.fillRect(rightMaskRect, grayBrush);
-    painter.fillRect(topMaskRect, grayBrush);
-    painter.fillRect(bottomMaskRect, grayBrush);
-
-    // 增加一个边框
-    painter.setPen(QPen(QColor(0, 111, 222), 2));
-    painter.drawRect(this->captured_rect_);
 }
 
 void ScreenShotWidget::paintEvent(QPaintEvent *)
@@ -116,7 +95,7 @@ void ScreenShotWidget::paintEvent(QPaintEvent *)
     else if (this->status_ == ScreenShotStatus::Captured)
     {
         this->setCursor(QCursor(Qt::ArrowCursor));
-        this->paintCapturedRect(painter);
+        this->captured_layer_->paint(painter);
     }
 }
 
@@ -124,19 +103,19 @@ void ScreenShotWidget::mousePressEvent(QMouseEvent *event)
 {
     this->status_ = ScreenShotStatus::Capturing;
     this->capturing_layer_->mousePressEvent(event);
+
     this->update();
 }
 
 void ScreenShotWidget::mouseReleaseEvent(QMouseEvent *event)
 {
     this->capturing_layer_->mouseReleaseEvent(event);
+
     this->update();
 }
 
 void ScreenShotWidget::mouseMoveEvent(QMouseEvent *event)
 {
-    this->mouse_pos_ = event->pos();
-
     this->explore_layer_->mouseMoveEvent(event);
     this->capturing_layer_->mouseMoveEvent(event);
 
@@ -147,4 +126,5 @@ void ScreenShotWidget::resizeEvent(QResizeEvent *event)
 {
     this->explore_layer_->setScreenSize(event->size());
     this->capturing_layer_->setScreenSize(event->size());
+    this->captured_layer_->setScreenSize(event->size());
 }

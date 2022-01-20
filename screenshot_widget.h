@@ -3,8 +3,11 @@
 
 #include <QWidget>
 
+
 #include "layer/explore_layer.h"
 #include "layer/capturing_layer.h"
+#include "layer/captured_layer.h"
+
 #include "helper/math_helper.h"
 #include "screenshot_status.h"
 
@@ -19,9 +22,6 @@ class ScreenShotWidget : public QWidget
 public:
     ScreenShotWidget(QWidget *parent = nullptr);
     ~ScreenShotWidget();
-private:
-    void paintCapturingRect(QPainter &);
-    void paintCapturedRect(QPainter &);
     // QWidget interface
 protected:
     virtual void paintEvent(QPaintEvent *event) override;
@@ -31,15 +31,14 @@ private slots:
 private:
     Ui::ScreenShotWidget *ui;
     QPixmap screen_pic_;
-    QPoint mouse_pos_;
-    QPoint mouse_down_pos_;
-    // 当状态为捕获完成以后，对应的桌面的捕获区域（截取的区域）
-    QRect captured_rect_;
 
     ScreenShotStatus status_;
     // 鼠标在捕获截取操作前的移动探索
     ExploreLayer *explore_layer_;
+    // 鼠标按下后捕获过程
     CapturingLayer *capturing_layer_;
+    // 完成截图区域捕获后的处理
+    CapturedLayer *captured_layer_;
 
     // QWidget interface
 protected:

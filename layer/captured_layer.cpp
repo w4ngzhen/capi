@@ -8,9 +8,14 @@ CapturedLayer::CapturedLayer(QSize screenSize)
 
 }
 
-void CapturedLayer::setCapturedRect(QRect &rect)
+void CapturedLayer::setCapturedRect(const QRect &rect)
 {
     this->captured_rect_ = QRect(rect);
+}
+
+void CapturedLayer::setScreenSize(const QSize &size)
+{
+    this->screen_size_ = QSize(size);
 }
 
 void CapturedLayer::paint(QPainter &painter)

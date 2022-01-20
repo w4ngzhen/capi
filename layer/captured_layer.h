@@ -9,7 +9,8 @@ class CapturedLayer
 {
 public:
     CapturedLayer(QSize screenSize);
-    void setCapturedRect(QRect &rect);
+    void setCapturedRect(const QRect &rect);
+    void setScreenSize(const QSize &size);
     void paint(QPainter &painter);
     ~CapturedLayer(){}
 private:
