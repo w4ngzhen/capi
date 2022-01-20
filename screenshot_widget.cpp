@@ -9,6 +9,8 @@
 #include "helper/math_helper.h"
 #include "helper/paint_helper.h"
 
+#include <layer/capturing_layer.h>
+
 ScreenShotWidget::ScreenShotWidget(QWidget *parent)
     : QWidget(parent)
     , ui(new Ui::ScreenShotWidget)
@@ -28,6 +30,11 @@ ScreenShotWidget::ScreenShotWidget(QWidget *parent)
     this->status_ = ScreenShotStatus::Explore;
     this->explore_layer_ = new ExploreLayer(this->size());
     this->capturing_layer_ = new CapturingLayer(this->size());
+
+    connect(this->capturing_layer_,
+            &CapturingLayer::capturingFinishedSignal,
+            this,
+            &ScreenShotWidget::handleCapturingFinished);
 }
 
 ScreenShotWidget::~ScreenShotWidget()
@@ -35,6 +42,31 @@ ScreenShotWidget::~ScreenShotWidget()
     delete ui;
     delete this->explore_layer_;
     delete this->capturing_layer_;
+}
+
+/**
+ * @brief ScreenShotWidget::handleCapturingFinished
+ * captruingLayer处理完成后，触发该处进行截取的处理
+ * @param sizeValid
+ * @param capturedRect
+ */
+void ScreenShotWidget::handleCapturingFinished(
+        bool sizeValid,
+        QRect *capturedRect)
+{
+    if(!sizeValid)
+    {
+        this->status_ = ScreenShotStatus::Explore;
+        this->captured_rect_ = QRect();
+    }
+    else
+    {
+        this->status_ = ScreenShotStatus::Captured;
+        this->captured_rect_ = QRect(capturedRect->x(),
+                                     capturedRect->y(),
+                                     capturedRect->width(),
+                                     capturedRect->height());
+    }
 }
 
 void ScreenShotWidget::paintCapturedRect(QPainter &painter)

@@ -20,7 +20,7 @@ public:
     void mouseReleaseEvent(QMouseEvent *event);
     ~CapturingLayer();
 signals:
-    void onCapturingFinished(bool valid, QRect *rect);
+    void capturingFinishedSignal(bool sizeValid, QRect *capturedRect);
 private:
     // 记录屏幕尺寸
     QSize screen_size_;

@@ -53,15 +53,11 @@ void CapturingLayer::mouseReleaseEvent(QMouseEvent *event)
     if (!math_helper::sizeLengthOver(capturedRect.size()))
     {
         // 截图区域过于小，不予捕获，回到Explore状态
-        emit this->onCapturingFinished(false, nullptr);
-//        this->status_ = ScreenShotStatus::Explore;
-//        this->captured_rect_ = QRect();
+        emit this->capturingFinishedSignal(false, nullptr);
     }
     else
     {
-        emit this->onCapturingFinished(true, &capturedRect);
-//        this->status_ = ScreenShotStatus::Captured;
-//        this->captured_rect_ = capturedRect;
+        emit this->capturingFinishedSignal(true, &capturedRect);
     }
 }
 

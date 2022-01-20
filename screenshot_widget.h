@@ -25,6 +25,8 @@ private:
     // QWidget interface
 protected:
     virtual void paintEvent(QPaintEvent *event) override;
+private slots:
+    void handleCapturingFinished(bool, QRect*);
 
 private:
     Ui::ScreenShotWidget *ui;
