@@ -27,29 +27,14 @@ ScreenShotWidget::ScreenShotWidget(QWidget *parent)
     // 初始状态
     this->status_ = ScreenShotStatus::Explore;
     this->explore_layer_ = new ExploreLayer(this->size());
+    this->capturing_layer_ = new CapturingLayer(this->size());
 }
 
 ScreenShotWidget::~ScreenShotWidget()
 {
     delete ui;
     delete this->explore_layer_;
-}
-
-void ScreenShotWidget::paintCapturingRect(QPainter &painter)
-{
-    painter.setPen(QPen(QColor(0, 111, 222), 2));
-    int mX = this->mouse_pos_.x();
-    int mY = this->mouse_pos_.y();
-    int dX = this->mouse_down_pos_.x();
-    int dY = this->mouse_down_pos_.y();
-    QRect rect = math_helper::calcRect(mX, mY, dX, dY);
-    painter.drawRect(rect);
-
-    paint_helper::paintCapturingRectSizeTip(
-                painter,
-                this->mouse_pos_,
-                this->mouse_down_pos_,
-                rect.size());
+    delete this->capturing_layer_;
 }
 
 void ScreenShotWidget::paintCapturedRect(QPainter &painter)
@@ -94,7 +79,7 @@ void ScreenShotWidget::paintEvent(QPaintEvent *)
     else if (this->status_ == ScreenShotStatus::Capturing)
     {
         this->setCursor(QCursor(Qt::CrossCursor));
-        this->paintCapturingRect(painter);
+        this->capturing_layer_->paint(painter);
     }
     else if (this->status_ == ScreenShotStatus::Captured)
     {
@@ -106,42 +91,28 @@ void ScreenShotWidget::paintEvent(QPaintEvent *)
 void ScreenShotWidget::mousePressEvent(QMouseEvent *event)
 {
     this->status_ = ScreenShotStatus::Capturing;
-    this->mouse_down_pos_ = event->pos();
+    this->capturing_layer_->mousePressEvent(event);
     this->update();
 }
 
 void ScreenShotWidget::mouseReleaseEvent(QMouseEvent *event)
 {
-    // 根据鼠标按下的位置和此时抬起的位置，计算捕获的矩形
-    QPoint &downPos = this->mouse_down_pos_;
-    QPoint currentPos = event->pos();
-    QRect capturedRect = math_helper::calcRect(
-                currentPos.x(), currentPos.y(), downPos.x(), downPos.y());
-
-    if (!math_helper::sizeLengthOver(capturedRect.size()))
-    {
-        // 截图区域过于小，不予捕获，回到Explore状态
-        this->status_ = ScreenShotStatus::Explore;
-        this->captured_rect_ = QRect();
-    }
-    else
-    {
-        this->status_ = ScreenShotStatus::Captured;
-        this->captured_rect_ = capturedRect;
-    }
-
+    this->capturing_layer_->mouseReleaseEvent(event);
     this->update();
 }
 
 void ScreenShotWidget::mouseMoveEvent(QMouseEvent *event)
 {
     this->mouse_pos_ = event->pos();
-    // 调用update，触发QT的绘制事件
+
     this->explore_layer_->mouseMoveEvent(event);
+    this->capturing_layer_->mouseMoveEvent(event);
+
     this->update();
 }
 
 void ScreenShotWidget::resizeEvent(QResizeEvent *event)
 {
     this->explore_layer_->setScreenSize(event->size());
+    this->capturing_layer_->setScreenSize(event->size());
 }

@@ -4,6 +4,8 @@
 #include <QWidget>
 
 #include "layer/explore_layer.h"
+#include "layer/capturing_layer.h"
+#include "helper/math_helper.h"
 #include "screenshot_status.h"
 
 QT_BEGIN_NAMESPACE
@@ -35,6 +37,7 @@ private:
     ScreenShotStatus status_;
     // 鼠标在捕获截取操作前的移动探索
     ExploreLayer *explore_layer_;
+    CapturingLayer *capturing_layer_;
 
     // QWidget interface
 protected:

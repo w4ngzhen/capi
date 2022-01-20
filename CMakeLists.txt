@@ -38,6 +38,8 @@ add_executable(QtScreenShot
   helper/paint_helper.cpp
   layer/explore_layer.h
   layer/explore_layer.cpp
+  layer/capturing_layer.h
+  layer/capturing_layer.cpp
 )
 
 target_link_libraries(QtScreenShot PRIVATE Qt5::Widgets)
