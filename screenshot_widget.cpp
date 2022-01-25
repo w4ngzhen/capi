@@ -73,6 +73,8 @@ void ScreenShotWidget::handleCapturingFinished(
                            capturedRect->height());
         this->captured_layer_->setCapturedRect(rect);
     }
+
+    this->update();
 }
 
 void ScreenShotWidget::paintEvent(QPaintEvent *)
@@ -104,29 +106,40 @@ void ScreenShotWidget::paintEvent(QPaintEvent *)
 
 void ScreenShotWidget::mousePressEvent(QMouseEvent *event)
 {
-    this->status_ = ScreenShotStatus::Capturing;
-    this->capturing_layer_->mousePressEvent(event);
+    if (this->status_ == ScreenShotStatus::Explore)
+    {
+        this->status_ = ScreenShotStatus::Capturing;
+    }
+
+    if (this->status_ == ScreenShotStatus::Capturing)
+    {
+        this->capturing_layer_->mousePressEvent(event);
+    }
 
     this->update();
 }
 
 void ScreenShotWidget::mouseReleaseEvent(QMouseEvent *event)
 {
-    this->capturing_layer_->mouseReleaseEvent(event);
+    if (this->status_ == ScreenShotStatus::Capturing)
+    {
+        this->capturing_layer_->mouseReleaseEvent(event);
+    }
 
     this->update();
 }
 
 void ScreenShotWidget::mouseMoveEvent(QMouseEvent *event)
 {
+    // 鼠标位置变化需要通知给所有的layer
     this->explore_layer_->mouseMoveEvent(event);
     this->capturing_layer_->mouseMoveEvent(event);
-
     this->update();
 }
 
 void ScreenShotWidget::resizeEvent(QResizeEvent *event)
 {
+    // size变化需要通知给所有的layer
     this->explore_layer_->setScreenSize(event->size());
     this->capturing_layer_->setScreenSize(event->size());
     this->captured_layer_->setScreenSize(event->size());
