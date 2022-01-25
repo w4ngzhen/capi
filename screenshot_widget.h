@@ -27,6 +27,7 @@ protected:
     virtual void paintEvent(QPaintEvent *event) override;
 private slots:
     void handleCapturingFinished(bool, QRect*);
+    void handleCapturedRect(QRect *, CapturedRectSaveType);
 
 private:
     Ui::ScreenShotWidget *ui;
@@ -47,7 +48,7 @@ protected:
     virtual void mouseMoveEvent(QMouseEvent *event) override;
     virtual void resizeEvent(QResizeEvent *event) override;
     virtual void keyReleaseEvent(QKeyEvent *event) override;
-
+    virtual void mouseDoubleClickEvent(QMouseEvent *event) override;
 };
 
 #endif // SCREENSHOT_WIDGET_H

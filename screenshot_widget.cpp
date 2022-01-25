@@ -1,6 +1,7 @@
 #include "screenshot_widget.h"
 #include "./ui_screenshot_widget.h"
 
+#include <QClipboard>
 #include <QMouseEvent>
 #include <QPainter>
 #include <QScreen>
@@ -36,6 +37,10 @@ ScreenShotWidget::ScreenShotWidget(QWidget *parent)
             &CapturingLayer::capturingFinishedSignal,
             this,
             &ScreenShotWidget::handleCapturingFinished);
+    connect(this->captured_layer_,
+            &CapturedLayer::saveCapturedRectSignal,
+            this,
+            &ScreenShotWidget::handleCapturedRect);
 
     // 无边框显示
     this->setWindowFlag(Qt::WindowType::FramelessWindowHint);
@@ -75,6 +80,26 @@ void ScreenShotWidget::handleCapturingFinished(
     }
 
     this->update();
+}
+
+/**
+ * @brief ScreenShotWidget::handleCapturedRect
+ * 处理CapturedLayer发射出的保存截屏的指定
+ */
+void ScreenShotWidget::handleCapturedRect(QRect *rect, CapturedRectSaveType saveType)
+{
+    const QPixmap pic = this->screen_pic_.copy(
+                rect->x(),
+                rect->y(),
+                rect->width(),
+                rect->height());
+    if (saveType == CapturedRectSaveType::ToClipboard)
+    {
+        QClipboard *clipboard = QGuiApplication::clipboard();
+        clipboard->setPixmap(pic);
+    }
+    // 保存到目标位置后，退出截图应用
+    this->close();
 }
 
 void ScreenShotWidget::paintEvent(QPaintEvent *)
@@ -145,7 +170,6 @@ void ScreenShotWidget::resizeEvent(QResizeEvent *event)
     this->captured_layer_->setScreenSize(event->size());
 }
 
-
 void ScreenShotWidget::keyReleaseEvent(QKeyEvent *event)
 {
     if (event->key() != Qt::Key_Escape)
@@ -158,4 +182,9 @@ void ScreenShotWidget::keyReleaseEvent(QKeyEvent *event)
         this->status_ = ScreenShotStatus::Explore;
         this->update();
     }
+}
+
+void ScreenShotWidget::mouseDoubleClickEvent(QMouseEvent *event)
+{
+    this->captured_layer_->mouseDoubleClickEvent(event);
 }

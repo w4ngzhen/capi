@@ -49,3 +49,8 @@ void CapturedLayer::paint(QPainter &painter)
 
     painter.restore();
 }
+
+void CapturedLayer::mouseDoubleClickEvent(QMouseEvent *)
+{
+    emit saveCapturedRectSignal(&this->captured_rect_, CapturedRectSaveType::ToClipboard);
+}
