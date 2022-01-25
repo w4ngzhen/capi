@@ -131,3 +131,18 @@ void ScreenShotWidget::resizeEvent(QResizeEvent *event)
     this->capturing_layer_->setScreenSize(event->size());
     this->captured_layer_->setScreenSize(event->size());
 }
+
+
+void ScreenShotWidget::keyReleaseEvent(QKeyEvent *event)
+{
+    if (event->key() != Qt::Key_Escape)
+    {
+        return;
+    }
+    if (this->status_ == ScreenShotStatus::Captured
+            || this->status_ == ScreenShotStatus::Capturing)
+    {
+        this->status_ = ScreenShotStatus::Explore;
+        this->update();
+    }
+}
