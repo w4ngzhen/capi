@@ -44,6 +44,8 @@ ScreenShotWidget::ScreenShotWidget(QWidget *parent)
 
     // 无边框显示
     this->setWindowFlag(Qt::WindowType::FramelessWindowHint);
+    // 不出现在任务栏
+    this->setWindowFlag(Qt::Tool);
 }
 
 ScreenShotWidget::~ScreenShotWidget()
