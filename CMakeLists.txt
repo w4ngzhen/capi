@@ -26,7 +26,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 find_package(Qt5 COMPONENTS Widgets REQUIRED)
 
-add_executable(QtScreenShot
+add_executable(QtScreenShot WIN32
   main.cpp
   screenshot_widget.cpp
   screenshot_widget.h
