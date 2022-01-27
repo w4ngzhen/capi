@@ -181,6 +181,15 @@ void ScreenShotWidget::keyReleaseEvent(QKeyEvent *event)
     {
         this->status_ = ScreenShotStatus::Explore;
         this->update();
+        return;
+    }
+
+    if (this->status_ == ScreenShotStatus::Explore)
+    {
+        // ESC退出截图，则需要清理粘贴板的图片数据
+        QClipboard *clipboard = QGuiApplication::clipboard();
+        clipboard->clear();
+        this->close();
     }
 }
 
