@@ -6,15 +6,16 @@
 #include <QPainter>
 #include <QMouseEvent>
 
+class QImage;
+
 
 class CapturingLayer: public QObject
 {
     // 会用到QT的signal/slot机制
     Q_OBJECT
 public:
-    CapturingLayer(QSize screenSize);
+    CapturingLayer(QImage*);
     void paint(QPainter &painter);
-    void setScreenSize(const QSize &size);
     void mouseMoveEvent(QMouseEvent *event);
     void mousePressEvent(QMouseEvent *event);
     void mouseReleaseEvent(QMouseEvent *event);
@@ -22,8 +23,8 @@ public:
 signals:
     void capturingFinishedSignal(bool sizeValid, QRect *capturedRect);
 private:
-    // 记录屏幕尺寸
-    QSize screen_size_;
+    // 屏幕图像
+    QImage *screen_pic_;
     // 记录随时的鼠标位置
     QPoint mouse_pos_;
     // 记录鼠标按下的位置

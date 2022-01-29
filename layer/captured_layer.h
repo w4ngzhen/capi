@@ -5,6 +5,7 @@
 #include <QRect>
 #include <QSize>
 class QPainter;
+class QImage;
 
 enum CapturedRectSaveType
 {
@@ -16,16 +17,15 @@ class CapturedLayer: public QObject
 {
     Q_OBJECT
 public:
-    CapturedLayer(QSize screenSize);
+    CapturedLayer(QImage*);
     void setCapturedRect(const QRect &rect);
-    void setScreenSize(const QSize &size);
     void paint(QPainter &painter);
     void mouseDoubleClickEvent(QMouseEvent *);
     ~CapturedLayer(){}
 signals:
     void saveCapturedRectSignal(QRect *, CapturedRectSaveType saveType);
 private:
-    QSize screen_size_;
+    QImage *screen_pic_;
     QRect captured_rect_;
 };
 

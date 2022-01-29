@@ -3,8 +3,8 @@
 #include "helper/paint_helper.h"
 #include "helper/math_helper.h"
 
-CapturingLayer::CapturingLayer(QSize screenSize)
-    : screen_size_(screenSize)
+CapturingLayer::CapturingLayer(QImage *screenPic)
+    : screen_pic_(screenPic)
 {
 
 }
@@ -26,11 +26,6 @@ void CapturingLayer::paint(QPainter &painter)
                 this->mouse_down_pos_,
                 rect.size());
     painter.restore();
-}
-
-void CapturingLayer::setScreenSize(const QSize &size)
-{
-    this->screen_size_ = QSize(size);
 }
 
 void CapturingLayer::mouseMoveEvent(QMouseEvent *event)

@@ -28,9 +28,10 @@ ScreenShotWidget::ScreenShotWidget(QWidget *parent)
     this->status_ = ScreenShotStatus::Explore;
 
     // 初始化各个层
-    this->explore_layer_ = new ExploreLayer(this->size());
-    this->capturing_layer_ = new CapturingLayer(this->size());
-    this->captured_layer_ = new CapturedLayer(this->size());
+    QImage * pScreenPic = &this->screen_pic_;
+    this->explore_layer_ = new ExploreLayer(pScreenPic);
+    this->capturing_layer_ = new CapturingLayer(pScreenPic);
+    this->captured_layer_ = new CapturedLayer(pScreenPic);
 
     // 信号连接
     connect(this->capturing_layer_,
@@ -162,14 +163,6 @@ void ScreenShotWidget::mouseMoveEvent(QMouseEvent *event)
     this->explore_layer_->mouseMoveEvent(event);
     this->capturing_layer_->mouseMoveEvent(event);
     this->update();
-}
-
-void ScreenShotWidget::resizeEvent(QResizeEvent *event)
-{
-    // size变化需要通知给所有的layer
-    this->explore_layer_->setScreenSize(event->size());
-    this->capturing_layer_->setScreenSize(event->size());
-    this->captured_layer_->setScreenSize(event->size());
 }
 
 void ScreenShotWidget::keyReleaseEvent(QKeyEvent *event)

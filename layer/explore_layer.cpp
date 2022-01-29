@@ -4,8 +4,8 @@
 #include <QPainter>
 #include <QSize>
 
-ExploreLayer::ExploreLayer(QSize screenSize)
-    : screen_size_(screenSize)
+ExploreLayer::ExploreLayer(QImage *screenPic)
+    : screen_pic_(screenPic)
     , mouse_pos_(QPoint())
 {
 
@@ -23,16 +23,13 @@ void ExploreLayer::paint(QPainter &painter)
     painter.setPen(QPen(Qt::red, 1));
     int mX = this->mouse_pos_.x();
     int mY = this->mouse_pos_.y();
+    // 屏幕尺寸
+    QSize screenSize = this->screen_pic_->size();
     // 垂直线
-    painter.drawLine(mX, 0, mX, this->screen_size_.height());
+    painter.drawLine(mX, 0, mX, screenSize.height());
     // 水平线
-    painter.drawLine(0, mY, this->screen_size_.width(), mY);
+    painter.drawLine(0, mY, screenSize.width(), mY);
     painter.restore();
-}
-
-void ExploreLayer::setScreenSize(const QSize &size)
-{
-    this->screen_size_ = QSize(size);
 }
 
 void ExploreLayer::mouseMoveEvent(QMouseEvent *event)

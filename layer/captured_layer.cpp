@@ -2,8 +2,8 @@
 
 #include <QPainter>
 
-CapturedLayer::CapturedLayer(QSize screenSize)
-    : screen_size_(screenSize)
+CapturedLayer::CapturedLayer(QImage *screenPic)
+    : screen_pic_(screenPic)
 {
 
 }
@@ -11,11 +11,6 @@ CapturedLayer::CapturedLayer(QSize screenSize)
 void CapturedLayer::setCapturedRect(const QRect &rect)
 {
     this->captured_rect_ = QRect(rect);
-}
-
-void CapturedLayer::setScreenSize(const QSize &size)
-{
-    this->screen_size_ = QSize(size);
 }
 
 void CapturedLayer::paint(QPainter &painter)
@@ -29,8 +24,9 @@ void CapturedLayer::paint(QPainter &painter)
     int rH = this->captured_rect_.height();
     // 得到捕获区域左侧的矩形
 
-    int screenW = this->screen_size_.width();
-    int screenH = this->screen_size_.height();
+    QSize screenSize = this->screen_pic_->size();
+    int screenW = screenSize.width();
+    int screenH = screenSize.height();
 
     QRect leftMaskRect(0, 0, rX, screenH);
     QRect rightMaskRect(rX + rW, 0, screenW - (rX + rW), screenH);
