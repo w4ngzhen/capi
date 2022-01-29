@@ -22,7 +22,7 @@ ScreenShotWidget::ScreenShotWidget(QWidget *parent)
 
     // 获取当前屏幕图像
     QScreen *screen = QGuiApplication::primaryScreen();
-    this->screen_pic_ = screen->grabWindow(0);
+    this->screen_pic_ = screen->grabWindow(0).toImage();
 
     // 初始状态
     this->status_ = ScreenShotStatus::Explore;
@@ -90,7 +90,7 @@ void ScreenShotWidget::handleCapturingFinished(
  */
 void ScreenShotWidget::handleCapturedRect(QRect *rect, CapturedRectSaveType saveType)
 {
-    const QPixmap pic = this->screen_pic_.copy(
+    const QImage pic = this->screen_pic_.copy(
                 rect->x(),
                 rect->y(),
                 rect->width(),
@@ -98,7 +98,7 @@ void ScreenShotWidget::handleCapturedRect(QRect *rect, CapturedRectSaveType save
     if (saveType == CapturedRectSaveType::ToClipboard)
     {
         QClipboard *clipboard = QGuiApplication::clipboard();
-        clipboard->setPixmap(pic);
+        clipboard->setImage(pic);
     }
     // 保存到目标位置后，退出截图应用
     this->close();
@@ -112,7 +112,7 @@ void ScreenShotWidget::paintEvent(QPaintEvent *)
     painter.setRenderHint(QPainter::Antialiasing, true);
 
     // 将截屏图像绘制在整个窗体
-    painter.drawPixmap(0, 0, this->width(), this->height(), this->screen_pic_);
+    painter.drawImage(QRect(0, 0, this->width(), this->height()), this->screen_pic_);
 
     if (this->status_ == ScreenShotStatus::Explore)
     {

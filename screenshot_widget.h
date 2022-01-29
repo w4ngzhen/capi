@@ -31,7 +31,7 @@ private slots:
 
 private:
     Ui::ScreenShotWidget *ui;
-    QPixmap screen_pic_;
+    QImage screen_pic_;
 
     ScreenShotStatus status_;
     // 鼠标在捕获截取操作前的移动探索
