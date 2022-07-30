@@ -110,7 +110,7 @@ void ScreenShotWidget::paintEvent(QPaintEvent *)
 
     // 构造Painter
     QPainter painter(this);
-    painter.setRenderHint(QPainter::Antialiasing, true);
+//    painter.setRenderHint(QPainter::Antialiasing, true);
 
     // 将截屏图像绘制在整个窗体
     painter.drawImage(QRect(0, 0, this->width(), this->height()), this->screen_pic_);
