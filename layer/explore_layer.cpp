@@ -3,6 +3,7 @@
 #include <QMouseEvent>
 #include <QPainter>
 #include <QSize>
+#include <QPainterPath>
 
 ExploreLayer::ExploreLayer(QImage *screenPic)
     : screen_pic_(screenPic)
