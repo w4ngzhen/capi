@@ -1,7 +1,8 @@
 # This file is used to ignore files which are generated
 # ----------------------------------------------------------------------------
-./build/
-./.cache/
+.idea/
+build/
+.cache/
 *~
 *.autosave
 *.a
