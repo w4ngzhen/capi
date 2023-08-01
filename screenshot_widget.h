@@ -2,6 +2,8 @@
 #define SCREENSHOT_WIDGET_H
 
 #include <QWidget>
+#include <QSize>
+#include <QImage>
 
 
 #include "layer/explore_layer.h"
@@ -31,7 +33,13 @@ private slots:
 
 private:
     Ui::ScreenShotWidget *ui;
+    // 屏幕截图，原始分辨率
     QImage screen_pic_;
+    // 屏幕尺寸，逻辑分辨率，例如mac的实际分辨率是2560 * 1600，
+    // 但获取到的屏幕逻辑分辨率是 1280 * 800
+    QSize screen_size_;
+    // 逻辑分辨率与实际分辨率的比例
+    QSize screen_scale_;
 
     ScreenShotStatus status_;
     // 鼠标在捕获截取操作前的移动探索
