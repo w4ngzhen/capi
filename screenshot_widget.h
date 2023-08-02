@@ -29,7 +29,7 @@ protected:
     virtual void paintEvent(QPaintEvent *event) override;
 private slots:
     void handleCapturingFinished(bool, QRect*);
-    void handleCapturedRect(QRect *, CapturedRectSaveType);
+    void handleCapturedRect(QRect logicRect, QRect realRect, CapturedRectSaveType);
 
 private:
     Ui::ScreenShotWidget *ui;

@@ -39,7 +39,7 @@ ScreenShotWidget::ScreenShotWidget(QWidget *parent)
   this->explore_layer_ =
       new ExploreLayer(pScreenPic, this->screen_size_, this->screen_scale_);
   this->capturing_layer_ = new CapturingLayer(pScreenPic);
-  this->captured_layer_ = new CapturedLayer(pScreenPic);
+  this->captured_layer_ = new CapturedLayer(pScreenPic, this->screen_scale_);
 
   // 信号连接
   connect(this->capturing_layer_, &CapturingLayer::capturingFinishedSignal,
@@ -49,8 +49,6 @@ ScreenShotWidget::ScreenShotWidget(QWidget *parent)
 
   // 无边框显示
   this->setWindowFlag(Qt::WindowType::FramelessWindowHint);
-  // 不出现在任务栏
-  this->setWindowFlag(Qt::Tool);
 }
 
 ScreenShotWidget::~ScreenShotWidget() {
@@ -85,10 +83,10 @@ void ScreenShotWidget::handleCapturingFinished(bool sizeValid,
  * @brief ScreenShotWidget::handleCapturedRect
  * 处理CapturedLayer发射出的保存截屏的指定
  */
-void ScreenShotWidget::handleCapturedRect(QRect *rect,
+void ScreenShotWidget::handleCapturedRect(QRect logicRect, QRect realRect,
                                           CapturedRectSaveType saveType) {
-  const QImage pic = this->screen_pic_.copy(rect->x(), rect->y(), rect->width(),
-                                            rect->height());
+  const QImage pic = this->screen_pic_.copy(
+      realRect.x(), realRect.y(), realRect.width(), realRect.height());
   if (saveType == CapturedRectSaveType::ToClipboard) {
     QClipboard *clipboard = QGuiApplication::clipboard();
     clipboard->setImage(pic);
