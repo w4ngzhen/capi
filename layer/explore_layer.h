@@ -23,6 +23,10 @@ private:
 public:
   void paint(QPainter &painter);
   void mouseMoveEvent(QMouseEvent *event);
+  /*
+   * 在exploring阶段，允许用户按上下左右方向键操控鼠标
+   * */
+  void keyMoveEvent(const int key);
 
 private:
   void paintAssistantPanel(QPainter &painter);

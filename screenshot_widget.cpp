@@ -145,21 +145,28 @@ void ScreenShotWidget::mouseMoveEvent(QMouseEvent *event) {
 }
 
 void ScreenShotWidget::keyReleaseEvent(QKeyEvent *event) {
-  if (event->key() != Qt::Key_Escape) {
-    return;
-  }
-  if (this->status_ == ScreenShotStatus::Captured ||
-      this->status_ == ScreenShotStatus::Capturing) {
-    this->status_ = ScreenShotStatus::Explore;
-    this->update();
-    return;
-  }
+  int key = event->key();
+  if (key == Qt::Key_Escape) {
+    // ESC键处理
+    if (this->status_ == ScreenShotStatus::Captured ||
+        this->status_ == ScreenShotStatus::Capturing) {
+      this->status_ = ScreenShotStatus::Explore;
+      this->update();
+      return;
+    }
 
-  if (this->status_ == ScreenShotStatus::Explore) {
-    // ESC退出截图，则需要清理粘贴板的图片数据
-    QClipboard *clipboard = QGuiApplication::clipboard();
-    clipboard->clear();
-    this->close();
+    if (this->status_ == ScreenShotStatus::Explore) {
+      // ESC退出截图，则需要清理粘贴板的图片数据
+      QClipboard *clipboard = QGuiApplication::clipboard();
+      clipboard->clear();
+      this->close();
+    }
+    return;
+  }
+  if (key == Qt::Key_Right || key == Qt::Key_Left || key == Qt::Key_Up ||
+      key == Qt::Key_Down) {
+    this->explore_layer_->keyMoveEvent(key);
+    this->update();
   }
 }
 

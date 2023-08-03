@@ -33,6 +33,22 @@ void ExploreLayer::paint(QPainter &painter) {
 void ExploreLayer::mouseMoveEvent(QMouseEvent *event) {
   this->mouse_pos_ = event->pos();
 }
+void ExploreLayer::keyMoveEvent(const int key) {
+  int dx = 0;
+  int dy = 0;
+  if (key == Qt::Key_Right) {
+    dx = 1;
+  } else if (key == Qt::Key_Left) {
+    dx = -1;
+  } else if (key == Qt::Key_Down) {
+    dy = 1;
+  } else if (key == Qt::Key_Up) {
+    dy = -1;
+  }
+  auto pos = &this->mouse_pos_;
+  pos->setX(pos->x() + dx);
+  pos->setY(pos->y() + dy);
+}
 
 /**
  * @brief ExploreLayer::paintAssistantArea
@@ -158,7 +174,8 @@ void ExploreLayer::paintAssistantPanelAt(int panelX, int panelY,
   // 再次使用反色
   painter.setPen(QPen(Qt::white, 1));
   painter.setCompositionMode(QPainter::RasterOp_SourceAndNotDestination);
-  painter.drawText(colorDisplayRect, Qt::AlignVCenter | Qt::AlignRight, rgbDesc);
+  painter.drawText(colorDisplayRect, Qt::AlignVCenter | Qt::AlignRight,
+                   rgbDesc);
   // 恢复颜色
   painter.setCompositionMode(QPainter::CompositionMode_Source);
 
