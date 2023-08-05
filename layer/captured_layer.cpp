@@ -61,7 +61,7 @@ void CapturedLayer::paint(QPainter &painter) {
 
 void CapturedLayer::mouseDoubleClickEvent(QMouseEvent *) {
   auto logicRect = this->captured_rect_;
-  auto realRect = paint_helper::rectLogicPixelToRealPixel(logicRect, 2, 2);
+  auto realRect = paint_helper::rectLogicPixelToRealPixel(logicRect, this->screen_scale_.width(), this->screen_scale_.height());
   emit saveCapturedRectSignal(logicRect, realRect,
                               CapturedRectSaveType::ToClipboard);
 }
