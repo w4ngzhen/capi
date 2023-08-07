@@ -22,6 +22,12 @@ namespace paint_helper {
  * @param scaleH
  */
     QRect rectLogicPixelToRealPixel(QRect logicRect, int scaleW, int scaleH);
+/**
+ * 根据圆心坐标得到指定半径的圆的矩形
+ * @param x
+ * @param y
+ */
+    QRect getCircleRectByPoint(int x, int y, int r);
 }
 
 

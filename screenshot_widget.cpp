@@ -9,6 +9,7 @@
 
 #include "helper/math_helper.h"
 #include "helper/paint_helper.h"
+#include "screenshot_status.h"
 
 ScreenShotWidget::ScreenShotWidget(QWidget *parent)
     : QWidget(parent), ui(new Ui::ScreenShotWidget),
@@ -39,7 +40,8 @@ ScreenShotWidget::ScreenShotWidget(QWidget *parent)
   this->explore_layer_ =
       new ExploreLayer(pScreenPic, this->screen_size_, this->screen_scale_);
   this->capturing_layer_ = new CapturingLayer(pScreenPic);
-  this->captured_layer_ = new CapturedLayer(pScreenPic, this->screen_scale_);
+  this->captured_layer_ =
+      new CapturedLayer(pScreenPic, this->screen_size_, this->screen_scale_);
 
   // 信号连接
   connect(this->capturing_layer_, &CapturingLayer::capturingFinishedSignal,
@@ -105,33 +107,55 @@ void ScreenShotWidget::paintEvent(QPaintEvent *) {
   painter.drawImage(QRect(0, 0, this->width(), this->height()),
                     this->screen_pic_);
 
-  if (this->status_ == ScreenShotStatus::Explore) {
+  switch (this->status_) {
+  case ScreenShotStatus::Explore:
     this->setCursor(QCursor(Qt::CrossCursor));
     this->explore_layer_->paint(painter);
-  } else if (this->status_ == ScreenShotStatus::Capturing) {
+    break;
+  case ScreenShotStatus::Capturing:
     this->setCursor(QCursor(Qt::CrossCursor));
     this->capturing_layer_->paint(painter);
-  } else if (this->status_ == ScreenShotStatus::Captured) {
+    break;
+  case ScreenShotStatus::Captured:
     this->setCursor(QCursor(Qt::ArrowCursor));
     this->captured_layer_->paint(painter);
+    break;
+  default:
+    break;
   }
 }
 
 void ScreenShotWidget::mousePressEvent(QMouseEvent *event) {
-  if (this->status_ == ScreenShotStatus::Explore) {
+
+  switch (this->status_) {
+  case ScreenShotStatus::Explore:
+    // explore态鼠标点击，设置capturing层起始点
+    this->capturing_layer_->setStartPos(event->pos());
+    // 切换状态
     this->status_ = ScreenShotStatus::Capturing;
+    break;
+  case ScreenShotStatus::Captured:
+    this->captured_layer_->mousePressEvent(event);
+    break;
+  default:
+    break;
   }
-
-  if (this->status_ == ScreenShotStatus::Capturing) {
-    this->capturing_layer_->mousePressEvent(event);
-  }
-
   this->update();
 }
 
 void ScreenShotWidget::mouseReleaseEvent(QMouseEvent *event) {
-  if (this->status_ == ScreenShotStatus::Capturing) {
+
+  switch (this->status_) {
+  case ScreenShotStatus::Capturing:
+    this->captured_layer_->resetStatus();
     this->capturing_layer_->mouseReleaseEvent(event);
+    this->status_ = ScreenShotStatus::Captured;
+    break;
+  case ScreenShotStatus::Captured:
+    this->captured_layer_->mouseReleaseEvent();
+    break;
+  default:
+    break;
   }
 
   this->update();
@@ -141,6 +165,7 @@ void ScreenShotWidget::mouseMoveEvent(QMouseEvent *event) {
   // 鼠标位置变化需要通知给所有的layer
   this->explore_layer_->mouseMoveEvent(event);
   this->capturing_layer_->mouseMoveEvent(event);
+  this->captured_layer_->mouseMoveEvent(event);
   this->update();
 }
 

@@ -17,8 +17,8 @@ public:
     CapturingLayer(QImage*);
     void paint(QPainter &painter);
     void mouseMoveEvent(QMouseEvent *event);
-    void mousePressEvent(QMouseEvent *event);
     void mouseReleaseEvent(QMouseEvent *event);
+    void setStartPos(QPoint);
     ~CapturingLayer();
 signals:
     void capturingFinishedSignal(bool sizeValid, QRect *capturedRect);
@@ -28,7 +28,7 @@ private:
     // 记录随时的鼠标位置
     QPoint mouse_pos_;
     // 记录鼠标按下的位置
-    QPoint mouse_down_pos_;
+    QPoint start_pos_;
 };
 
 #endif // CAPTURING_LAYER_H

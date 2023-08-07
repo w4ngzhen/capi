@@ -23,7 +23,11 @@ bool calcTextSize(const QString &text, const QFont &font, QSize *size);
  * @brief effectiveSize Size的宽度和高度是否超过指定的长度
  * 例如 (w = 10, h = 2) 就没超过length = 3
  */
-bool sizeLengthOver(const QSize &size, const int length = 3);
+bool sizeLengthOver(const QSize &size, const int length);
+/**
+ * @brief 判断某点是否出于Rect的有效范围内
+ */
+bool posInEffectiveRect(const QPoint &pos, const QRect &rect, const int borderWidth);
 }
 
 
