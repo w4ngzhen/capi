@@ -20,8 +20,8 @@ ScreenShotWidget::ScreenShotWidget(QWidget *parent)
   // 要想鼠标不按下时的移动也能捕捉到，需要setMouseTracking(true)
   setMouseTracking(true);
 
-  // 获取当前主屏幕
-  QScreen *screen = QGuiApplication::primaryScreen();
+  // 获取当前程序所在屏幕
+  QScreen *screen = this->screen();
 
   // 主屏幕的size
   this->screen_size_ = screen->geometry().size();
