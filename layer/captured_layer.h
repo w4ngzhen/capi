@@ -22,14 +22,23 @@ public:
   void resetStatus();
   ~CapturedLayer() {}
 signals:
-  void saveCapturedRectSignal(QRect logicRect, QRect realRect, CapturedRectSaveType saveType);
+  void saveCapturedRectSignal(QRect logicRect, QRect realRect,
+                              CapturedRectSaveType saveType);
 
 private:
   QImage *screen_pic_;
   QSize screen_scale_;
   QSize screen_size_;
   QRect captured_rect_;
-  bool is_relocating_;
+  // 是否整体区域拖动
+  bool is_area_dragging_;
+  /*
+   * 四个角的拖动
+   * 0: lt, 1: rt, 2: lb, 3: rb
+   * 小于0:nothing
+   * */
+  int dragging_corner_;
+
   QPoint mouse_last_pos_;
 };
 

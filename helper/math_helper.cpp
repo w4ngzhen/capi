@@ -1,5 +1,7 @@
 
 #include "helper/math_helper.h"
+#include <stdlib.h>
+#include <QDebug>
 
 namespace math_helper {
 
@@ -7,24 +9,13 @@ namespace math_helper {
  * @brief calcRect 给定两个点（x1，y1）（x2，y2），计算对应的矩形
  */
 QRect calcRect(int x1, int y1, int x2, int y2) {
-  int leftTopX, leftTopY, rightBottomX, rightBottomY;
-  if (x1 <= x2) {
-    leftTopX = x1;
-    rightBottomX = x2;
-  } else {
-    leftTopX = x2;
-    rightBottomX = x1;
-  }
 
-  if (y1 <= y2) {
-    leftTopY = y1;
-    rightBottomY = y2;
-  } else {
-    leftTopY = y2;
-    rightBottomY = y1;
-  }
-  return QRect(leftTopX, leftTopY, rightBottomX - leftTopX,
-               rightBottomY - leftTopY);
+  qDebug("x1 = %d, y1 = %d, x2 = %d, y2 = %d", x1, y1, x2, y2);
+  int x = fmin(x1, x2);
+  int y = fmin(y1, y2);
+  int w = abs(x1 - x2);
+  int h = abs(y1 - y2);
+  return QRect(x, y, w, h);
 }
 
 /**
