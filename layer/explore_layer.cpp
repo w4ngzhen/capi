@@ -1,6 +1,6 @@
 
 #include "layer/explore_layer.h"
-#include "../helper/paint_helper.h"
+#include "helper/math_helper.h"
 #include <QMouseEvent>
 #include <QPainter>
 #include <QPainterPath>
@@ -101,7 +101,7 @@ void ExploreLayer::paintAssistantPanelAt(int panelX, int panelY,
   // +1是因为要把鼠标所在位置的1个像素加上
   QRect logicRect = QRect(left, top, PADDING * 2 + 1, PADDING * 2 + 1);
   // 将逻辑像素下的Rect转为真实图像上的Rect
-  QRect realPicRect = paint_helper::rectLogicPixelToRealPixel(
+  QRect realPicRect = math_helper::rectLogicPixelToRealPixel(
       logicRect, this->screen_scale_.width(), this->screen_scale_.height());
 
   // 从中取得对应区域的图像内容

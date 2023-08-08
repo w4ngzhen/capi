@@ -1,7 +1,7 @@
 
 #include "helper/math_helper.h"
-#include <stdlib.h>
 #include <QDebug>
+#include <stdlib.h>
 
 namespace math_helper {
 
@@ -53,5 +53,21 @@ bool posInEffectiveRect(const QPoint &pos, const QRect &rect,
   QRect _rect(rect.x() + borderWidth, rect.y() + borderWidth,
               rect.width() - borderWidth * 2, rect.height() - borderWidth * 2);
   return rect.contains(pos);
+}
+
+QRect rectLogicPixelToRealPixel(QRect logicRect, int scaleW, int scaleH) {
+  int x = logicRect.x() * scaleW;
+  int y = logicRect.y() * scaleH;
+  int w = logicRect.width() * scaleW;
+  int h = logicRect.height() * scaleH;
+  return {x, y, w, h};
+}
+
+QRect getCircleRectByPoint(int x, int y, int r) {
+  int left = x - r;
+  int top = y - r;
+  int w = r * 2 + 1;
+  int h = w;
+  return QRect(left, top, w, h);
 }
 } // namespace math_helper

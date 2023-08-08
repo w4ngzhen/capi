@@ -48,13 +48,13 @@ void CapturedLayer::paint(QPainter &painter) {
   painter.drawRect(this->captured_rect_);
 
   // 2. 绘制四个角的圆点
-  const auto lt = paint_helper::getCircleRectByPoint(
+  const auto lt = math_helper::getCircleRectByPoint(
       rX - CORNER_OFFSET, rY - CORNER_OFFSET, CORNER_CIRCLE_RADIUS);
-  const auto rt = paint_helper::getCircleRectByPoint(
+  const auto rt = math_helper::getCircleRectByPoint(
       rX + rW + CORNER_OFFSET, rY - CORNER_OFFSET, CORNER_CIRCLE_RADIUS);
-  const auto lb = paint_helper::getCircleRectByPoint(
+  const auto lb = math_helper::getCircleRectByPoint(
       rX - CORNER_OFFSET, rY + rH + CORNER_OFFSET, CORNER_CIRCLE_RADIUS);
-  const auto rb = paint_helper::getCircleRectByPoint(
+  const auto rb = math_helper::getCircleRectByPoint(
       rX + rW + CORNER_OFFSET, rY + rH + CORNER_OFFSET, CORNER_CIRCLE_RADIUS);
   painter.setBrush(color);
   painter.drawEllipse(lt);
@@ -67,7 +67,7 @@ void CapturedLayer::paint(QPainter &painter) {
 
 void CapturedLayer::mouseDoubleClickEvent(QMouseEvent *) {
   auto logicRect = this->captured_rect_;
-  auto realRect = paint_helper::rectLogicPixelToRealPixel(
+  auto realRect = math_helper::rectLogicPixelToRealPixel(
       logicRect, this->screen_scale_.width(), this->screen_scale_.height());
   emit saveCapturedRectSignal(logicRect, realRect,
                               CapturedRectSaveType::ToClipboard);
@@ -145,28 +145,28 @@ void CapturedLayer::mousePressEvent(QMouseEvent *event) {
   // 开始判断是否点击到了某个角
   auto effectiveRadius = CORNER_CIRCLE_RADIUS * 2;
   auto capRect = this->captured_rect_;
-  auto ltRect = paint_helper::getCircleRectByPoint(capRect.x() - CORNER_OFFSET,
+  auto ltRect = math_helper::getCircleRectByPoint(capRect.x() - CORNER_OFFSET,
                                                    capRect.y() - CORNER_OFFSET,
                                                    effectiveRadius);
   if (ltRect.contains(mousePos)) {
     this->dragging_corner_ = 0;
     return;
   }
-  auto rtRect = paint_helper::getCircleRectByPoint(
+  auto rtRect = math_helper::getCircleRectByPoint(
       capRect.x() + capRect.width() + CORNER_OFFSET,
       capRect.y() - CORNER_OFFSET, effectiveRadius);
   if (rtRect.contains(mousePos)) {
     this->dragging_corner_ = 1;
     return;
   }
-  auto lbRect = paint_helper::getCircleRectByPoint(
+  auto lbRect = math_helper::getCircleRectByPoint(
       capRect.x() - CORNER_OFFSET,
       capRect.y() + capRect.height() + CORNER_OFFSET, effectiveRadius);
   if (lbRect.contains(mousePos)) {
     this->dragging_corner_ = 2;
     return;
   }
-  auto rbRect = paint_helper::getCircleRectByPoint(
+  auto rbRect = math_helper::getCircleRectByPoint(
       capRect.x() + capRect.width() + CORNER_OFFSET,
       capRect.y() + capRect.height() + CORNER_OFFSET, effectiveRadius);
   if (rbRect.contains(mousePos)) {

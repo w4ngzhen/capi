@@ -70,20 +70,4 @@ void paintCapturingRectSizeTip(QPainter &painter, const QPoint &mousePos,
   painter.restore();
 }
 
-QRect rectLogicPixelToRealPixel(QRect logicRect, int scaleW, int scaleH) {
-  int x = logicRect.x() * scaleW;
-  int y = logicRect.y() * scaleH;
-  int w = logicRect.width() * scaleW;
-  int h = logicRect.height() * scaleH;
-  return {x, y, w, h};
-}
-
-QRect getCircleRectByPoint(int x, int y, int r) {
-  int left = x - r;
-  int top = y - r;
-  int w = r * 2 + 1;
-  int h = w;
-  return QRect(left, top, w, h);
-}
-
 } // namespace paint_helper
