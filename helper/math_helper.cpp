@@ -10,7 +10,6 @@ namespace math_helper {
  */
 QRect calcRect(int x1, int y1, int x2, int y2) {
 
-  qDebug("x1 = %d, y1 = %d, x2 = %d, y2 = %d", x1, y1, x2, y2);
   int x = fmin(x1, x2);
   int y = fmin(y1, y2);
   int w = abs(x1 - x2);
