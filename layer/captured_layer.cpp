@@ -8,11 +8,9 @@
 const int CORNER_OFFSET = 5;
 const int CORNER_CIRCLE_RADIUS = 3;
 
-CapturedLayer::CapturedLayer(QImage *screenPic, QSize screenSize,
-                             QSize screenScale)
-    : screen_pic_(screenPic), screen_size_(screenSize),
-      screen_scale_(screenScale), is_area_dragging_(false),
-      mouse_last_pos_(QPoint()) {}
+CapturedLayer::CapturedLayer(QImage *screenPic, QSize canvasSize)
+    : screen_pic_(screenPic), canvas_size_(canvasSize),
+      is_area_dragging_(false), mouse_last_pos_(QPoint()) {}
 
 void CapturedLayer::setCapturedRect(const QRect &rect) {
   this->captured_rect_ = QRect(rect);
@@ -27,14 +25,14 @@ void CapturedLayer::paint(QPainter &painter) {
   int rW = this->captured_rect_.width();
   int rH = this->captured_rect_.height();
 
-  QSize screenSize = this->screen_size_;
-  int screenW = screenSize.width();
-  int screenH = screenSize.height();
+  QSize canvasSize = this->canvas_size_;
+  int canvasW = canvasSize.width();
+  int canvasH = canvasSize.height();
 
-  QRect leftMaskRect(0, 0, rX, screenH);
-  QRect rightMaskRect(rX + rW, 0, screenW - (rX + rW), screenH);
+  QRect leftMaskRect(0, 0, rX, canvasH);
+  QRect rightMaskRect(rX + rW, 0, canvasW - (rX + rW), canvasH);
   QRect topMaskRect(rX, 0, rW, rY);
-  QRect bottomMaskRect(rX, (rY + rH), rW, screenH - (rY + rH));
+  QRect bottomMaskRect(rX, (rY + rH), rW, canvasH - (rY + rH));
 
   QBrush grayBrush = QBrush(QColor(0, 0, 0, 50)); // 50% Alpha的灰色
   painter.fillRect(leftMaskRect, grayBrush);
@@ -66,10 +64,7 @@ void CapturedLayer::paint(QPainter &painter) {
 }
 
 void CapturedLayer::mouseDoubleClickEvent(QMouseEvent *) {
-  auto logicRect = this->captured_rect_;
-  auto realRect = math_helper::rectLogicPixelToRealPixel(
-      logicRect, this->screen_scale_.width(), this->screen_scale_.height());
-  emit saveCapturedRectSignal(logicRect, realRect,
+  emit saveCapturedRectSignal(this->captured_rect_,
                               CapturedRectSaveType::ToClipboard);
 }
 
@@ -146,8 +141,8 @@ void CapturedLayer::mousePressEvent(QMouseEvent *event) {
   auto effectiveRadius = CORNER_CIRCLE_RADIUS * 2;
   auto capRect = this->captured_rect_;
   auto ltRect = math_helper::getCircleRectByPoint(capRect.x() - CORNER_OFFSET,
-                                                   capRect.y() - CORNER_OFFSET,
-                                                   effectiveRadius);
+                                                  capRect.y() - CORNER_OFFSET,
+                                                  effectiveRadius);
   if (ltRect.contains(mousePos)) {
     this->dragging_corner_ = 0;
     return;
@@ -177,11 +172,10 @@ void CapturedLayer::mousePressEvent(QMouseEvent *event) {
   this->dragging_corner_ = -1;
 }
 
-void CapturedLayer::mouseReleaseEvent() {
-  this->resetStatus();
-}
+void CapturedLayer::mouseReleaseEvent() { this->resetStatus(); }
 
 void CapturedLayer::resetStatus() {
   this->is_area_dragging_ = false;
   this->dragging_corner_ = -1;
 }
+void CapturedLayer::setCanvasSize(QSize size) { this->canvas_size_ = size; }

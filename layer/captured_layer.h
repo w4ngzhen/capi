@@ -4,6 +4,8 @@
 #include <QMouseEvent>
 #include <QRect>
 #include <QSize>
+
+
 class QPainter;
 class QImage;
 
@@ -12,8 +14,9 @@ enum CapturedRectSaveType { ToClipboard, ToFile };
 class CapturedLayer : public QObject {
   Q_OBJECT
 public:
-  CapturedLayer(QImage *, QSize screenSize, QSize screenScale);
+  CapturedLayer(QImage *, QSize canvasSize);
   void setCapturedRect(const QRect &rect);
+  void setCanvasSize(QSize);
   void paint(QPainter &painter);
   void mouseDoubleClickEvent(QMouseEvent *);
   void mouseMoveEvent(QMouseEvent *);
@@ -22,13 +25,11 @@ public:
   void resetStatus();
   ~CapturedLayer() {}
 signals:
-  void saveCapturedRectSignal(QRect logicRect, QRect realRect,
-                              CapturedRectSaveType saveType);
+  void saveCapturedRectSignal(QRect capruredRect, CapturedRectSaveType saveType);
 
 private:
   QImage *screen_pic_;
-  QSize screen_scale_;
-  QSize screen_size_;
+  QSize canvas_size_;
   QRect captured_rect_;
   // 是否整体区域拖动
   bool is_area_dragging_;

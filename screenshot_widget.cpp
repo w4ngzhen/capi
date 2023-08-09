@@ -20,28 +20,23 @@ ScreenShotWidget::ScreenShotWidget(QWidget *parent)
   // 要想鼠标不按下时的移动也能捕捉到，需要setMouseTracking(true)
   setMouseTracking(true);
 
-  // 获取当前程序所在屏幕
-  QScreen *screen = this->screen();
+  // 获取鼠标所在的屏幕
+  QScreen *screen = QApplication::screenAt(QCursor().pos());
 
-  // 主屏幕的size
-  this->screen_size_ = screen->geometry().size();
+  // 默认是屏幕的size，但是当前widget可以修改大小
+  auto canvasSize = screen->geometry().size();
   // 获取当前主屏幕的图片（注意，这是真实像素的图片，在高分屏上，要注意鼠标坐标）
   this->screen_pic_ = screen->grabWindow(0).toImage();
   const auto screenPicSize = this->screen_pic_.size();
-  this->screen_scale_ =
-      QSize(screenPicSize.width() / this->screen_size_.width(),
-            screenPicSize.height() / this->screen_size_.height());
-
+  //
   // 初始状态
   this->status_ = ScreenShotStatus::Explore;
 
   // 初始化各个层
   QImage *pScreenPic = &this->screen_pic_;
-  this->explore_layer_ =
-      new ExploreLayer(pScreenPic, this->screen_size_, this->screen_scale_);
+  this->explore_layer_ = new ExploreLayer(pScreenPic, canvasSize);
   this->capturing_layer_ = new CapturingLayer(pScreenPic);
-  this->captured_layer_ =
-      new CapturedLayer(pScreenPic, this->screen_size_, this->screen_scale_);
+  this->captured_layer_ = new CapturedLayer(pScreenPic, canvasSize);
 
   // 信号连接
   connect(this->capturing_layer_, &CapturingLayer::capturingFinishedSignal,
@@ -50,7 +45,7 @@ ScreenShotWidget::ScreenShotWidget(QWidget *parent)
           &ScreenShotWidget::handleCapturedRect);
 
   // 无边框显示
-  this->setWindowFlag(Qt::WindowType::FramelessWindowHint);
+  //  this->setWindowFlag(Qt::WindowType::FramelessWindowHint);
 }
 
 ScreenShotWidget::~ScreenShotWidget() {
@@ -84,11 +79,20 @@ void ScreenShotWidget::handleCapturingFinished(bool sizeValid,
 /**
  * @brief ScreenShotWidget::handleCapturedRect
  * 处理CapturedLayer发射出的保存截屏的指定
+ * 注意，信号发出的捕获的区域仅仅是逻辑区域，需要转化为图片上的实际像素区域
  */
-void ScreenShotWidget::handleCapturedRect(QRect logicRect, QRect realRect,
+void ScreenShotWidget::handleCapturedRect(QRect capturedRect,
                                           CapturedRectSaveType saveType) {
-  const QImage pic = this->screen_pic_.copy(
-      realRect.x(), realRect.y(), realRect.width(), realRect.height());
+  auto picRealSize = this->screen_pic_.size();
+  auto canvasSize = this->size();
+  int realRectX = capturedRect.x() * picRealSize.width() / canvasSize.width();
+  int realRectY = capturedRect.y() * picRealSize.height() / canvasSize.height();
+  int realRectW =
+      capturedRect.width() * picRealSize.width() / canvasSize.width();
+  int realRectH =
+      capturedRect.height() * picRealSize.height() / canvasSize.height();
+  const QImage pic =
+      this->screen_pic_.copy(realRectX, realRectY, realRectW, realRectH);
   if (saveType == CapturedRectSaveType::ToClipboard) {
     QClipboard *clipboard = QGuiApplication::clipboard();
     clipboard->setImage(pic);
@@ -109,7 +113,7 @@ void ScreenShotWidget::paintEvent(QPaintEvent *) {
 
   switch (this->status_) {
   case ScreenShotStatus::Explore:
-    this->setCursor(QCursor(Qt::CrossCursor));
+    this->setCursor(QCursor(Qt::BlankCursor));
     this->explore_layer_->paint(painter);
     break;
   case ScreenShotStatus::Capturing:
@@ -197,4 +201,12 @@ void ScreenShotWidget::keyReleaseEvent(QKeyEvent *event) {
 
 void ScreenShotWidget::mouseDoubleClickEvent(QMouseEvent *event) {
   this->captured_layer_->mouseDoubleClickEvent(event);
+}
+/**
+ * 重要：需要在resizeEvent中，更新canvas size，并重新计算canvas size scale
+ **/
+void ScreenShotWidget::resizeEvent(QResizeEvent *event) {
+  auto canvasSize = event->size();
+  this->explore_layer_->setCanvasSize(canvasSize);
+  this->captured_layer_->setCanvasSize(canvasSize);
 }
