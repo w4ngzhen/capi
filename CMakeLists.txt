@@ -29,7 +29,6 @@ add_executable(QtScreenShot WIN32
   main.cpp
   screenshot_widget.cpp
   screenshot_widget.h
-  screenshot_widget.ui
   screenshot_status.h
   helper/math_helper.h
   helper/math_helper.cpp

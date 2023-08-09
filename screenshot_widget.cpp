@@ -1,20 +1,19 @@
 #include "screenshot_widget.h"
-#include "./ui_screenshot_widget.h"
 
 #include <QClipboard>
 #include <QGuiApplication>
 #include <QMouseEvent>
 #include <QPainter>
 #include <QScreen>
+#include <QtWidgets/QApplication>
+#include <QtWidgets/QWidget>
 
 #include "helper/math_helper.h"
 #include "helper/paint_helper.h"
 #include "screenshot_status.h"
 
 ScreenShotWidget::ScreenShotWidget(QWidget *parent)
-    : QWidget(parent), ui(new Ui::ScreenShotWidget),
-      status_(ScreenShotStatus::Explore) {
-  ui->setupUi(this);
+    : QWidget(parent), status_(ScreenShotStatus::Explore) {
 
   // QT中 MouseMoveEvent为了降低计算资源，默认需要要鼠标按下才能触发该事件。
   // 要想鼠标不按下时的移动也能捕捉到，需要setMouseTracking(true)
@@ -49,7 +48,6 @@ ScreenShotWidget::ScreenShotWidget(QWidget *parent)
 }
 
 ScreenShotWidget::~ScreenShotWidget() {
-  delete ui;
   delete this->explore_layer_;
   delete this->capturing_layer_;
   delete this->captured_layer_;

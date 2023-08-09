@@ -12,19 +12,13 @@
 #include "helper/math_helper.h"
 #include "screenshot_status.h"
 
-QT_BEGIN_NAMESPACE
-namespace Ui {
-class ScreenShotWidget;
-}
-QT_END_NAMESPACE
-
 class ScreenShotWidget : public QWidget {
   Q_OBJECT
 
 public:
   ScreenShotWidget(QWidget *parent = nullptr);
   ~ScreenShotWidget();
-  // QWidget interface
+
 protected:
   virtual void paintEvent(QPaintEvent *event) override;
   virtual void resizeEvent(QResizeEvent *event) override;
@@ -33,7 +27,6 @@ private slots:
   void handleCapturedRect(QRect capturedRect, CapturedRectSaveType);
 
 private:
-  Ui::ScreenShotWidget *ui;
   // 屏幕截图，原始分辨率
   QImage screen_pic_;
 
