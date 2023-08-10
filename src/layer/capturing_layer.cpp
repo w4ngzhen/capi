@@ -1,8 +1,8 @@
 #include "capturing_layer.h"
-#include "helper/math_helper.h"
-#include "helper/paint_helper.h"
+#include "../helper/math_helper.h"
+#include "../helper/paint_helper.h"
 
-CapturingLayer::CapturingLayer(QImage *screenPic) : screen_pic_(screenPic) {}
+CapturingLayer::CapturingLayer(QImage *canvasImg) : canvas_img_(canvasImg) {}
 
 void CapturingLayer::paint(QPainter &painter) {
   painter.save();
@@ -23,9 +23,7 @@ void CapturingLayer::mouseMoveEvent(QMouseEvent *event) {
   this->mouse_pos_ = event->pos();
 }
 
-void CapturingLayer::setStartPos(QPoint pos) {
-  this->start_pos_ = pos;
-}
+void CapturingLayer::setStartPos(QPoint pos) { this->start_pos_ = pos; }
 
 void CapturingLayer::mouseReleaseEvent(QMouseEvent *event) {
   QPoint &startPos = this->start_pos_;

@@ -28,7 +28,7 @@ signals:
   void saveCapturedRectSignal(QRect capruredRect, CapturedRectSaveType saveType);
 
 private:
-  QImage *screen_pic_;
+  QImage *canvas_img_;
   QSize canvas_size_;
   QRect captured_rect_;
   // 是否整体区域拖动

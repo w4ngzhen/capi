@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.5)
 
-project(QtScreenShot LANGUAGES CXX)
+project(caps LANGUAGES CXX)
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS 1)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
@@ -25,21 +25,14 @@ endif()
 
 find_package(Qt6 COMPONENTS Widgets REQUIRED)
 
-add_executable(QtScreenShot WIN32
-  main.cpp
-  screenshot_widget.cpp
-  screenshot_widget.h
-  screenshot_status.h
-  helper/math_helper.h
-  helper/math_helper.cpp
-  helper/paint_helper.h
-  helper/paint_helper.cpp
-  layer/explore_layer.h
-  layer/explore_layer.cpp
-  layer/capturing_layer.h
-  layer/capturing_layer.cpp
-  layer/captured_layer.h
-  layer/captured_layer.cpp
+# 将src下面的所有头文件路径保存至 all_head_files 数组变量中
+# 将src下面的所有源文件路径保存至 all_source_files 数组变量中
+file(GLOB_RECURSE all_head_files "src/*.hpp" "src/*.h")
+file(GLOB_RECURSE all_source_files "src/*.cpp" "src/*.c")
+
+add_executable(${CMAKE_PROJECT_NAME} WIN32
+  ${all_head_files}
+  ${all_source_files}
 )
 
-target_link_libraries(QtScreenShot PRIVATE Qt6::Widgets)
+target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE Qt6::Widgets)

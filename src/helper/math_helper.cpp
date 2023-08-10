@@ -1,5 +1,5 @@
 
-#include "helper/math_helper.h"
+#include "math_helper.h"
 #include <QDebug>
 #include <stdlib.h>
 

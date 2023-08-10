@@ -1,7 +1,7 @@
-#ifndef SCREENSHOT_STATUS_H
-#define SCREENSHOT_STATUS_H
+#ifndef CANAVS_STATUS_H
+#define CANAVS_STATUS_H
 
-enum  ScreenShotStatus
+enum  CanvasStatus
 {
 
     // 鼠标悬浮移动
@@ -12,4 +12,4 @@ enum  ScreenShotStatus
     Captured
 };
 
-#endif // SCREENSHOT_STATUS_H
+#endif // CANAVS_STATUS_H

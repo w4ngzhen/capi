@@ -1,17 +1,17 @@
-#include "layer/explore_layer.h"
-#include "helper/math_helper.h"
-
 #include <QMouseEvent>
 #include <QPainter>
 #include <QPainterPath>
 #include <QSize>
 
+#include "../helper/math_helper.h"
+#include "../layer/explore_layer.h"
+
 // 工具面板的size
 const int TOOL_PANE_WIDTH = 201;
 const int TOOL_PANE_HEIGHT = 351;
 
-ExploreLayer::ExploreLayer(QImage *screenPic, QSize canvasSize)
-    : screen_pic_(screenPic), canvas_size_(canvasSize), mouse_pos_(QPoint()) {}
+ExploreLayer::ExploreLayer(QImage *canvasImg, QSize canvasSize)
+    : canvas_img_(canvasImg), canvas_size_(canvasSize), mouse_pos_(QPoint()) {}
 
 ExploreLayer::~ExploreLayer() {}
 
@@ -90,16 +90,16 @@ void ExploreLayer::paintToolPaneAt(int panelX, int panelY, QPainter &painter) {
   const int TOOL_PANE_X = panelX;
   const int TOOL_PANE_Y = panelY;
   const QRect TOOL_PANE_RECT(TOOL_PANE_X, TOOL_PANE_Y, TOOL_PANE_WIDTH,
-                                   TOOL_PANE_HEIGHT);
+                             TOOL_PANE_HEIGHT);
 
   // 2. 计算鼠标的实际像素位置
   int mX = this->mouse_pos_.x();
   int mY = this->mouse_pos_.y();
   // 由于mouse_pos是逻辑坐标，为了获取图片上对应的值，需要转为实际坐标
-  auto picRealSize = this->screen_pic_->size();
+  auto picRealSize = this->canvas_img_->size();
   int realMouseX = mX * picRealSize.width() / canvas_size_.width();
   int realMouseY = mY * picRealSize.height() / canvas_size_.height();
-  
+
   // 3. 所在图片真实像素位置周围30px的区域内容
   // 需要将对应区域转为实际区域，进而获取实际的区域的图像内容
   const int PADDING = 30;
@@ -110,10 +110,10 @@ void ExploreLayer::paintToolPaneAt(int panelX, int panelY, QPainter &painter) {
   int h = PADDING * 2 + 1;
   QRect realPicRect = QRect(left, top, w, h);
   // 从中取得对应区域的图像内容
-  QImage partialImage = this->screen_pic_->copy(realPicRect);
+  QImage partialImage = this->canvas_img_->copy(realPicRect);
 
   // 获取鼠标指定位置的颜色
-  QRgb rgbAtMousePos = this->screen_pic_->pixel(realMouseX, realMouseY);
+  QRgb rgbAtMousePos = this->canvas_img_->pixel(realMouseX, realMouseY);
 
   // === 绘制阶段 ===
   // === 1. 给工具面板绘制1像素的边框 ===
@@ -155,7 +155,7 @@ void ExploreLayer::paintToolPaneAt(int panelX, int panelY, QPainter &painter) {
   // 否则后续涂色的时候，在白色背景上一直是黑色
   painter.setCompositionMode(QPainter::CompositionMode_Source);
 
-  // === 4. 在下方涂写十字中心捕获的颜色 === 
+  // === 4. 在下方涂写十字中心捕获的颜色 ===
   // 4.1 区域中填充颜色
   QBrush brush(rgbAtMousePos);
   const int COLOR_DISPLAY_RECT_W = SCALED_IMG_W;

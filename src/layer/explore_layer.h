@@ -15,7 +15,7 @@ public:
   ~ExploreLayer();
 
 private:
-  QImage *screen_pic_;
+  QImage *canvas_img_;
   QSize canvas_size_;
   QPoint mouse_pos_;
 

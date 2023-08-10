@@ -1,15 +1,16 @@
-#include "captured_layer.h"
-#include "helper/math_helper.h"
-#include "helper/paint_helper.h"
 
 #include <QPainter>
 #include <QRect>
 
+#include "captured_layer.h"
+#include "../helper/math_helper.h"
+#include "../helper/paint_helper.h"
+
 const int CORNER_OFFSET = 5;
 const int CORNER_CIRCLE_RADIUS = 3;
 
-CapturedLayer::CapturedLayer(QImage *screenPic, QSize canvasSize)
-    : screen_pic_(screenPic), canvas_size_(canvasSize),
+CapturedLayer::CapturedLayer(QImage *canvasImg, QSize canvasSize)
+    : canvas_img_(canvasImg), canvas_size_(canvasSize),
       is_area_dragging_(false), mouse_last_pos_(QPoint()) {}
 
 void CapturedLayer::setCapturedRect(const QRect &rect) {

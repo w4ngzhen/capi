@@ -1,5 +1,5 @@
-#include "helper/paint_helper.h"
-#include "helper/math_helper.h"
+#include "paint_helper.h"
+#include "math_helper.h"
 
 namespace paint_helper {
 

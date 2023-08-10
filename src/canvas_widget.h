@@ -1,5 +1,5 @@
-#ifndef SCREENSHOT_WIDGET_H
-#define SCREENSHOT_WIDGET_H
+#ifndef CANVAS_WIDGET_H
+#define CANVAS_WIDGET_H
 
 #include <QImage>
 #include <QSize>
@@ -10,14 +10,15 @@
 #include "layer/explore_layer.h"
 
 #include "helper/math_helper.h"
-#include "screenshot_status.h"
+#include "canvas_status.h"
 
-class ScreenShotWidget : public QWidget {
+class CanvasWidget : public QWidget {
   Q_OBJECT
 
 public:
-  ScreenShotWidget(QWidget *parent = nullptr);
-  ~ScreenShotWidget();
+  CanvasWidget(QWidget *parent = nullptr);
+  void init(QImage *); 
+  ~CanvasWidget();
 
 protected:
   virtual void paintEvent(QPaintEvent *event) override;
@@ -27,10 +28,10 @@ private slots:
   void handleCapturedRect(QRect capturedRect, CapturedRectSaveType);
 
 private:
-  // 屏幕截图，原始分辨率
-  QImage screen_pic_;
+  // 原始分辨率的图片
+  QImage *canvas_img_;
 
-  ScreenShotStatus status_;
+  CanvasStatus status_;
   // 鼠标在捕获截取操作前的移动探索
   ExploreLayer *explore_layer_;
   // 鼠标按下后捕获过程
@@ -47,4 +48,4 @@ protected:
   virtual void mouseDoubleClickEvent(QMouseEvent *event) override;
 };
 
-#endif // SCREENSHOT_WIDGET_H
+#endif // CANVAS_WIDGET_H

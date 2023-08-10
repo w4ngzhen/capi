@@ -23,8 +23,8 @@ public:
 signals:
     void capturingFinishedSignal(bool sizeValid, QRect *capturedRect);
 private:
-    // 屏幕图像
-    QImage *screen_pic_;
+    // 画布图像
+    QImage *canvas_img_;
     // 记录随时的鼠标位置
     QPoint mouse_pos_;
     // 记录鼠标按下的位置
