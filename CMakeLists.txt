@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.5)
 
-project(caps LANGUAGES CXX)
+project(capi LANGUAGES CXX)
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS 1)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
