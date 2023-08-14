@@ -9,23 +9,21 @@
 #include "layer/capturing_layer.h"
 #include "layer/explore_layer.h"
 
-#include "helper/math_helper.h"
 #include "canvas_status.h"
+#include "helper/math_helper.h"
 
 class CanvasWidget : public QWidget {
   Q_OBJECT
 
 public:
   CanvasWidget(QWidget *parent = nullptr);
-  void init(QImage *); 
+  void init(QImage *);
   ~CanvasWidget();
 
-protected:
-  virtual void paintEvent(QPaintEvent *event) override;
-  virtual void resizeEvent(QResizeEvent *event) override;
 private slots:
-  void handleCapturingFinished(bool, QRect *);
-  void handleCapturedRect(QRect capturedRect, CapturedRectSaveType);
+  void handleSignalCapturingFinished(bool, QRect *);
+  void handleSignalCapturedRect(QRect capturedRect, CapturedRectSaveType);
+  void handleSignalQuitLayer(CanvasStatus);
 
 private:
   // 原始分辨率的图片
@@ -46,6 +44,8 @@ protected:
   virtual void mouseMoveEvent(QMouseEvent *event) override;
   virtual void keyReleaseEvent(QKeyEvent *event) override;
   virtual void mouseDoubleClickEvent(QMouseEvent *event) override;
+  virtual void paintEvent(QPaintEvent *) override;
+  virtual void resizeEvent(QResizeEvent *) override;
 };
 
 #endif // CANVAS_WIDGET_H

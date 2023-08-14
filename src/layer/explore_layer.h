@@ -1,14 +1,18 @@
 #ifndef EXPLORE_LAYER_H
 #define EXPLORE_LAYER_H
 
+#include <QObject>
 #include <QPoint>
 #include <QSize>
 
 class QPainter;
 class QMouseEvent;
 class QImage;
+class QKeyEvent;
 
-class ExploreLayer {
+class ExploreLayer : public QObject {
+  // 会用到QT的signal/slot机制
+  Q_OBJECT
 public:
   ExploreLayer(QImage *, QSize canvasSize);
   void setCanvasSize(QSize);
@@ -22,10 +26,10 @@ private:
 public:
   void paint(QPainter &painter);
   void mouseMoveEvent(QMouseEvent *event);
-  /*
-   * 在exploring阶段，允许用户按上下左右方向键操控鼠标
-   * */
-  void keyMoveEvent(const int key);
+  void keyReleaseEvent(QKeyEvent *);
+
+signals:
+  void signalQuitCurrentLayer();
 
 private:
   void paintToolPane(QPainter &painter);

@@ -15,13 +15,17 @@ class CapturingLayer: public QObject
     Q_OBJECT
 public:
     CapturingLayer(QImage*);
-    void paint(QPainter &painter);
-    void mouseMoveEvent(QMouseEvent *event);
-    void mouseReleaseEvent(QMouseEvent *event);
+    void paint(QPainter &);
+    void mouseMoveEvent(QMouseEvent *);
+    void mouseReleaseEvent(QMouseEvent *);
+    void keyReleaseEvent(QKeyEvent *);
     void setStartPos(QPoint);
     ~CapturingLayer();
+
 signals:
-    void capturingFinishedSignal(bool sizeValid, QRect *capturedRect);
+    void signalCapturingFinished(bool sizeValid, QRect *capturedRect);
+    void signalQuitCurrentLayer();
+
 private:
     // 画布图像
     QImage *canvas_img_;

@@ -33,9 +33,17 @@ void CapturingLayer::mouseReleaseEvent(QMouseEvent *event) {
 
   if (!math_helper::sizeLengthOver(capturedRect.size(), 10)) {
     // 截图区域过于小，不予捕获，回到Explore状态
-    emit this->capturingFinishedSignal(false, nullptr);
+    emit this->signalCapturingFinished(false, nullptr);
   } else {
-    emit this->capturingFinishedSignal(true, &capturedRect);
+    emit this->signalCapturingFinished(true, &capturedRect);
+  }
+}
+
+void CapturingLayer::keyReleaseEvent(QKeyEvent *event) {
+  auto key = event->key();
+  if (key == Qt::Key_Escape) {
+    emit signalQuitCurrentLayer();
+    return;
   }
 }
 

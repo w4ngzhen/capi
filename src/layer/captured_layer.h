@@ -5,9 +5,9 @@
 #include <QRect>
 #include <QSize>
 
-
 class QPainter;
 class QImage;
+class QKeyEvent;
 
 enum CapturedRectSaveType { ToClipboard, ToFile };
 
@@ -22,10 +22,15 @@ public:
   void mouseMoveEvent(QMouseEvent *);
   void mousePressEvent(QMouseEvent *);
   void mouseReleaseEvent();
+  void keyReleaseEvent(QKeyEvent *);
   void resetStatus();
   ~CapturedLayer() {}
 signals:
-  void saveCapturedRectSignal(QRect capruredRect, CapturedRectSaveType saveType);
+  // 信号：完成当前捕获
+  void signalSaveCapturedRect(QRect capruredRect,
+                              CapturedRectSaveType saveType);
+  // 信号：退出当前状态
+  void signalQuitCurrentLayer();
 
 private:
   QImage *canvas_img_;

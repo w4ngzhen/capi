@@ -1,10 +1,11 @@
 
+#include <QKeyEvent>
 #include <QPainter>
 #include <QRect>
 
-#include "captured_layer.h"
 #include "../helper/math_helper.h"
 #include "../helper/paint_helper.h"
+#include "captured_layer.h"
 
 const int CORNER_OFFSET = 5;
 const int CORNER_CIRCLE_RADIUS = 3;
@@ -65,7 +66,8 @@ void CapturedLayer::paint(QPainter &painter) {
 }
 
 void CapturedLayer::mouseDoubleClickEvent(QMouseEvent *) {
-  emit saveCapturedRectSignal(this->captured_rect_,
+  // 双击以后，完成图像保存
+  emit signalSaveCapturedRect(this->captured_rect_,
                               CapturedRectSaveType::ToClipboard);
 }
 
@@ -174,6 +176,13 @@ void CapturedLayer::mousePressEvent(QMouseEvent *event) {
 }
 
 void CapturedLayer::mouseReleaseEvent() { this->resetStatus(); }
+
+void CapturedLayer::keyReleaseEvent(QKeyEvent *event) {
+  auto key = event->key();
+  if (key == Qt::Key_Escape) {
+    emit signalQuitCurrentLayer();
+  }
+}
 
 void CapturedLayer::resetStatus() {
   this->is_area_dragging_ = false;

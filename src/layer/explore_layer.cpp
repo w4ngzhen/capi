@@ -34,7 +34,13 @@ void ExploreLayer::paint(QPainter &painter) {
 void ExploreLayer::mouseMoveEvent(QMouseEvent *event) {
   this->mouse_pos_ = event->pos();
 }
-void ExploreLayer::keyMoveEvent(const int key) {
+
+void ExploreLayer::keyReleaseEvent(QKeyEvent *event) {
+  auto key = event->key();
+  if (key == Qt::Key_Escape) {
+    emit signalQuitCurrentLayer();
+    return;
+  }
   int dx = 0;
   int dy = 0;
   if (key == Qt::Key_Right) {

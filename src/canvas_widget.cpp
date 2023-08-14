@@ -1,4 +1,5 @@
 #include <QClipboard>
+#include <QDebug>
 #include <QGuiApplication>
 #include <QMouseEvent>
 #include <QPainter>
@@ -33,10 +34,20 @@ void CanvasWidget::init(QImage *img) {
   this->captured_layer_ = new CapturedLayer(this->canvas_img_, initSize);
 
   // 信号连接
-  connect(this->capturing_layer_, &CapturingLayer::capturingFinishedSignal,
-          this, &CanvasWidget::handleCapturingFinished);
-  connect(this->captured_layer_, &CapturedLayer::saveCapturedRectSignal, this,
-          &CanvasWidget::handleCapturedRect);
+  connect(this->capturing_layer_, &CapturingLayer::signalCapturingFinished,
+          this, &CanvasWidget::handleSignalCapturingFinished);
+
+  // 处理captured layer触发的保存事件
+  connect(this->captured_layer_, &CapturedLayer::signalSaveCapturedRect, this,
+          &CanvasWidget::handleSignalCapturedRect);
+
+  // 处理三个layer的quit事件
+  connect(this->explore_layer_, &ExploreLayer::signalQuitCurrentLayer, this,
+          [&]() { this->handleSignalQuitLayer(CanvasStatus::Explore); });
+  connect(this->capturing_layer_, &CapturingLayer::signalQuitCurrentLayer, this,
+          [&]() { this->handleSignalQuitLayer(CanvasStatus::Capturing); });
+  connect(this->captured_layer_, &CapturedLayer::signalQuitCurrentLayer, this,
+          [&]() { this->handleSignalQuitLayer(CanvasStatus::Captured); });
 }
 
 CanvasWidget::~CanvasWidget() {
@@ -50,8 +61,8 @@ CanvasWidget::~CanvasWidget() {
  * @param sizeValid
  * @param capturedRect
  */
-void CanvasWidget::handleCapturingFinished(bool sizeValid,
-                                               QRect *capturedRect) {
+void CanvasWidget::handleSignalCapturingFinished(bool sizeValid,
+                                                 QRect *capturedRect) {
   if (!sizeValid) {
     this->status_ = CanvasStatus::Explore;
     this->captured_layer_->setCapturedRect(QRect());
@@ -69,8 +80,8 @@ void CanvasWidget::handleCapturingFinished(bool sizeValid,
  * 处理CapturedLayer发射出的保存截屏的指定
  * 注意，信号发出的捕获的区域仅仅是逻辑区域，需要转化为图片上的实际像素区域
  */
-void CanvasWidget::handleCapturedRect(QRect capturedRect,
-                                          CapturedRectSaveType saveType) {
+void CanvasWidget::handleSignalCapturedRect(QRect capturedRect,
+                                            CapturedRectSaveType saveType) {
   auto picRealSize = this->canvas_img_->size();
   auto canvasSize = this->size();
   int realRectX = capturedRect.x() * picRealSize.width() / canvasSize.width();
@@ -87,6 +98,24 @@ void CanvasWidget::handleCapturedRect(QRect capturedRect,
   }
   // 保存到目标位置后，退出截图应用
   this->close();
+}
+
+void CanvasWidget::handleSignalQuitLayer(CanvasStatus status) {
+
+  if (status == CanvasStatus::Captured || status == CanvasStatus::Capturing) {
+    // 更新状态
+    this->status_ = CanvasStatus::Explore;
+    this->update();
+    return;
+  }
+
+  if (status == CanvasStatus::Explore) {
+    // ESC退出截图，则需要清理粘贴板的图片数据
+    QClipboard *clipboard = QGuiApplication::clipboard();
+    clipboard->clear();
+    this->close();
+  }
+  return;
 }
 
 void CanvasWidget::paintEvent(QPaintEvent *) {
@@ -162,36 +191,26 @@ void CanvasWidget::mouseMoveEvent(QMouseEvent *event) {
 }
 
 void CanvasWidget::keyReleaseEvent(QKeyEvent *event) {
-  int key = event->key();
-  if (key == Qt::Key_Escape) {
-    // ESC键处理
-    if (this->status_ == CanvasStatus::Captured ||
-        this->status_ == CanvasStatus::Capturing) {
-      this->status_ = CanvasStatus::Explore;
-      this->update();
-      return;
-    }
 
-    if (this->status_ == CanvasStatus::Explore) {
-      // ESC退出截图，则需要清理粘贴板的图片数据
-      QClipboard *clipboard = QGuiApplication::clipboard();
-      clipboard->clear();
-      this->close();
-    }
-    return;
+  qDebug() << event->key();
+  switch (this->status_) {
+  case CanvasStatus::Explore:
+    this->explore_layer_->keyReleaseEvent(event);
+  case CanvasStatus::Capturing:
+    this->capturing_layer_->keyReleaseEvent(event);
+  case CanvasStatus::Captured:
+    this->captured_layer_->keyReleaseEvent(event);
+  default:
+    break;
   }
-  if (key == Qt::Key_Right || key == Qt::Key_Left || key == Qt::Key_Up ||
-      key == Qt::Key_Down) {
-    this->explore_layer_->keyMoveEvent(key);
-    this->update();
-  }
+  this->update();
 }
 
 void CanvasWidget::mouseDoubleClickEvent(QMouseEvent *event) {
   this->captured_layer_->mouseDoubleClickEvent(event);
 }
 /**
- * 重要：需要在resizeEvent中，更新canvas size，并重新计算canvas size scale
+ * 重要：需要在resizeEvent中，更新canvas size
  **/
 void CanvasWidget::resizeEvent(QResizeEvent *event) {
   auto canvasSize = event->size();
