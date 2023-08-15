@@ -57,12 +57,18 @@ void CapturedLayer::paint(QPainter &painter) {
       rX - CORNER_OFFSET, rY + rH + CORNER_OFFSET, CORNER_CIRCLE_RADIUS);
   const auto rb = math_helper::getCircleRectByPoint(
       rX + rW + CORNER_OFFSET, rY + rH + CORNER_OFFSET, CORNER_CIRCLE_RADIUS);
+  // 先填充圆
   painter.setBrush(color);
   painter.drawEllipse(lt);
   painter.drawEllipse(rt);
   painter.drawEllipse(lb);
   painter.drawEllipse(rb);
-
+  // 在绘制圆的边框
+  painter.setPen(QPen(QColorConstants::White));
+  painter.drawEllipse(lt);
+  painter.drawEllipse(rt);
+  painter.drawEllipse(lb);
+  painter.drawEllipse(rb);
   painter.restore();
 }
 
