@@ -6,6 +6,7 @@
 #include "../../helper/math_helper.h"
 #include "../../helper/paint_helper.h"
 #include "captured_layer.h"
+#include "operation_mode.h"
 
 const int CORNER_OFFSET = 5;
 const int CORNER_CIRCLE_RADIUS = 3;
@@ -133,6 +134,11 @@ void CapturedLayer::mousePressEvent(QMouseEvent *event) {
   auto mousePos = event->pos();
   this->mouse_last_pos_ = mousePos;
 
+  if (this->opr_mode_ == EnableDrawRect) {
+    // 用户启用了矩形绘制，则进入矩形绘制状态
+    this->opr_mode_ = DrawingRect;
+    return;
+  }
 
   if (math_helper::posInEffectiveRect(mousePos, this->captured_rect_, 10)) {
     // 在有效区域内点击，则拖动rect
@@ -184,6 +190,10 @@ void CapturedLayer::mouseReleaseEvent() {
     case DraggingLeftBottom:
     case DraggingRightBottom:
       this->opr_mode_ = Normal;
+      break;
+    case DrawingRect:
+      // 用户绘制矩形以后，松开鼠标，回到启用绘制矩形状态
+      this->opr_mode_ = EnableDrawRect;
       break;
     default:
       break;

@@ -4,25 +4,13 @@
 #include <QMouseEvent>
 #include <QRect>
 #include <QSize>
+#include "operation_mode.h"
 
 class QPainter;
 class QImage;
 class QKeyEvent;
 
 enum CapturedRectSaveType { ToClipboard, ToFile };
-
-enum OperationMode {
-  Normal = 0,
-
-  DraggingLeftTop = 0x01,
-  DraggingRightTop = 0x02,
-  DraggingLeftBottom = 0x03,
-  DraggingRightBottom = 0x04,
-  DraggingArea = 0x10,
-
-  EnableDrawRect = 0x20,
-  DrawingRect = 0x21,
-};
 
 class CapturedLayer : public QObject {
   Q_OBJECT
@@ -53,6 +41,9 @@ private:
   QPoint mouse_last_pos_;
 
   OperationMode opr_mode_;
+
+  // 记录用户绘制的矩形
+  QRect draw_rect_;
 };
 
 #endif // CAPTURED_LAYER_H
