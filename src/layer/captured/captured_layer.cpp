@@ -12,7 +12,7 @@ const int CORNER_CIRCLE_RADIUS = 3;
 
 CapturedLayer::CapturedLayer(QImage *canvasImg, QSize canvasSize)
     : canvas_img_(canvasImg), canvas_size_(canvasSize),
-      is_area_dragging_(false), mouse_last_pos_(QPoint()) {}
+      mouse_last_pos_(QPoint()), opr_mode_(OperationMode::Normal) {}
 
 void CapturedLayer::setCapturedRect(const QRect &rect) {
   this->captured_rect_ = QRect(rect);
@@ -73,27 +73,27 @@ void CapturedLayer::mouseDoubleClickEvent(QMouseEvent *) {
 
 void CapturedLayer::mouseMoveEvent(QMouseEvent *event) {
 
-  if (!this->is_area_dragging_ && this->dragging_corner_ < 0) {
-    // 非整体移动，或不是在拖动四个角
-    return;
-  }
-
   auto currPos = event->pos();
   auto lastPos = this->mouse_last_pos_;
-
   // 更新鼠标位置，为下一次move作准备
   this->mouse_last_pos_ = currPos;
-
   // 计算偏移
   int dx = currPos.x() - lastPos.x();
   int dy = currPos.y() - lastPos.y();
 
+  if (this->opr_mode_ == OperationMode::Normal) {
+    return;
+  }
+
   QRect lastCapRect = this->captured_rect_;
-  if (this->is_area_dragging_) {
+  if (this->opr_mode_ == OperationMode::DraggingArea) {
     // 移动捕获区域
     this->captured_rect_ = QRect(lastCapRect.x() + dx, lastCapRect.y() + dy,
                                  lastCapRect.width(), lastCapRect.height());
-  } else {
+  } else if (this->opr_mode_ == DraggingLeftTop ||
+             this->opr_mode_ == DraggingRightTop ||
+             this->opr_mode_ == DraggingLeftBottom ||
+             this->opr_mode_ == DraggingRightBottom) {
     // 4个角拖动
     auto lt = QPoint(lastCapRect.x(), lastCapRect.y());
     auto rt = QPoint(lt.x() + lastCapRect.width(), lt.y());
@@ -101,20 +101,20 @@ void CapturedLayer::mouseMoveEvent(QMouseEvent *event) {
     auto rb = QPoint(rt.x(), lb.y());
     QPoint *draggingCor; // 正在拖动的角
     QPoint *fixedCor;    // 正在拖动角的对角固定不动
-    switch (this->dragging_corner_) {
-    case 0:
+    switch (this->opr_mode_) {
+    case DraggingLeftTop:
       draggingCor = &lt;
       fixedCor = &rb;
       break;
-    case 1:
+    case DraggingRightTop:
       draggingCor = &rt;
       fixedCor = &lb;
       break;
-    case 2:
+    case DraggingLeftBottom:
       draggingCor = &lb;
       fixedCor = &rt;
       break;
-    case 3:
+    case DraggingRightBottom:
     default:
       draggingCor = &rb;
       fixedCor = &lt;
@@ -133,13 +133,13 @@ void CapturedLayer::mousePressEvent(QMouseEvent *event) {
   auto mousePos = event->pos();
   this->mouse_last_pos_ = mousePos;
 
+
   if (math_helper::posInEffectiveRect(mousePos, this->captured_rect_, 10)) {
     // 在有效区域内点击，则拖动rect
-    this->is_area_dragging_ = true;
+    this->opr_mode_ = DraggingArea;
     return;
   }
   // 否则，不属于区域拖动
-  this->is_area_dragging_ = false;
   // 开始判断是否点击到了某个角
   auto effectiveRadius = CORNER_CIRCLE_RADIUS * 2;
   auto capRect = this->captured_rect_;
@@ -147,35 +147,48 @@ void CapturedLayer::mousePressEvent(QMouseEvent *event) {
                                                   capRect.y() - CORNER_OFFSET,
                                                   effectiveRadius);
   if (ltRect.contains(mousePos)) {
-    this->dragging_corner_ = 0;
+    this->opr_mode_ = DraggingLeftTop;
     return;
   }
   auto rtRect = math_helper::getCircleRectByPoint(
       capRect.x() + capRect.width() + CORNER_OFFSET,
       capRect.y() - CORNER_OFFSET, effectiveRadius);
   if (rtRect.contains(mousePos)) {
-    this->dragging_corner_ = 1;
+    this->opr_mode_ = DraggingRightTop;
     return;
   }
   auto lbRect = math_helper::getCircleRectByPoint(
       capRect.x() - CORNER_OFFSET,
       capRect.y() + capRect.height() + CORNER_OFFSET, effectiveRadius);
   if (lbRect.contains(mousePos)) {
-    this->dragging_corner_ = 2;
+    this->opr_mode_ = DraggingLeftBottom;
     return;
   }
   auto rbRect = math_helper::getCircleRectByPoint(
       capRect.x() + capRect.width() + CORNER_OFFSET,
       capRect.y() + capRect.height() + CORNER_OFFSET, effectiveRadius);
   if (rbRect.contains(mousePos)) {
-    this->dragging_corner_ = 3;
+    this->opr_mode_ = DraggingRightBottom;
     return;
   }
   // 否则也不是角落点击
-  this->dragging_corner_ = -1;
+  this->opr_mode_ = Normal;
 }
 
-void CapturedLayer::mouseReleaseEvent() { this->resetStatus(); }
+void CapturedLayer::mouseReleaseEvent() { 
+  switch (this->opr_mode_) {
+    case Normal:
+    case DraggingArea:
+    case DraggingLeftTop:
+    case DraggingRightTop:
+    case DraggingLeftBottom:
+    case DraggingRightBottom:
+      this->opr_mode_ = Normal;
+      break;
+    default:
+      break;
+  }
+}
 
 void CapturedLayer::keyReleaseEvent(QKeyEvent *event) {
   auto key = event->key();
@@ -185,7 +198,6 @@ void CapturedLayer::keyReleaseEvent(QKeyEvent *event) {
 }
 
 void CapturedLayer::resetStatus() {
-  this->is_area_dragging_ = false;
-  this->dragging_corner_ = -1;
+  this->opr_mode_ = Normal;
 }
 void CapturedLayer::setCanvasSize(QSize size) { this->canvas_size_ = size; }

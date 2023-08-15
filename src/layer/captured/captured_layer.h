@@ -11,6 +11,19 @@ class QKeyEvent;
 
 enum CapturedRectSaveType { ToClipboard, ToFile };
 
+enum OperationMode {
+  Normal = 0,
+
+  DraggingLeftTop = 0x01,
+  DraggingRightTop = 0x02,
+  DraggingLeftBottom = 0x03,
+  DraggingRightBottom = 0x04,
+  DraggingArea = 0x10,
+
+  EnableDrawRect = 0x20,
+  DrawingRect = 0x21,
+};
+
 class CapturedLayer : public QObject {
   Q_OBJECT
 public:
@@ -36,16 +49,10 @@ private:
   QImage *canvas_img_;
   QSize canvas_size_;
   QRect captured_rect_;
-  // 是否整体区域拖动
-  bool is_area_dragging_;
-  /*
-   * 四个角的拖动
-   * 0: lt, 1: rt, 2: lb, 3: rb
-   * 小于0:nothing
-   * */
-  int dragging_corner_;
 
   QPoint mouse_last_pos_;
+
+  OperationMode opr_mode_;
 };
 
 #endif // CAPTURED_LAYER_H
