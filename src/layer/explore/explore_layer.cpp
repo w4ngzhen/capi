@@ -3,8 +3,8 @@
 #include <QPainterPath>
 #include <QSize>
 
-#include "../helper/math_helper.h"
-#include "../layer/explore_layer.h"
+#include "../../helper/math_helper.h"
+#include "explore_layer.h"
 
 // 工具面板的size
 const int TOOL_PANE_WIDTH = 201;

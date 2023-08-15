@@ -5,9 +5,9 @@
 #include <QSize>
 #include <QWidget>
 
-#include "layer/captured_layer.h"
-#include "layer/capturing_layer.h"
-#include "layer/explore_layer.h"
+#include "layer/captured/captured_layer.h"
+#include "layer/capturing/capturing_layer.h"
+#include "layer/explore/explore_layer.h"
 
 #include "canvas_status.h"
 #include "helper/math_helper.h"

@@ -1,6 +1,6 @@
 #include "capturing_layer.h"
-#include "../helper/math_helper.h"
-#include "../helper/paint_helper.h"
+#include "../../helper/math_helper.h"
+#include "../../helper/paint_helper.h"
 
 CapturingLayer::CapturingLayer(QImage *canvasImg) : canvas_img_(canvasImg) {}
 

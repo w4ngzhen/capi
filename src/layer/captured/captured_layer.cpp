@@ -3,8 +3,8 @@
 #include <QPainter>
 #include <QRect>
 
-#include "../helper/math_helper.h"
-#include "../helper/paint_helper.h"
+#include "../../helper/math_helper.h"
+#include "../../helper/paint_helper.h"
 #include "captured_layer.h"
 
 const int CORNER_OFFSET = 5;
