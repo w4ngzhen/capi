@@ -192,7 +192,6 @@ void CanvasWidget::mouseMoveEvent(QMouseEvent *event) {
 
 void CanvasWidget::keyReleaseEvent(QKeyEvent *event) {
 
-  qDebug() << event->key();
   switch (this->status_) {
   case CanvasStatus::Explore:
     this->explore_layer_->keyReleaseEvent(event);
