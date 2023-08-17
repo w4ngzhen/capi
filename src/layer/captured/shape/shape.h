@@ -5,6 +5,7 @@
 #include <QPen>
 
 class QPainter;
+class QMouseEvent;
 
 // 涉及直线，边框的图像，线的类型
 // 普通实线
@@ -15,7 +16,10 @@ class Shape {
 public:
   Shape();
   ~Shape();
+
   virtual void onPaint(QPainter *) = 0;
+  virtual bool isMouseHover(QMouseEvent *) = 0;
+
   void setIsFilled(bool val) { this->isFilled_ = val; }
   void setColor(QColor color) {
     this->color_ = color;
@@ -27,7 +31,7 @@ public:
     this->pen_.setWidth(penWidth);
   }
   void setLineType(LineType lineType) {
-    this->line_type_ = line_type_;
+    this->line_type_ = lineType;
     switch (line_type_) {
     case Dash:
       this->pen_.setStyle(Qt::DashLine);

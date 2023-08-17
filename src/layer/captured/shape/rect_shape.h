@@ -9,8 +9,11 @@
 class RectShape : public Shape {
 public:
   void onPaint(QPainter *) override;
-  void setBody(QRect);
+  bool isMouseHover(QMouseEvent *) override;
+  void setRect(QRect rect) {
+    this->rect_ = rect;
+  }
 
 private:
-  QRect body_;
+  QRect rect_;
 };

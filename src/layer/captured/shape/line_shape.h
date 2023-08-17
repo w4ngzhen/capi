@@ -10,7 +10,10 @@ enum AnchorType {
 
 class LineShape : public Shape {
 public:
+
   void onPaint(QPainter *) override;
+  bool isMouseHover(QMouseEvent *) override;
+
   void setStartPos(QPoint pos) { this->start_pos_ = pos; }
   void setEndPos(QPoint pos) { this->end_pos_ = pos; }
   void setStartAnchorType(AnchorType type) { this->start_anchor_type_ = type; }
