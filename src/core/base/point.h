@@ -4,15 +4,15 @@ namespace capi {
 class Point {
 public:
   Point(int x, int y);
-  Point() = default;
+  Point();
   Point(Point &&) = default;
   Point(const Point &) = default;
   Point &operator=(Point &&) = default;
   Point &operator=(const Point &) = default;
   ~Point() = default;
 
-  int x();
-  int y();
+  int x() const;
+  int y() const;
   void setX(int);
   void setY(int);
 

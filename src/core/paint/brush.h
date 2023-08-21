@@ -1,17 +1,16 @@
+#pragma once
+
 #include "color.h"
 
 namespace capi {
 class Brush {
 public:
-  Brush();
-  Brush(Brush &&) = default;
-  Brush(const Brush &) = default;
-  Brush &operator=(Brush &&) = default;
-  Brush &operator=(const Brush &) = default;
-  ~Brush();
 
-  Brush(Color &);
-  void setColor(Color &);
+  Brush();
+
+  Brush(const Color &);
+  void setColor(const Color &);
+  Color color() const;
 
 private:
   Color color_;

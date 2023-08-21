@@ -30,6 +30,8 @@ find_package(Qt6 COMPONENTS Widgets REQUIRED)
 file(GLOB_RECURSE all_head_files "src/*.hpp" "src/*.h")
 file(GLOB_RECURSE all_source_files "src/*.cpp" "src/*.c")
 
+include_directories("src")
+
 add_executable(${CMAKE_PROJECT_NAME} WIN32
   ${all_head_files}
   ${all_source_files}

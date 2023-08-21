@@ -28,5 +28,5 @@ bool Rect::contains(int x, int y) const {
   return (this->x_ <= x && this->x_ + this->w_ >= x) &&
          (this->y_ <= y && this->y_ + this->h_ >= y);
 }
-bool Rect::contains(Point &p) const { return this->contains(p.x(), p.y()); }
+bool Rect::contains(const Point &p) const { return this->contains(p.x(), p.y()); }
 } // namespace capi

@@ -1,12 +1,13 @@
 #pragma once
 
+namespace capi {
+
 class Point;
 class Size;
 
-namespace capi {
 class Rect {
 public:
-  bool contains(Point &) const;
+  bool contains(const Point &) const;
   bool contains(int x, int y) const;
 
   int x() const;

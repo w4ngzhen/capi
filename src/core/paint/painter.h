@@ -1,6 +1,8 @@
-namespace std {
-  class string;
-}
+#pragma once
+
+#include "core/global/global.h"
+#include "core/paint/image.h"
+#include <iostream>
 
 namespace capi {
 
@@ -10,24 +12,26 @@ class Brush;
 
 class Painter {
 public:
-  Painter();
-  Painter(Painter &&) = default;
-  Painter(const Painter &) = default;
-  Painter &operator=(Painter &&) = default;
-  Painter &operator=(const Painter &) = default;
-  ~Painter();
 
-  virtual void drawRect(Rect &) = 0;
-  virtual void fillRect(Rect &) = 0;
-  virtual void drawEllipse(Rect &) = 0;
-  virtual void fillEllipse(Rect &) = 0;
+  virtual void drawRect(const Rect &) = 0;
+  virtual void fillRect(const Rect &, const Brush &) = 0;
+  virtual void drawEllipse(const Rect &) = 0;
+  virtual void drawLine(const Point &start, const Point &end) = 0;
+  virtual void drawLine(int x1, int y1, int x2, int y2) = 0;
+  virtual void fillEllipse(const Rect &) = 0;
+  virtual void drawText(std::string &, const Rect &, int alignMode) = 0;
+  virtual void drawText(std::string &, const Point &) = 0;
   virtual void drawText(std::string &) = 0;
-  virtual void setPen(Pen &) = 0;
-  virtual void setBrush(Brush &) = 0;
+  virtual void drawImage(Image *img, const Rect &) = 0;
+  virtual void setColorReverse(bool) = 0;
+  virtual Size mesureTextSize(std::string &, std::string fontFamily,
+                              int fontSize) = 0;
+  virtual void setPen(const Pen &) = 0;
+  virtual void setBrush(const Brush &) = 0;
+  virtual void setFont(std::string fontFamily, int fontSize) = 0;
   virtual void save() = 0;
   virtual void restore() = 0;
 
 private:
-  
 };
-}
+} // namespace capi
