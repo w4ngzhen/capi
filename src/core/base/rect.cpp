@@ -3,7 +3,7 @@
 #include "rect.h"
 namespace capi {
 Rect::Rect(int x, int y, int w, int h) : x_(x), y_(y), w_(w), h_(h) {}
-Rect::Rect(Point &p, Size &s) : x_(p.x()), y_(p.y()), w_(s.w()), h_(s.h()) {}
+Rect::Rect(const Point &p, const Size &s) : x_(p.x()), y_(p.y()), w_(s.w()), h_(s.h()) {}
 
 int Rect::x() const { return this->x_; }
 int Rect::y() const { return this->y_; }

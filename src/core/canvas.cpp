@@ -1,6 +1,7 @@
 #include "canvas.h"
 
 #include "./base/point.h"
+#include "./base/rect.h"
 #include "./paint/painter.h"
 #include "canvas_status.h"
 #include "layer/captured/captured_layer.h"
@@ -18,8 +19,7 @@ Canvas::Canvas(Image *canvasImg) : canvas_img_(canvasImg), status_(Explore) {
 
 void Canvas::onPaint(Painter *painter) {
   // 首先绘制图像
-  const Size &size = this->size_;
-  const Image *img = this->canvas_img_;
+  painter->drawImage(Rect(Point(0, 0), this->size_), this->canvas_img_);
 
   switch (this->status_) {
   case CanvasStatus::Explore:

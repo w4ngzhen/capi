@@ -27,7 +27,7 @@ public:
   void setSize(Size &);
 
   Rect(int x, int y, int w, int h);
-  Rect(Point &, Size &);
+  Rect(const Point &, const Size &);
 
   Rect() = default;
   Rect(Rect &&) = default;
