@@ -11,9 +11,9 @@ class Rect;
 class CapturingLayer: public Layer {
 
 public:
-  CapturingLayer(const Size &);
+  explicit CapturingLayer(const Size &);
 
-  void paint(Painter *) override;
+  void onPaint(Painter *) override;
 
   void finishCapture(const Point &endPos);
 

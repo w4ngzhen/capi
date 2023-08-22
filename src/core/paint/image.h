@@ -9,7 +9,5 @@ class Image {
 public:
   virtual Color colorAt(int x, int y) = 0;
   virtual Size size() = 0;
-  virtual Image* copy(Rect &) = 0;
-private:
 };
 } // namespace capi

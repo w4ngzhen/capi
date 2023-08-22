@@ -7,7 +7,6 @@
 #include "core/paint/color.h"
 #include "core/paint/pen.h"
 
-
 namespace capi {
 
 // 工具面板的size
@@ -17,7 +16,7 @@ const int TOOL_PANE_HEIGHT = 351;
 ExploreLayer::ExploreLayer(Image *canvasImg, const Size &canvasSize)
     : canvas_img_(canvasImg), Layer(canvasSize) {}
 
-void ExploreLayer::paint(Painter *painter) {
+void ExploreLayer::onPaint(Painter *painter) {
 
   painter->save();
   // 绘制鼠标所在的位置垂直和水平线
@@ -78,9 +77,8 @@ void ExploreLayer::paintToolPaneAt(Painter *painter, int panelX, int panelY,
   // +1是因为要把光标所在位置的1个像素加上
   int w = PADDING * 2 + 1;
   int h = PADDING * 2 + 1;
+  // 从而区域图片真实区域
   Rect realPicRect = Rect(left, top, w, h);
-  // 从中取得对应区域的图像内容
-  Image *partialImage = this->canvas_img_->copy(realPicRect);
 
   // 获取光标指定位置的颜色
   Color colorAtCursorPos = this->canvas_img_->colorAt(realMouseX, realMouseY);
@@ -101,8 +99,12 @@ void ExploreLayer::paintToolPaneAt(Painter *painter, int panelX, int panelY,
   const int SCALED_IMG_H = SCALED_IMG_W;
   const int SCALED_IMG_X = TOOL_PANE_X + BORDER_W;
   const int SCALED_IMG_Y = TOOL_PANE_Y + BORDER_W;
-  painter->drawImage(partialImage, Rect(SCALED_IMG_X, SCALED_IMG_Y,
-                                        SCALED_IMG_W, SCALED_IMG_H));
+  // 在该区域绘制图片：
+  // 从图片（this->canvas_img_）的指定区域（realPicRect）取出图像，
+  // 绘制到画布指定区域（第一个Rect参数）
+  painter->drawImage(
+      Rect(SCALED_IMG_X, SCALED_IMG_Y, SCALED_IMG_W, SCALED_IMG_H),
+      this->canvas_img_, realPicRect);
 
   // === 3. 在图像放大区域绘制一个中央十字 ===
   // SCALED_IMG_W为奇数
@@ -136,8 +138,9 @@ void ExploreLayer::paintToolPaneAt(Painter *painter, int panelX, int panelY,
   std::string rgbDesc = "RGB DESC";
   // 使用反色
   painter->setColorReverse(true);
+
   painter->drawText(rgbDesc, colorDisplayRect,
-                    AlignMode::VCenter | AlignMode::Right);
+                    AlignFlag::AlignVCenter | AlignFlag::AlignRight);
   painter->setColorReverse(false);
 
   // === 5. 在色彩卡下方绘制坐标，以及RGB文字 ===
@@ -152,7 +155,7 @@ void ExploreLayer::paintToolPaneAt(Painter *painter, int panelX, int panelY,
   std::string posDesc = "POS DESC";
   painter->setPen(Pen(Color(0, 0, 0)));
   painter->drawText(posDesc, infoDescRect,
-                    AlignMode::Center | AlignMode::VCenter);
+                    AlignFlag::AlignVCenter | AlignFlag::AlignRight);
 
   // finally
   painter->restore();

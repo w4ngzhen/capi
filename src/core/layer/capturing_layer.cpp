@@ -12,7 +12,7 @@
 namespace capi {
 CapturingLayer::CapturingLayer(const Size &canvasSize) : Layer(canvasSize) {}
 
-void CapturingLayer::paint(Painter *painter) {
+void CapturingLayer::onPaint(Painter *painter) {
   painter->save();
 
   // === 渲染数据准备 ===
@@ -58,7 +58,7 @@ void CapturingLayer::drawCaptureRectInfo(Painter *painter, Point &startPos,
   std::stringstream ss;
   ss << w << " x " << h;
   std::string rectSizeInfo = ss.str();
-  Size textSize = painter->mesureTextSize(rectSizeInfo, fontFamily, fontSize);
+  Size textSize = painter->measureTextSize(rectSizeInfo, fontFamily, fontSize);
 
   // 计算文本的背景尺寸（比起文本size要多一个padding）
   int PADDING = 5;
@@ -106,7 +106,7 @@ void CapturingLayer::drawCaptureRectInfo(Painter *painter, Point &startPos,
   painter->setFont(fontFamily, fontSize);
 
   painter->drawText(rectSizeInfo, bgRect,
-                    AlignMode::Center | AlignMode::VCenter);
+                    AlignFlag::AlignVCenter | AlignFlag::AlignRight);
   painter->restore();
 }
 

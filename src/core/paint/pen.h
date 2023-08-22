@@ -8,7 +8,7 @@ namespace capi {
 class Pen {
 public:
   Pen();
-  Pen(const Color &);
+  explicit Pen(const Color &);
   Pen(const Color &, int width);
   Pen(int width, const Color &, PenStyle);
   void setWidth(int w);

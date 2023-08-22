@@ -14,7 +14,7 @@ public:
   /**
    * 核心绘制
    */
-  void paint(Painter *) override;
+  void onPaint(Painter *) override;
 
 private:
   void paintToolPane(Painter *, int mouseX, int mouseY);

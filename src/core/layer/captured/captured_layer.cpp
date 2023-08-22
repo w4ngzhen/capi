@@ -9,9 +9,9 @@ const int CORNER_OFFSET = 5;
 const int CORNER_CIRCLE_RADIUS = 3;
 
 CapturedLayer::CapturedLayer(const Size &canvasSize)
-    : Layer(canvasSize), opr_mode_(OperationMode::Normal) {}
+    : Layer(canvasSize), opr_mode_(OperationMode::Normal), captured_rect_(Rect()) {}
 
-void CapturedLayer::paint(Painter *painter) {
+void CapturedLayer::onPaint(Painter *painter) {
 
   painter->save();
 
@@ -51,7 +51,7 @@ void CapturedLayer::paint(Painter *painter) {
   const auto rb = math_utils::getCircleRectByPoint(
       rX + rW + CORNER_OFFSET, rY + rH + CORNER_OFFSET, CORNER_CIRCLE_RADIUS);
   // 先填充圆
-  painter->setBrush(color);
+  painter->setBrush(Brush(color));
   painter->drawEllipse(lt);
   painter->drawEllipse(rt);
   painter->drawEllipse(lb);

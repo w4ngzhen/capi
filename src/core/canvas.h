@@ -4,6 +4,7 @@
 #include "core/base/size.h"
 #include "canvas_status.h"
 #include "core/global/global.h"
+#include "core/paint/image.h"
 
 namespace capi {
 
@@ -15,26 +16,27 @@ class CapturedLayer;
 class Canvas {
 
 public:
-  Canvas();
+  explicit Canvas(Image *canvasImg);
 
   void onMouseMove(const Point &);
   void onMousePress(const Point &);
   void onMouseRelease(const Point &);
   void onResize(const Size &);
-  void onKeyPresss(const Key);
-
-  void paint(Painter *);
+  void onKeyPress(Key);
+  void onPaint(Painter *);
 
   ~Canvas();
 
 private:
   // 画布尺寸
-  Size size_;
+  Size size_{};
   // 指针位置
   // 该指针不可与cpp语言的指针混淆，
   // 而是指在画布上一个移动的指针，
   // 具体一点讲，如果在GUI下，鼠标在画布上移动，鼠标就是这个指针。
   Point cursor_pos_;
+
+  Image *canvas_img_;
 
   CanvasStatus status_;
   /**

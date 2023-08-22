@@ -12,8 +12,8 @@ namespace capi {
 class CapturedLayer: public Layer {
 
 public:
-  CapturedLayer(const Size &);
-  void paint(Painter *) override;
+  explicit CapturedLayer(const Size &);
+  void onPaint(Painter *) override;
 
   void onMousePress(const Point &) override;
   void onMouseMove(const Point &) override;
