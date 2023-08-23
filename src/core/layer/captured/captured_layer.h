@@ -6,6 +6,7 @@
 #include "core/paint/painter.h"
 #include "../layer.h"
 #include "operation_mode.h"
+#include <cwchar>
 
 namespace capi {
 
@@ -18,6 +19,9 @@ public:
   void onMousePress(const Point &) override;
   void onMouseMove(const Point &) override;
   void onMouseRelease(const Point &) override;
+  void onMouseDoubleClick(const Point &) override;
+
+  void setCapturedRect(const Rect &);
 
 private:
   Rect captured_rect_;

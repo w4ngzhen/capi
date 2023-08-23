@@ -15,6 +15,13 @@ Canvas::Canvas(Image *canvasImg) : canvas_img_(canvasImg), status_(Explore) {
   this->explore_layer_ = new ExploreLayer(this->canvas_img_, initCanvasSize);
   this->capturing_layer_ = new CapturingLayer(initCanvasSize);
   this->captured_layer_ = new CapturedLayer(initCanvasSize);
+
+  // 注册各种事件
+  // 回调事件：capturing layer完成区域捕获
+  auto eventCbOnCapturingFinish =
+      std::bind(&Canvas::eventCbHandleOnCapturingFinish, this,
+                std::placeholders::_1, std::placeholders::_2);
+  this->capturing_layer_->setEventCbOnCapturingFinish(eventCbOnCapturingFinish);
 }
 
 void Canvas::onPaint(Painter *painter) {
@@ -98,6 +105,36 @@ Canvas::~Canvas() {
 }
 
 void Canvas::onKeyPress(const Key) {
-    // todo
+  // todo
+}
+void Canvas::onMouseDoubleClick(const Point &pos) {
+  switch (this->status_) {
+  case CanvasStatus::Explore:
+    this->explore_layer_->onMouseDoubleClick(pos);
+    break;
+  case CanvasStatus::Capturing:
+    this->capturing_layer_->onMouseDoubleClick(pos);
+    break;
+  case CanvasStatus::Captured:
+    this->captured_layer_->onMouseDoubleClick(pos);
+    break;
+  default:
+    break;
+  }
+}
+/**
+ * captruingLayer处理完成后，触发该处进行截取的处理
+ * @param sizeValid
+ * @param capturedRect
+ */
+void Canvas::eventCbHandleOnCapturingFinish(bool sizeValid,
+                                            const Rect &capturedRect) {
+  if (!sizeValid) {
+    this->status_ = CanvasStatus::Explore;
+    this->captured_layer_->setCapturedRect(Rect());
+  } else {
+    this->status_ = CanvasStatus::Captured;
+    this->captured_layer_->setCapturedRect(capturedRect);
+  }
 }
 } // namespace capi

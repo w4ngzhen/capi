@@ -21,9 +21,12 @@ public:
   void onMouseMove(const Point &);
   void onMousePress(const Point &);
   void onMouseRelease(const Point &);
+  void onMouseDoubleClick(const Point &);
   void onResize(const Size &);
   void onKeyPress(Key);
   void onPaint(Painter *);
+
+  void eventCbHandleOnCapturingFinish(bool sizeValid, const Rect &capturedRect);
 
   ~Canvas();
 

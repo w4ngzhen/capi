@@ -11,6 +11,7 @@ public:
   virtual void onMousePress(const Point &);
   virtual void onMouseMove(const Point &);
   virtual void onMouseRelease(const Point &);
+  virtual void onMouseDoubleClick(const Point &);
   virtual void onPaint(Painter *) = 0;
   
   virtual void onCanvasResize(const Size &);

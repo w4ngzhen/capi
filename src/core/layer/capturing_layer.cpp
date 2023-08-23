@@ -35,7 +35,7 @@ void CapturingLayer::onPaint(Painter *painter) {
   painter->restore();
 }
 
-void CapturingLayer::finishCapture(const Point &endPos) {
+void CapturingLayer::onMouseRelease(const Point &endPos) {
   Point startPos = this->mouse_press_pos_;
   int w = abs(startPos.x() - endPos.x());
   int h = abs(startPos.y() - endPos.y());
@@ -45,6 +45,10 @@ void CapturingLayer::finishCapture(const Point &endPos) {
   // 获取区域，触发事件完成事件。
   Rect capturedRect =
       math_utils::calcRect(endPos.x(), endPos.y(), startPos.x(), startPos.y());
+
+  if (this->event_cb_on_capturing_finish_ != nullptr) {
+    (this->event_cb_on_capturing_finish_)(true, capturedRect);
+  }
 }
 
 void CapturingLayer::drawCaptureRectInfo(Painter *painter, Point &startPos,
@@ -108,6 +112,10 @@ void CapturingLayer::drawCaptureRectInfo(Painter *painter, Point &startPos,
   painter->drawText(rectSizeInfo, bgRect,
                     AlignFlag::AlignVCenter | AlignFlag::AlignRight);
   painter->restore();
+}
+
+void CapturingLayer::setEventCbOnCapturingFinish(EventCbOnCapturingFinish cb) {
+  this->event_cb_on_capturing_finish_ = cb;
 }
 
 } // namespace capi

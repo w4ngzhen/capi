@@ -185,4 +185,11 @@ void CapturedLayer::onMouseRelease(const Point &pos) {
   }
 }
 
+void CapturedLayer::onMouseDoubleClick(const Point &) {
+  
+}
+
+void CapturedLayer::setCapturedRect(const Rect &rect) {
+  this->captured_rect_ = rect;
+}
 } // namespace capi
