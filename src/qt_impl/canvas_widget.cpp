@@ -12,7 +12,8 @@
 #include "qt_impl/image_qt_impl.h"
 #include "qt_impl/painter_qt_impl.h"
 
-CanvasWidget::CanvasWidget(QWidget *parent) : QWidget(parent), canvas_(nullptr) {
+CanvasWidget::CanvasWidget(QWidget *parent)
+    : QWidget(parent), canvas_(nullptr) {
   // QT中 MouseMoveEvent为了降低计算资源，默认需要要鼠标按下才能触发该事件。
   // 要想鼠标不按下时的移动也能捕捉到，需要setMouseTracking(true)
   setMouseTracking(true);
@@ -24,6 +25,14 @@ void CanvasWidget::init(QImage *img) {
   auto *pImgQtImpl = new ImageQtImpl(img);
   // pImgQtImpl指针在canvas析构时会被释放
   this->canvas_ = new capi::Canvas(pImgQtImpl);
+  this->canvas_->setOnCanvasQuitCb(std::bind(&CanvasWidget::handleOnCanvasQuitCb, this));
+}
+
+void CanvasWidget::handleOnCanvasQuitCb() {
+  // ESC退出截图，则需要清理粘贴板的图片数据
+  QClipboard *clipboard = QGuiApplication::clipboard();
+  clipboard->clear();
+  this->close();
 }
 
 CanvasWidget::~CanvasWidget() { delete this->canvas_; }
@@ -58,10 +67,11 @@ void CanvasWidget::mouseMoveEvent(QMouseEvent *event) {
 
 void CanvasWidget::keyReleaseEvent(QKeyEvent *event) { this->update(); }
 
-void CanvasWidget::keyPressEvent(QKeyEvent *event) { 
+void CanvasWidget::keyPressEvent(QKeyEvent *event) {
   auto key = event->key();
   auto keyModifiers = event->modifiers();
-  this->canvas_->onKeyPress((capi::Key)key, (capi::KeyboardModifier)keyModifiers.toInt());
+  this->canvas_->onKeyPress((capi::Key)key,
+                            (capi::KeyboardModifier)keyModifiers.toInt());
   this->update();
 }
 

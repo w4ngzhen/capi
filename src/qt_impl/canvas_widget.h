@@ -17,6 +17,8 @@ public:
 
 private:
   capi::Canvas *canvas_{};
+
+  void handleOnCanvasQuitCb();
   // QWidget interface
 protected:
   void mousePressEvent(QMouseEvent *event) override;

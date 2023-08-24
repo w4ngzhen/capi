@@ -5,6 +5,7 @@
 #include "core/base/size.h"
 #include "core/global/global.h"
 #include "core/paint/image.h"
+#include <functional>
 
 namespace capi {
 
@@ -12,6 +13,16 @@ class Painter;
 class ExploreLayer;
 class CapturingLayer;
 class CapturedLayer;
+class CanvasCapturedImageSaveEvent;
+
+/**
+ * 画布退出事件
+ */
+typedef std::function<void()> OnCanvasQuitCb;
+/**
+ * 画布图片保存事件
+ */
+typedef std::function<void(const CanvasCapturedImageSaveEvent*)> OnCanvasImageSaveCb;
 
 class Canvas {
 
@@ -28,6 +39,9 @@ public:
 
   void eventCbHandleOnCapturingFinish(bool sizeValid, const Rect &capturedRect);
   void eventCbHandleOnQuitCurrentLayer(CanvasStatus status);
+
+  void setOnCanvasQuitCb(OnCanvasQuitCb);
+  void setOnCanvasImageSaveCb(OnCanvasImageSaveCb);
 
   ~Canvas();
 
@@ -49,8 +63,8 @@ private:
   ExploreLayer *explore_layer_;
   CapturingLayer *capturing_layer_;
   CapturedLayer *captured_layer_;
-  /**
-   * TODO: 绘画操作层
-   */
+
+  OnCanvasQuitCb on_canvas_quit_cb_;
+  OnCanvasImageSaveCb on_canvas_image_save_cb_;
 };
 } // namespace capi

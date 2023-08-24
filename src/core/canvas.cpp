@@ -164,11 +164,18 @@ void Canvas::eventCbHandleOnQuitCurrentLayer(CanvasStatus status) {
     return;
   case CanvasStatus::Explore:
     // explore阶段，则退出截图画布
-    // todo
+    this->on_canvas_quit_cb_();
     return;
   default:
     break;
   }
+}
+
+void Canvas::setOnCanvasQuitCb(OnCanvasQuitCb cb) {
+  this->on_canvas_quit_cb_ = cb;
+}
+void Canvas::setOnCanvasImageSaveCb(OnCanvasImageSaveCb cb) {
+  this->on_canvas_image_save_cb_ = cb;
 }
 
 Canvas::~Canvas() {
