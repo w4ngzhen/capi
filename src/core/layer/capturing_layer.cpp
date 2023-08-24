@@ -118,4 +118,11 @@ void CapturingLayer::setEventCbOnCapturingFinish(EventCbOnCapturingFinish cb) {
   this->event_cb_on_capturing_finish_ = cb;
 }
 
+void CapturingLayer::onKeyPress(Key k, KeyboardModifier m) {
+  // ESC 退出当前层
+  if (k == Key::Key_Escape) {
+    this->event_cb_on_quit_current_layer_();
+    return;
+  }
+}
 } // namespace capi

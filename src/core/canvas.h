@@ -1,8 +1,8 @@
 #pragma once
 
+#include "canvas_status.h"
 #include "core/base/point.h"
 #include "core/base/size.h"
-#include "canvas_status.h"
 #include "core/global/global.h"
 #include "core/paint/image.h"
 
@@ -23,10 +23,11 @@ public:
   void onMouseRelease(const Point &);
   void onMouseDoubleClick(const Point &);
   void onResize(const Size &);
-  void onKeyPress(Key);
+  void onKeyPress(Key, KeyboardModifier);
   void onPaint(Painter *);
 
   void eventCbHandleOnCapturingFinish(bool sizeValid, const Rect &capturedRect);
+  void eventCbHandleOnQuitCurrentLayer(CanvasStatus status);
 
   ~Canvas();
 

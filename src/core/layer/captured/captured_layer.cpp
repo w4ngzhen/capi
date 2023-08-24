@@ -9,7 +9,8 @@ const int CORNER_OFFSET = 5;
 const int CORNER_CIRCLE_RADIUS = 3;
 
 CapturedLayer::CapturedLayer(const Size &canvasSize)
-    : Layer(canvasSize), opr_mode_(OperationMode::Normal), captured_rect_(Rect()) {}
+    : Layer(canvasSize), opr_mode_(OperationMode::Normal),
+      captured_rect_(Rect()) {}
 
 void CapturedLayer::onPaint(Painter *painter) {
 
@@ -185,10 +186,15 @@ void CapturedLayer::onMouseRelease(const Point &pos) {
   }
 }
 
-void CapturedLayer::onMouseDoubleClick(const Point &) {
-  
-}
+void CapturedLayer::onMouseDoubleClick(const Point &) {}
 
+void CapturedLayer::onKeyPress(Key k, KeyboardModifier m) {
+  // ESC 退出当前层
+  if (k == Key::Key_Escape) {
+    this->event_cb_on_quit_current_layer_();
+    return;
+  }
+}
 void CapturedLayer::setCapturedRect(const Rect &rect) {
   this->captured_rect_ = rect;
 }

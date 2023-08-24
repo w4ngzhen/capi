@@ -16,6 +16,8 @@ public:
    */
   void onPaint(Painter *) override;
 
+  void onKeyPress(Key, KeyboardModifier) override;
+
 private:
   void paintToolPane(Painter *, int mouseX, int mouseY);
   void paintToolPaneAt(Painter *, int panelX, int panelY, int mouseX, int mouseY);

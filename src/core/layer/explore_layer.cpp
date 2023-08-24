@@ -161,4 +161,36 @@ void ExploreLayer::paintToolPaneAt(Painter *painter, int panelX, int panelY,
   painter->restore();
 }
 
+void ExploreLayer::onKeyPress(Key k, KeyboardModifier m) {
+
+  // ESC 退出当前层
+  if (k == Key::Key_Escape) {
+    this->event_cb_on_quit_current_layer_();
+    return;
+  }
+
+  // 上下左右控制鼠标位置精准移动
+  int dx = 0;
+  int dy = 0;
+  switch (k) {
+  case Key::Key_Up:
+    dy -= 1;
+    break;
+  case Key::Key_Down:
+    dy += 1;
+    break;
+  case Key::Key_Left:
+    dx -= 1;
+    break;
+  case Key::Key_Right:
+    dx += 1;
+    break;
+  default:
+    break;
+  }
+  auto mousePos = this->mouse_current_pos_;
+  this->mouse_current_pos_.setX(mousePos.x() + dx);
+  this->mouse_current_pos_.setY(mousePos.y() + dy);
+}
+
 } // namespace capi

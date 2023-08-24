@@ -8,6 +8,7 @@
 #include "core/canvas.h"
 
 #include "canvas_widget.h"
+#include "core/global/global.h"
 #include "qt_impl/image_qt_impl.h"
 #include "qt_impl/painter_qt_impl.h"
 
@@ -56,6 +57,13 @@ void CanvasWidget::mouseMoveEvent(QMouseEvent *event) {
 }
 
 void CanvasWidget::keyReleaseEvent(QKeyEvent *event) { this->update(); }
+
+void CanvasWidget::keyPressEvent(QKeyEvent *event) { 
+  auto key = event->key();
+  auto keyModifiers = event->modifiers();
+  this->canvas_->onKeyPress((capi::Key)key, (capi::KeyboardModifier)keyModifiers.toInt());
+  this->update();
+}
 
 void CanvasWidget::mouseDoubleClickEvent(QMouseEvent *event) {}
 

@@ -22,6 +22,7 @@ public:
 
   void onPaint(Painter *) override;
   void onMouseRelease(const Point &) override;
+  void onKeyPress(Key, KeyboardModifier) override;
 
   void setEventCbOnCapturingFinish(EventCbOnCapturingFinish cb);
 

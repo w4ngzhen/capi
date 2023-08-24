@@ -17,11 +17,18 @@ Canvas::Canvas(Image *canvasImg) : canvas_img_(canvasImg), status_(Explore) {
   this->captured_layer_ = new CapturedLayer(initCanvasSize);
 
   // 注册各种事件
+  // 回调事件：layer各层退出事件
+  this->explore_layer_->setEventCbOnQuitCurrentLayer(std::bind(
+      &Canvas::eventCbHandleOnQuitCurrentLayer, this, CanvasStatus::Explore));
+  this->capturing_layer_->setEventCbOnQuitCurrentLayer(std::bind(
+      &Canvas::eventCbHandleOnQuitCurrentLayer, this, CanvasStatus::Capturing));
+  this->captured_layer_->setEventCbOnQuitCurrentLayer(std::bind(
+      &Canvas::eventCbHandleOnQuitCurrentLayer, this, CanvasStatus::Captured));
+
   // 回调事件：capturing layer完成区域捕获
-  auto eventCbOnCapturingFinish =
+  this->capturing_layer_->setEventCbOnCapturingFinish(
       std::bind(&Canvas::eventCbHandleOnCapturingFinish, this,
-                std::placeholders::_1, std::placeholders::_2);
-  this->capturing_layer_->setEventCbOnCapturingFinish(eventCbOnCapturingFinish);
+                std::placeholders::_1, std::placeholders::_2));
 }
 
 void Canvas::onPaint(Painter *painter) {
@@ -91,6 +98,22 @@ void Canvas::onMouseRelease(const Point &pos) {
   }
 }
 
+void Canvas::onKeyPress(Key key, KeyboardModifier m) {
+  switch (this->status_) {
+  case CanvasStatus::Explore:
+    this->explore_layer_->onKeyPress(key, m);
+    break;
+  case CanvasStatus::Capturing:
+    this->capturing_layer_->onKeyPress(key, m);
+    break;
+  case CanvasStatus::Captured:
+    this->captured_layer_->onKeyPress(key, m);
+    break;
+  default:
+    break;
+  }
+}
+
 void Canvas::onResize(const Size &size) {
   this->size_ = size;
   this->explore_layer_->onCanvasResize(size);
@@ -98,15 +121,6 @@ void Canvas::onResize(const Size &size) {
   this->captured_layer_->onCanvasResize(size);
 }
 
-Canvas::~Canvas() {
-  delete this->explore_layer_;
-  delete this->capturing_layer_;
-  delete this->captured_layer_;
-}
-
-void Canvas::onKeyPress(const Key) {
-  // todo
-}
 void Canvas::onMouseDoubleClick(const Point &pos) {
   switch (this->status_) {
   case CanvasStatus::Explore:
@@ -136,5 +150,30 @@ void Canvas::eventCbHandleOnCapturingFinish(bool sizeValid,
     this->status_ = CanvasStatus::Captured;
     this->captured_layer_->setCapturedRect(capturedRect);
   }
+}
+void Canvas::eventCbHandleOnQuitCurrentLayer(CanvasStatus status) {
+  if (status == CanvasStatus::Captured || status == CanvasStatus::Capturing) {
+    this->status_ = CanvasStatus::Explore;
+    return;
+  }
+  switch (status) {
+  case CanvasStatus::Capturing:
+  case CanvasStatus::Captured:
+    // Capturing huo Captured，退到 Explore阶段
+    this->status_ = CanvasStatus::Explore;
+    return;
+  case CanvasStatus::Explore:
+    // explore阶段，则退出截图画布
+    // todo
+    return;
+  default:
+    break;
+  }
+}
+
+Canvas::~Canvas() {
+  delete this->explore_layer_;
+  delete this->capturing_layer_;
+  delete this->captured_layer_;
 }
 } // namespace capi
