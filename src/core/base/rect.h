@@ -7,16 +7,16 @@ class Size;
 
 class Rect {
 public:
-  bool contains(const Point &) const;
-  bool contains(int x, int y) const;
+  [[nodiscard]] bool contains(const Point &) const;
+  [[nodiscard]] bool contains(int x, int y) const;
 
-  int x() const;
-  int y() const;
-  Point pos() const;
+  [[nodiscard]] int x() const;
+  [[nodiscard]] int y() const;
+  [[nodiscard]] Point pos() const;
 
-  int w() const;
-  int h() const;
-  Size size() const;
+  [[nodiscard]] int w() const;
+  [[nodiscard]] int h() const;
+  [[nodiscard]] Size size() const;
 
   void setX(int x);
   void setY(int y);

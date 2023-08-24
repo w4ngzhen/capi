@@ -11,8 +11,8 @@ public:
   Point &operator=(const Point &) = default;
   ~Point() = default;
 
-  int x() const;
-  int y() const;
+  [[nodiscard]] int x() const;
+  [[nodiscard]] int y() const;
   void setX(int);
   void setY(int);
 

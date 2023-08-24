@@ -27,7 +27,7 @@ enum AlignFlag {
   AlignJustify = 0x0008,
   AlignAbsolute = 0x0010,
   AlignHorizontal_Mask =
-      AlignLeft | AlignRight | AlignHCenter | AlignJustify | AlignAbsolute,
+  AlignLeft | AlignRight | AlignHCenter | AlignJustify | AlignAbsolute,
 
   AlignTop = 0x0020,
   AlignBottom = 0x0040,

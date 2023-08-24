@@ -1,7 +1,7 @@
 #include "canvas.h"
 
-#include "./base/point.h"
-#include "./base/rect.h"
+#include <utility>
+
 #include "./paint/painter.h"
 #include "canvas_status.h"
 #include "layer/captured/captured_layer.h"
@@ -18,17 +18,16 @@ Canvas::Canvas(Image *canvasImg) : canvas_img_(canvasImg), status_(Explore) {
 
   // 注册各种事件
   // 回调事件：layer各层退出事件
-  this->explore_layer_->setEventCbOnQuitCurrentLayer(std::bind(
-      &Canvas::eventCbHandleOnQuitCurrentLayer, this, CanvasStatus::Explore));
-  this->capturing_layer_->setEventCbOnQuitCurrentLayer(std::bind(
-      &Canvas::eventCbHandleOnQuitCurrentLayer, this, CanvasStatus::Capturing));
-  this->captured_layer_->setEventCbOnQuitCurrentLayer(std::bind(
-      &Canvas::eventCbHandleOnQuitCurrentLayer, this, CanvasStatus::Captured));
+  this->explore_layer_->setEventCbOnQuitCurrentLayer(
+      [this] { eventCbHandleOnQuitCurrentLayer(CanvasStatus::Explore); });
+  this->capturing_layer_->setEventCbOnQuitCurrentLayer(
+      [this] { eventCbHandleOnQuitCurrentLayer(CanvasStatus::Capturing); });
+  this->captured_layer_->setEventCbOnQuitCurrentLayer(
+      [this] { eventCbHandleOnQuitCurrentLayer(CanvasStatus::Captured); });
 
   // 回调事件：capturing layer完成区域捕获
   this->capturing_layer_->setEventCbOnCapturingFinish(
-      std::bind(&Canvas::eventCbHandleOnCapturingFinish, this,
-                std::placeholders::_1, std::placeholders::_2));
+      [this](auto validSize, auto rect) { eventCbHandleOnCapturingFinish(validSize, rect); });
 }
 
 void Canvas::onPaint(Painter *painter) {
@@ -36,81 +35,63 @@ void Canvas::onPaint(Painter *painter) {
   painter->drawImage(Rect(Point(0, 0), this->size_), this->canvas_img_);
 
   switch (this->status_) {
-  case CanvasStatus::Explore:
-    this->explore_layer_->onPaint(painter);
-    break;
-  case CanvasStatus::Capturing:
-    this->capturing_layer_->onPaint(painter);
-    break;
-  case CanvasStatus::Captured:
-    this->captured_layer_->onPaint(painter);
-    break;
-  default:
-    break;
+    case CanvasStatus::Explore:this->explore_layer_->onPaint(painter);
+      break;
+    case CanvasStatus::Capturing:this->capturing_layer_->onPaint(painter);
+      break;
+    case CanvasStatus::Captured:this->captured_layer_->onPaint(painter);
+      break;
+    default:break;
   }
 }
 
 void Canvas::onMousePress(const Point &pos) {
   switch (this->status_) {
-  case CanvasStatus::Explore:
-    // explore 按下鼠标，则进入capturing模式
-    this->status_ = CanvasStatus::Capturing;
-    this->capturing_layer_->onMousePress(pos);
-    break;
-  case CanvasStatus::Capturing:
-    break;
-  case CanvasStatus::Captured:
-    this->captured_layer_->onMousePress(pos);
-    break;
-  default:
-    break;
+    case CanvasStatus::Explore:
+      // explore 按下鼠标，则进入capturing模式
+      this->status_ = CanvasStatus::Capturing;
+      this->capturing_layer_->onMousePress(pos);
+      break;
+    case CanvasStatus::Capturing:break;
+    case CanvasStatus::Captured:this->captured_layer_->onMousePress(pos);
+      break;
+    default:break;
   }
 }
 
 void Canvas::onMouseMove(const Point &pos) {
   switch (this->status_) {
-  case CanvasStatus::Explore:
-    this->explore_layer_->onMouseMove(pos);
-    break;
-  case CanvasStatus::Capturing:
-    this->capturing_layer_->onMouseMove(pos);
-    break;
-  case CanvasStatus::Captured:
-    this->captured_layer_->onMouseMove(pos);
-    break;
-  default:
-    break;
+    case CanvasStatus::Explore:this->explore_layer_->onMouseMove(pos);
+      break;
+    case CanvasStatus::Capturing:this->capturing_layer_->onMouseMove(pos);
+      break;
+    case CanvasStatus::Captured:this->captured_layer_->onMouseMove(pos);
+      break;
+    default:break;
   }
 }
+
 void Canvas::onMouseRelease(const Point &pos) {
   switch (this->status_) {
-  case CanvasStatus::Explore:
-    this->explore_layer_->onMouseRelease(pos);
-    break;
-  case CanvasStatus::Capturing:
-    this->capturing_layer_->onMouseRelease(pos);
-    break;
-  case CanvasStatus::Captured:
-    this->captured_layer_->onMouseRelease(pos);
-    break;
-  default:
-    break;
+    case CanvasStatus::Explore:this->explore_layer_->onMouseRelease(pos);
+      break;
+    case CanvasStatus::Capturing:this->capturing_layer_->onMouseRelease(pos);
+      break;
+    case CanvasStatus::Captured:this->captured_layer_->onMouseRelease(pos);
+      break;
+    default:break;
   }
 }
 
 void Canvas::onKeyPress(Key key, KeyboardModifier m) {
   switch (this->status_) {
-  case CanvasStatus::Explore:
-    this->explore_layer_->onKeyPress(key, m);
-    break;
-  case CanvasStatus::Capturing:
-    this->capturing_layer_->onKeyPress(key, m);
-    break;
-  case CanvasStatus::Captured:
-    this->captured_layer_->onKeyPress(key, m);
-    break;
-  default:
-    break;
+    case CanvasStatus::Explore:this->explore_layer_->onKeyPress(key, m);
+      break;
+    case CanvasStatus::Capturing:this->capturing_layer_->onKeyPress(key, m);
+      break;
+    case CanvasStatus::Captured:this->captured_layer_->onKeyPress(key, m);
+      break;
+    default:break;
   }
 }
 
@@ -123,21 +104,18 @@ void Canvas::onResize(const Size &size) {
 
 void Canvas::onMouseDoubleClick(const Point &pos) {
   switch (this->status_) {
-  case CanvasStatus::Explore:
-    this->explore_layer_->onMouseDoubleClick(pos);
-    break;
-  case CanvasStatus::Capturing:
-    this->capturing_layer_->onMouseDoubleClick(pos);
-    break;
-  case CanvasStatus::Captured:
-    this->captured_layer_->onMouseDoubleClick(pos);
-    break;
-  default:
-    break;
+    case CanvasStatus::Explore:this->explore_layer_->onMouseDoubleClick(pos);
+      break;
+    case CanvasStatus::Capturing:this->capturing_layer_->onMouseDoubleClick(pos);
+      break;
+    case CanvasStatus::Captured:this->captured_layer_->onMouseDoubleClick(pos);
+      break;
+    default:break;
   }
 }
+
 /**
- * captruingLayer处理完成后，触发该处进行截取的处理
+ * capturingLayer处理完成后，触发该处进行截取的处理
  * @param sizeValid
  * @param capturedRect
  */
@@ -151,31 +129,28 @@ void Canvas::eventCbHandleOnCapturingFinish(bool sizeValid,
     this->captured_layer_->setCapturedRect(capturedRect);
   }
 }
+
 void Canvas::eventCbHandleOnQuitCurrentLayer(CanvasStatus status) {
-  if (status == CanvasStatus::Captured || status == CanvasStatus::Capturing) {
-    this->status_ = CanvasStatus::Explore;
-    return;
-  }
   switch (status) {
-  case CanvasStatus::Capturing:
-  case CanvasStatus::Captured:
-    // Capturing huo Captured，退到 Explore阶段
-    this->status_ = CanvasStatus::Explore;
-    return;
-  case CanvasStatus::Explore:
-    // explore阶段，则退出截图画布
-    this->on_canvas_quit_cb_();
-    return;
-  default:
-    break;
+    case CanvasStatus::Capturing:
+    case CanvasStatus::Captured:
+      // Capturing huo Captured，退到 Explore阶段
+      this->status_ = CanvasStatus::Explore;
+      return;
+    case CanvasStatus::Explore:
+      // explore阶段，则退出截图画布
+      this->on_canvas_quit_cb_();
+      return;
+    default:break;
   }
 }
 
 void Canvas::setOnCanvasQuitCb(OnCanvasQuitCb cb) {
-  this->on_canvas_quit_cb_ = cb;
+  this->on_canvas_quit_cb_ = std::move(cb);
 }
+
 void Canvas::setOnCanvasImageSaveCb(OnCanvasImageSaveCb cb) {
-  this->on_canvas_image_save_cb_ = cb;
+  this->on_canvas_image_save_cb_ = std::move(cb);
 }
 
 Canvas::~Canvas() {

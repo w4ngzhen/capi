@@ -25,7 +25,7 @@ void CanvasWidget::init(QImage *img) {
   auto *pImgQtImpl = new ImageQtImpl(img);
   // pImgQtImpl指针在canvas析构时会被释放
   this->canvas_ = new capi::Canvas(pImgQtImpl);
-  this->canvas_->setOnCanvasQuitCb(std::bind(&CanvasWidget::handleOnCanvasQuitCb, this));
+  this->canvas_->setOnCanvasQuitCb([this] { handleOnCanvasQuitCb(); });
 }
 
 void CanvasWidget::handleOnCanvasQuitCb() {

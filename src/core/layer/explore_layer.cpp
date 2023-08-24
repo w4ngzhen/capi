@@ -173,20 +173,15 @@ void ExploreLayer::onKeyPress(Key k, KeyboardModifier m) {
   int dx = 0;
   int dy = 0;
   switch (k) {
-  case Key::Key_Up:
-    dy -= 1;
-    break;
-  case Key::Key_Down:
-    dy += 1;
-    break;
-  case Key::Key_Left:
-    dx -= 1;
-    break;
-  case Key::Key_Right:
-    dx += 1;
-    break;
-  default:
-    break;
+    case Key::Key_Up:dy -= 1;
+      break;
+    case Key::Key_Down:dy += 1;
+      break;
+    case Key::Key_Left:dx -= 1;
+      break;
+    case Key::Key_Right:dx += 1;
+      break;
+    default:break;
   }
   auto mousePos = this->mouse_current_pos_;
   this->mouse_current_pos_.setX(mousePos.x() + dx);

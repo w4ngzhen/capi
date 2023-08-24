@@ -14,7 +14,7 @@ typedef std::function<void()> EventCbOnQuitCurrentLayer;
 
 class Layer {
 public:
-  Layer(const Size &canvasSize);
+  explicit Layer(const Size &canvasSize);
   virtual void onMousePress(const Point &);
   virtual void onMouseMove(const Point &);
   virtual void onMouseRelease(const Point &);

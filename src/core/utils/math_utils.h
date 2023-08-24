@@ -2,7 +2,6 @@
 
 #include "core/global/global.h"
 
-
 namespace capi::math_utils {
 
 /**

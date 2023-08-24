@@ -15,9 +15,9 @@ public:
   void setColor(const Color &);
   void setPenStyle(PenStyle);
 
-  int width() const;
-  Color color() const;
-  PenStyle pen_style() const;
+  [[nodiscard]] int width() const;
+  [[nodiscard]] Color color() const;
+  [[nodiscard]] PenStyle pen_style() const;
 
 private:
   int width_;

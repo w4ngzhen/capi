@@ -132,9 +132,9 @@ void CapturedLayer::onMouseMove(const Point &pos) {
     this->captured_rect_ = Rect(lastCapRect.x() + dx, lastCapRect.y() + dy,
                                 lastCapRect.w(), lastCapRect.h());
   } else if (this->opr_mode_ == DraggingLeftTop ||
-             this->opr_mode_ == DraggingRightTop ||
-             this->opr_mode_ == DraggingLeftBottom ||
-             this->opr_mode_ == DraggingRightBottom) {
+      this->opr_mode_ == DraggingRightTop ||
+      this->opr_mode_ == DraggingLeftBottom ||
+      this->opr_mode_ == DraggingRightBottom) {
     // 4个角拖动
     auto lt = Point(lastCapRect.x(), lastCapRect.y());
     auto rt = Point(lt.x() + lastCapRect.w(), lt.y());
@@ -143,23 +143,19 @@ void CapturedLayer::onMouseMove(const Point &pos) {
     Point *draggingCor; // 正在拖动的角
     Point *fixedCor;    // 正在拖动角的对角固定不动
     switch (this->opr_mode_) {
-    case DraggingLeftTop:
-      draggingCor = &lt;
-      fixedCor = &rb;
-      break;
-    case DraggingRightTop:
-      draggingCor = &rt;
-      fixedCor = &lb;
-      break;
-    case DraggingLeftBottom:
-      draggingCor = &lb;
-      fixedCor = &rt;
-      break;
-    case DraggingRightBottom:
-    default:
-      draggingCor = &rb;
-      fixedCor = &lt;
-      break;
+      case DraggingLeftTop:draggingCor = &lt;
+        fixedCor = &rb;
+        break;
+      case DraggingRightTop:draggingCor = &rt;
+        fixedCor = &lb;
+        break;
+      case DraggingLeftBottom:draggingCor = &lb;
+        fixedCor = &rt;
+        break;
+      case DraggingRightBottom:
+      default:draggingCor = &rb;
+        fixedCor = &lt;
+        break;
     }
     Rect rect =
         math_utils::calcRect(draggingCor->x() + dx, draggingCor->y() + dy,
@@ -169,20 +165,18 @@ void CapturedLayer::onMouseMove(const Point &pos) {
 }
 void CapturedLayer::onMouseRelease(const Point &pos) {
   switch (this->opr_mode_) {
-  case Normal:
-  case DraggingArea:
-  case DraggingLeftTop:
-  case DraggingRightTop:
-  case DraggingLeftBottom:
-  case DraggingRightBottom:
-    this->opr_mode_ = Normal;
-    break;
-  case DrawingRect:
-    // 用户绘制矩形以后，松开鼠标，回到启用绘制矩形状态
-    this->opr_mode_ = EnableDrawRect;
-    break;
-  default:
-    break;
+    case Normal:
+    case DraggingArea:
+    case DraggingLeftTop:
+    case DraggingRightTop:
+    case DraggingLeftBottom:
+    case DraggingRightBottom:this->opr_mode_ = Normal;
+      break;
+    case DrawingRect:
+      // 用户绘制矩形以后，松开鼠标，回到启用绘制矩形状态
+      this->opr_mode_ = EnableDrawRect;
+      break;
+    default:break;
   }
 }
 

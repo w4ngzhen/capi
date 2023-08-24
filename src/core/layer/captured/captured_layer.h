@@ -17,7 +17,7 @@ namespace capi {
 typedef std::function<void(const Rect &capturedRect)>
     EventCbOnCapturedFinish;
 
-class CapturedLayer: public Layer {
+class CapturedLayer : public Layer {
 
 public:
   explicit CapturedLayer(const Size &);

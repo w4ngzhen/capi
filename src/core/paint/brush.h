@@ -10,7 +10,7 @@ public:
 
   explicit Brush(const Color &);
   void setColor(const Color &);
-  Color color() const;
+  [[nodiscard]] Color color() const;
 
 private:
   Color color_;

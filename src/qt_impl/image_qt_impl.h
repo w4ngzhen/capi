@@ -14,7 +14,7 @@ public:
 
   // impl
   explicit ImageQtImpl(QImage *img);
-  QImage *getQImage() const;
+  [[nodiscard]] QImage *getQImage() const;
 
 private:
   QImage *qt_img_;

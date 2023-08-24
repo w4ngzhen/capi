@@ -22,7 +22,7 @@ typedef std::function<void()> OnCanvasQuitCb;
 /**
  * 画布图片保存事件
  */
-typedef std::function<void(const CanvasCapturedImageSaveEvent*)> OnCanvasImageSaveCb;
+typedef std::function<void(const CanvasCapturedImageSaveEvent *)> OnCanvasImageSaveCb;
 
 class Canvas {
 
@@ -64,6 +64,9 @@ private:
   CapturingLayer *capturing_layer_;
   CapturedLayer *captured_layer_;
 
+  /**
+   * 画布自身事件
+   */
   OnCanvasQuitCb on_canvas_quit_cb_;
   OnCanvasImageSaveCb on_canvas_image_save_cb_;
 };

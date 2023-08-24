@@ -11,9 +11,9 @@ enum SaveMode {
 class CanvasCapturedImageSaveEvent {
 
 public:
-  CanvasCapturedImageSaveEvent(const Rect &capturedRect, const SaveMode);
-  Rect capured_rect() const;
-  SaveMode save_mode() const;
+  CanvasCapturedImageSaveEvent(const Rect &capturedRect, SaveMode);
+  [[nodiscard]] Rect captured_rect() const;
+  [[nodiscard]] SaveMode save_mode() const;
 private:
   const Rect captured_rect_;
   const SaveMode save_mode_;

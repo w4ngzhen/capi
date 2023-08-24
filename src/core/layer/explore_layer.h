@@ -7,7 +7,7 @@
 
 namespace capi {
 
-class ExploreLayer: public Layer {
+class ExploreLayer : public Layer {
 
 public:
   ExploreLayer(Image *img, const Size &canvasSize);

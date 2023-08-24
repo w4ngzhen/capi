@@ -3,7 +3,6 @@
 #include "core/base/size.h"
 #include <cmath>
 
-
 namespace capi::math_utils {
 
 Rect calcRect(int x1, int y1, int x2, int y2) {

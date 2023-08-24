@@ -1,5 +1,6 @@
 #include <iostream>
 #include <sstream>
+#include <utility>
 
 #include "capturing_layer.h"
 #include "core/global/global.h"
@@ -115,7 +116,7 @@ void CapturingLayer::drawCaptureRectInfo(Painter *painter, Point &startPos,
 }
 
 void CapturingLayer::setEventCbOnCapturingFinish(EventCbOnCapturingFinish cb) {
-  this->event_cb_on_capturing_finish_ = cb;
+  this->event_cb_on_capturing_finish_ = std::move(cb);
 }
 
 void CapturingLayer::onKeyPress(Key k, KeyboardModifier m) {

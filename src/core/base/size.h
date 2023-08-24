@@ -11,8 +11,8 @@ public:
   Size &operator=(const Size &) = default;
   ~Size() = default;
 
-  int w() const;
-  int h() const;
+  [[nodiscard]] int w() const;
+  [[nodiscard]] int h() const;
   void setW(int);
   void setH(int);
 
