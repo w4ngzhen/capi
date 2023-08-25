@@ -10,7 +10,7 @@ namespace capi {
  * 事件回调EventCb
  * 退出当前层状态
  */
-typedef std::function<void()> EventCbOnQuitCurrentLayer;
+typedef std::function<void()> LayerEventOnQuitCurrentLayerCb;
 
 class Layer {
 public:
@@ -23,12 +23,12 @@ public:
   virtual void onPaint(Painter *) = 0;
 
   virtual void onCanvasResize(const Size &);
-  virtual void setEventCbOnQuitCurrentLayer(EventCbOnQuitCurrentLayer cb);
+  virtual void setLayerEventOnQuitCurrentLayerCb(LayerEventOnQuitCurrentLayerCb cb);
 
 protected:
   Point mouse_press_pos_;
   Point mouse_current_pos_;
   Size canvas_size_;
-  EventCbOnQuitCurrentLayer event_cb_on_quit_current_layer_;
+  LayerEventOnQuitCurrentLayerCb layer_event_on_quit_current_layer_cb_;
 };
 } // namespace capi

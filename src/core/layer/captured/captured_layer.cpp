@@ -2,6 +2,7 @@
 #include "core/paint/brush.h"
 #include "core/paint/pen.h"
 #include "core/utils/math_utils.h"
+#include "core/event/captured_image_save_event.h"
 
 namespace capi {
 
@@ -180,16 +181,25 @@ void CapturedLayer::onMouseRelease(const Point &pos) {
   }
 }
 
-void CapturedLayer::onMouseDoubleClick(const Point &) {}
+void CapturedLayer::onMouseDoubleClick(const Point &) {
+  // 准备构造captured canvas_image 保存事件
+  // 暂时只支持保存到粘贴板
+  CapturedImageSaveEvent ev(this->captured_rect_, SaveMode::Clipboard);
+  this->layer_event_on_captured_layer_image_save_cb_(&ev);
+}
 
 void CapturedLayer::onKeyPress(Key k, KeyboardModifier m) {
   // ESC 退出当前层
   if (k == Key::Key_Escape) {
-    this->event_cb_on_quit_current_layer_();
+    this->layer_event_on_quit_current_layer_cb_();
     return;
   }
 }
 void CapturedLayer::setCapturedRect(const Rect &rect) {
   this->captured_rect_ = rect;
+}
+
+void CapturedLayer::setLayerEventOnCapturedLayerImageSaveCb(LayerEventOnCapturedLayerImageSaveCb cb) {
+  this->layer_event_on_captured_layer_image_save_cb_ = std::move(cb);
 }
 } // namespace capi

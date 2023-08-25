@@ -13,7 +13,7 @@ class Rect;
  * 区域捕获完成事件
  */
 typedef std::function<void(bool sizeValid, const Rect &capturedRect)>
-    EventCbOnCapturingFinish;
+    LayerEventOnCapturingLayerFinishCb;
 
 class CapturingLayer : public Layer {
 
@@ -24,7 +24,7 @@ public:
   void onMouseRelease(const Point &) override;
   void onKeyPress(Key, KeyboardModifier) override;
 
-  void setEventCbOnCapturingFinish(EventCbOnCapturingFinish cb);
+  void setLayerEventOnCapturingLayerFinishCb(LayerEventOnCapturingLayerFinishCb cb);
 
 private:
   // 静态辅助方法，便于绘制捕获过程中捕获的矩形框信息
@@ -34,6 +34,6 @@ private:
   /**
    * 存储事件回调函数
    */
-  EventCbOnCapturingFinish event_cb_on_capturing_finish_;
+  LayerEventOnCapturingLayerFinishCb layer_event_on_capturing_layer_finish_cb_;
 };
 } // namespace capi

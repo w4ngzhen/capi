@@ -7,6 +7,7 @@
 #include "layer/captured/captured_layer.h"
 #include "layer/capturing_layer.h"
 #include "layer/explore_layer.h"
+#include "core/event/captured_image_save_event.h"
 
 namespace capi {
 
@@ -18,16 +19,20 @@ Canvas::Canvas(Image *canvasImg) : canvas_img_(canvasImg), status_(Explore) {
 
   // 注册各种事件
   // 回调事件：layer各层退出事件
-  this->explore_layer_->setEventCbOnQuitCurrentLayer(
-      [this] { eventCbHandleOnQuitCurrentLayer(CanvasStatus::Explore); });
-  this->capturing_layer_->setEventCbOnQuitCurrentLayer(
-      [this] { eventCbHandleOnQuitCurrentLayer(CanvasStatus::Capturing); });
-  this->captured_layer_->setEventCbOnQuitCurrentLayer(
-      [this] { eventCbHandleOnQuitCurrentLayer(CanvasStatus::Captured); });
+  this->explore_layer_->setLayerEventOnQuitCurrentLayerCb(
+      [this] { handleLayerEventOnLayerQuitCurrentLayer(CanvasStatus::Explore); });
+  this->capturing_layer_->setLayerEventOnQuitCurrentLayerCb(
+      [this] { handleLayerEventOnLayerQuitCurrentLayer(CanvasStatus::Capturing); });
+  this->captured_layer_->setLayerEventOnQuitCurrentLayerCb(
+      [this] { handleLayerEventOnLayerQuitCurrentLayer(CanvasStatus::Captured); });
 
   // 回调事件：capturing layer完成区域捕获
-  this->capturing_layer_->setEventCbOnCapturingFinish(
-      [this](auto validSize, auto rect) { eventCbHandleOnCapturingFinish(validSize, rect); });
+  this->capturing_layer_->setLayerEventOnCapturingLayerFinishCb(
+      [this](auto validSize, auto rect) { handleLayerEventOnCapturingLayerFinish(validSize, rect); });
+
+  this->captured_layer_->setLayerEventOnCapturedLayerImageSaveCb([this](auto event) {
+    handleLayerEventOnCapturedLayerImageSave(event);
+  });
 }
 
 void Canvas::onPaint(Painter *painter) {
@@ -119,8 +124,8 @@ void Canvas::onMouseDoubleClick(const Point &pos) {
  * @param sizeValid
  * @param capturedRect
  */
-void Canvas::eventCbHandleOnCapturingFinish(bool sizeValid,
-                                            const Rect &capturedRect) {
+void Canvas::handleLayerEventOnCapturingLayerFinish(bool sizeValid,
+                                                    const Rect &capturedRect) {
   if (!sizeValid) {
     this->status_ = CanvasStatus::Explore;
     this->captured_layer_->setCapturedRect(Rect());
@@ -130,7 +135,11 @@ void Canvas::eventCbHandleOnCapturingFinish(bool sizeValid,
   }
 }
 
-void Canvas::eventCbHandleOnQuitCurrentLayer(CanvasStatus status) {
+/**
+ * 处理通用所有layer的quit current事件，一般会进行切换处理
+ * @param status
+ */
+void Canvas::handleLayerEventOnLayerQuitCurrentLayer(CanvasStatus status) {
   switch (status) {
     case CanvasStatus::Capturing:
     case CanvasStatus::Captured:
@@ -139,23 +148,36 @@ void Canvas::eventCbHandleOnQuitCurrentLayer(CanvasStatus status) {
       return;
     case CanvasStatus::Explore:
       // explore阶段，则退出截图画布
-      this->on_canvas_quit_cb_();
+      this->canvas_event_on_quit_cb_();
       return;
     default:break;
   }
 }
-
-void Canvas::setOnCanvasQuitCb(OnCanvasQuitCb cb) {
-  this->on_canvas_quit_cb_ = std::move(cb);
+/**
+ * 处理captured layer 图片保存事件，这里作为canvas canvas_image save事件转发到外部
+ * @param event
+ */
+void Canvas::handleLayerEventOnCapturedLayerImageSave(const CapturedImageSaveEvent *event) {
+  this->canvas_event_on_image_save_cb_(event);
 }
 
-void Canvas::setOnCanvasImageSaveCb(OnCanvasImageSaveCb cb) {
-  this->on_canvas_image_save_cb_ = std::move(cb);
+void Canvas::setCanvasEventOnQuitCb(CanvasEventOnQuitCb cb) {
+  this->canvas_event_on_quit_cb_ = std::move(cb);
+}
+
+void Canvas::setCanvasEventOnImageSaveCb(CanvasEventOnImageSaveCb cb) {
+  this->canvas_event_on_image_save_cb_ = std::move(cb);
 }
 
 Canvas::~Canvas() {
   delete this->explore_layer_;
   delete this->capturing_layer_;
   delete this->captured_layer_;
+}
+Image *Canvas::canvas_image() {
+  return this->canvas_img_;
+}
+Size Canvas::size() {
+  return this->size_;
 }
 } // namespace capi

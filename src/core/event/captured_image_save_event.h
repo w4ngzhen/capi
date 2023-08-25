@@ -8,10 +8,10 @@ enum SaveMode {
   File
 };
 
-class CanvasCapturedImageSaveEvent {
+class CapturedImageSaveEvent {
 
 public:
-  CanvasCapturedImageSaveEvent(const Rect &capturedRect, SaveMode);
+  CapturedImageSaveEvent(const Rect &capturedRect, SaveMode);
   [[nodiscard]] Rect captured_rect() const;
   [[nodiscard]] SaveMode save_mode() const;
 private:

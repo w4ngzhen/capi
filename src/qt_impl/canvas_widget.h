@@ -7,6 +7,10 @@
 
 #include "core/canvas.h"
 
+namespace capi {
+  class CapturedImageSaveEvent;
+}
+
 class CanvasWidget : public QWidget {
   Q_OBJECT
 
@@ -18,7 +22,8 @@ public:
 private:
   capi::Canvas *canvas_{};
 
-  void handleOnCanvasQuitCb();
+  void handleCanvasEventOnQuit();
+  void handleCanvasEventOnImageSave(const capi::CapturedImageSaveEvent *);
   // QWidget interface
 protected:
   void mousePressEvent(QMouseEvent *event) override;

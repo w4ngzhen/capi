@@ -13,21 +13,23 @@ class Painter;
 class ExploreLayer;
 class CapturingLayer;
 class CapturedLayer;
-class CanvasCapturedImageSaveEvent;
+class CapturedImageSaveEvent;
 
 /**
  * 画布退出事件
  */
-typedef std::function<void()> OnCanvasQuitCb;
+typedef std::function<void()> CanvasEventOnQuitCb;
 /**
  * 画布图片保存事件
  */
-typedef std::function<void(const CanvasCapturedImageSaveEvent *)> OnCanvasImageSaveCb;
+typedef std::function<void(const CapturedImageSaveEvent *)> CanvasEventOnImageSaveCb;
 
 class Canvas {
 
 public:
   explicit Canvas(Image *canvasImg);
+  Image *canvas_image();
+  Size size();
 
   void onMouseMove(const Point &);
   void onMousePress(const Point &);
@@ -37,11 +39,12 @@ public:
   void onKeyPress(Key, KeyboardModifier);
   void onPaint(Painter *);
 
-  void eventCbHandleOnCapturingFinish(bool sizeValid, const Rect &capturedRect);
-  void eventCbHandleOnQuitCurrentLayer(CanvasStatus status);
+  void handleLayerEventOnCapturingLayerFinish(bool sizeValid, const Rect &capturedRect);
+  void handleLayerEventOnLayerQuitCurrentLayer(CanvasStatus status);
+  void handleLayerEventOnCapturedLayerImageSave(const CapturedImageSaveEvent *);
 
-  void setOnCanvasQuitCb(OnCanvasQuitCb);
-  void setOnCanvasImageSaveCb(OnCanvasImageSaveCb);
+  void setCanvasEventOnQuitCb(CanvasEventOnQuitCb);
+  void setCanvasEventOnImageSaveCb(CanvasEventOnImageSaveCb);
 
   ~Canvas();
 
@@ -67,7 +70,7 @@ private:
   /**
    * 画布自身事件
    */
-  OnCanvasQuitCb on_canvas_quit_cb_;
-  OnCanvasImageSaveCb on_canvas_image_save_cb_;
+  CanvasEventOnQuitCb canvas_event_on_quit_cb_;
+  CanvasEventOnImageSaveCb canvas_event_on_image_save_cb_;
 };
 } // namespace capi

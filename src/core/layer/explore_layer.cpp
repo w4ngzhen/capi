@@ -165,7 +165,7 @@ void ExploreLayer::onKeyPress(Key k, KeyboardModifier m) {
 
   // ESC 退出当前层
   if (k == Key::Key_Escape) {
-    this->event_cb_on_quit_current_layer_();
+    this->layer_event_on_quit_current_layer_cb_();
     return;
   }
 

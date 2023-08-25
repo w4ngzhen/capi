@@ -47,8 +47,8 @@ void CapturingLayer::onMouseRelease(const Point &endPos) {
   Rect capturedRect =
       math_utils::calcRect(endPos.x(), endPos.y(), startPos.x(), startPos.y());
 
-  if (this->event_cb_on_capturing_finish_ != nullptr) {
-    (this->event_cb_on_capturing_finish_)(true, capturedRect);
+  if (this->layer_event_on_capturing_layer_finish_cb_ != nullptr) {
+    (this->layer_event_on_capturing_layer_finish_cb_)(true, capturedRect);
   }
 }
 
@@ -115,14 +115,14 @@ void CapturingLayer::drawCaptureRectInfo(Painter *painter, Point &startPos,
   painter->restore();
 }
 
-void CapturingLayer::setEventCbOnCapturingFinish(EventCbOnCapturingFinish cb) {
-  this->event_cb_on_capturing_finish_ = std::move(cb);
+void CapturingLayer::setLayerEventOnCapturingLayerFinishCb(LayerEventOnCapturingLayerFinishCb cb) {
+  this->layer_event_on_capturing_layer_finish_cb_ = std::move(cb);
 }
 
 void CapturingLayer::onKeyPress(Key k, KeyboardModifier m) {
   // ESC 退出当前层
   if (k == Key::Key_Escape) {
-    this->event_cb_on_quit_current_layer_();
+    this->layer_event_on_quit_current_layer_cb_();
     return;
   }
 }
