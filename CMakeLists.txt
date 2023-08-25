@@ -17,22 +17,24 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 # 在Windows，它可能是这样:"D:\\Qt\\6.2.4\\msvc2019_64"
 # 这里为了统一，建议不同的操作系统将Qt对应工具链的路径写入到环境变量中
 # 这里统一读取环境变量 QT_DEV_DIR
-if(NOT DEFINED ENV{QT_DEV_DIR})
+if (NOT DEFINED ENV{QT_DEV_DIR})
   message(FATAL_ERROR ">>> not define 'QT_DEV_DIR' in env path, please add it. <<<")
-else()
+else ()
   set(CMAKE_PREFIX_PATH $ENV{QT_DEV_DIR})
-endif()
+endif ()
 
 find_package(Qt6 COMPONENTS Widgets REQUIRED)
 
 # 将src下面的所有头文件路径保存至 all_head_files 数组变量中
 # 将src下面的所有源文件路径保存至 all_source_files 数组变量中
-file(GLOB_RECURSE all_head_files "src/*.hpp" "src/*.h")
-file(GLOB_RECURSE all_source_files "src/*.cpp" "src/*.c")
+file(GLOB_RECURSE all_head_files "src/**/*.hpp" "src/**/*.h")
+file(GLOB_RECURSE all_source_files "src/**/*.cpp" "src/**/*.c")
+
+include_directories("src")
 
 add_executable(${CMAKE_PROJECT_NAME} WIN32
-  ${all_head_files}
-  ${all_source_files}
+    ${all_head_files}
+    ${all_source_files}
 )
 
 target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE Qt6::Widgets)
