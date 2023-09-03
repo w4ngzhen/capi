@@ -7,7 +7,6 @@
 #include "../layer.h"
 #include "operation_mode.h"
 #include "core/event/captured_image_save_event.h"
-#include <cwchar>
 
 namespace capi {
 
