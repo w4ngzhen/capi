@@ -1,7 +1,7 @@
-#include "core/base/rect.h"
 #include "core/paint/painter.h"
 #include "core/base/point.h"
 #include "core/paint/pen.h"
+#include "core/utils/math_utils.h"
 #include "shape.h"
 
 namespace capi {
@@ -16,7 +16,7 @@ TouchedArea Shape::checkTouchedArea(const Point &mousePos) const {
 
 void Shape::onPaint(Painter *painter) {
   onBorderPaint(painter);
-  onBodyPaint(painter);
+  onContentPaint(painter);
 }
 
 void Shape::onBorderPaint(Painter *painter) {
@@ -33,16 +33,13 @@ void Shape::onBorderPaint(Painter *painter) {
     pen.setColor(Color(100, 100, 100));
   }
   painter->setPen(pen);
-  painter->drawRect(this->body_);
+  painter->drawRect(this->content_rect());
   if (this->is_selected_) {
     // todo 若选中，还需绘制四个角
   }
   painter->restore();
 }
 
-Rect &Shape::body() {
-  return body_;
-}
 bool Shape::is_selected() const {
   return is_selected_;
 }
@@ -62,6 +59,22 @@ void Shape::setPenColor(const Color &pen_color) {
 }
 void Shape::setPenWidth(int pen_width) {
   pen_width_ = pen_width;
+}
+const Point &Shape::start_pos() const {
+  return startPos_;
+}
+void Shape::setStartPos(const Point &start_pos) {
+  startPos_ = start_pos;
+}
+const Point &Shape::end_pos() const {
+  return endPos_;
+}
+void Shape::setEndPos(const Point &end_pos) {
+  endPos_ = end_pos;
+}
+Rect Shape::content_rect() const {
+  auto contentRect = math_utils::calcRect(startPos_.x(), startPos_.y(), endPos_.x(), endPos_.y());
+  return contentRect;
 }
 
 };

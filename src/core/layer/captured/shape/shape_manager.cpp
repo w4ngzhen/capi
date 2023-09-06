@@ -1,88 +1,95 @@
 #include "shape_manager.h"
 #include "core/base/point.h"
 namespace capi {
-capi::ShapeManager::ShapeManager() : selected_shape_(nullptr) {
-
-}
+ShapeManager::ShapeManager() : selected_shape_(nullptr) {}
 void ShapeManager::addShape(bool selected) {
 
 }
-void ShapeManager::removeSelectedShape() {
-  int idx = findShapeIndex(this->shapes_, [](Shape *item) {
-    return item->is_selected();
-  });
-  if (idx >= 0) {
-    this->shapes_.erase(this->shapes_.begin() + idx);
-    this->selected_shape_ = nullptr;
+void ShapeManager::deleteSelectedShape() {
+  auto itr = std::find_if(
+      shapes_.begin(),
+      shapes_.end(),
+      [](Shape *sp) { return sp->is_selected(); }
+  );
+  if (itr != shapes_.end()) {
+    shapes_.erase(itr);
+    selected_shape_ = nullptr;
   }
 }
 void ShapeManager::selectShape(const Point &mousePos) {
-  Shape *shape = findShape(this->shapes_, [mousePos](Shape *sp) {
+  bool hasTouchedContent = false;
+  for (auto sp : shapes_) {
+    // 清理所有的shape的被选择状态
     sp->setIsSelected(false);
-    return sp->checkTouchedArea(mousePos) == TouchedArea::Body;
-  });
-  // 存在被选中的图形，则设置对应的被选中状态
-  shape->setIsSelected(true);
-  this->selected_shape_ = shape;
+    // 根据优先级原则，若已经选择到了某个图形，我们就不再进行后面图形的判断
+    if (hasTouchedContent) {
+      continue;
+    }
+    if (sp->checkTouchedArea(mousePos) == TouchedArea::ContentRect) {
+      sp->setIsSelected(true);
+      selected_shape_ = sp;
+    }
+  }
 }
 void ShapeManager::hoverShape(const Point &mousePos) {
-  Shape *shape = findShape(this->shapes_, [mousePos](Shape *sp) {
-    // 对于每一个要清空hover状态
+  bool hasTouchedContent = false;
+  for (auto &sp : this->shapes_) {
     sp->setIsHover(false);
-    return sp->checkTouchedArea(mousePos) == TouchedArea::Body;
-  });
-  // 存在被选中的图形，则设置对应的被选中状态
-  shape->setIsHover(true);
+    if (hasTouchedContent) {
+      continue;
+    }
+    if (sp->checkTouchedArea(mousePos) == TouchedArea::ContentRect) {
+      sp->setIsHover(true);
+    }
+  }
 }
 void ShapeManager::moveSelectedShapeTo(int levelIdx) {
-  if (levelIdx >= shapes_.size()) {
+  auto size = shapes_.size();
+  if (shapes_.empty()) {
     return;
   }
-  // 获取当前选中的shape指针的索引，
-  int idx = -1;
-  for (int i = 0; i < shapes_.size(); i++) {
+
+  // 搜索被选择的图形和其索引
+  int selectedIdx = -1;
+  Shape *selectedShape = nullptr;
+  for (int i = 0; i < size; ++i) {
     auto sp = shapes_[i];
     if (sp->is_selected()) {
-      idx = i;
+      selectedIdx = i;
+      selectedShape = sp;
       break;
     }
   }
-  if (idx == -1) {
+
+  if (selectedIdx < 0) {
     return;
   }
-  if (idx == levelIdx) {
+  long targetPos;
+  if (levelIdx < 0) {
+    // 小于0，则视为放到首位
+    targetPos = 0;
+  } else if (levelIdx >= size) {
+    // 超过size，则视为放到最后一个位置
+    targetPos = static_cast<long>(size - 1);
+  } else {
+    // 否则就是对应位置
+    targetPos = levelIdx;
+  }
+  if (targetPos == selectedIdx) {
+    // 位置不变，不发生改变
     return;
   }
-
+  // 准备移动
+  // 先移除，再添加到指定位置
+  shapes_.erase(shapes_.begin() + selectedIdx);
+  shapes_.insert(shapes_.begin() + targetPos, selectedShape);
 }
-
-Shape *findShape(std::vector<Shape *> &list, const std::function<bool(Shape *)> &filter) {
-  if (filter == nullptr) {
-    return nullptr;
+void ShapeManager::setSelectedShapeContentRect(const Point &start, const Point &end) {
+  if (selected_shape_ == nullptr) {
+    return;
   }
-  if (list.empty()) {
-    return nullptr;
-  }
-  for (const auto &item : list) {
-    if (filter(item)) {
-      return item;
-    }
-  }
-  return nullptr;
-}
-int findShapeIndex(std::vector<Shape *> &list, const std::function<bool(Shape *)> &filter) {
-  if (filter == nullptr) {
-    return -1;
-  }
-  if (list.empty()) {
-    return -1;
-  }
-  for (int i = 0; i < list.size(); ++i) {
-    if (filter(list[i])) {
-      return i;
-    }
-  }
-  return -1;
+  selected_shape_->setStartPos(start);
+  selected_shape_->setEndPos(end);
 }
 }
 

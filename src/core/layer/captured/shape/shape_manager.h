@@ -7,7 +7,7 @@
 namespace capi {
 
 enum ShapeType {
-  Rect = 0,
+  Rectangle = 0,
   Ellipse
 };
 
@@ -21,7 +21,10 @@ class ShapeManager {
    * @param selected 增加后是否立即选中
    */
   void addShape(bool selected);
-
+  /**
+ * 移除正在选择的图形
+ */
+  void deleteSelectedShape();
   /**
    * 使用鼠标点击选择某个图形
    * @param mousePos
@@ -37,27 +40,20 @@ class ShapeManager {
    * @param levelIdx
    */
   void moveSelectedShapeTo(int levelIdx);
+
   /**
- * 移除正在选择的图形
- */
-  void removeSelectedShape();
+   * 设置当前正选中元素的内容矩形
+   */
+  void setSelectedShapeContentRect(const Point &start, const Point &end);
+
 private:
   /**
    * 已有的所有图形
    */
   std::vector<Shape *> shapes_;
   /**
-   * 当前正选择的图形
+   * 存储当前正被选中的图形
    */
   Shape *selected_shape_;
 };
-
-/**
- * 根据filter获取对应的Shape指针
- */
-Shape *findShape(std::vector<Shape *> &list, const std::function<bool(Shape *)> &filter = nullptr);
-/**
- * 根据filter获取对应的Shape的索引
- */
-int findShapeIndex(std::vector<Shape *> &list, const std::function<bool(Shape *)> &filter = nullptr);
 }

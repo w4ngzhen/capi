@@ -14,7 +14,7 @@ class Point;
  */
 enum TouchedArea {
   None = 0,
-  Body,
+  ContentRect,
   LeftTop,
   RightTop,
   LeftBottom,
@@ -33,14 +33,14 @@ protected:
   Shape(const Color &bc, const Color &pc, int pw);
   /**
    * 纯虚函数
-   * 每一个shape必须实现body的渲染
+   * 每一个shape必须实现图形内容的渲染
    */
-  virtual void onBodyPaint(Painter *) = 0;
+  virtual void onContentPaint(Painter *) = 0;
   /**
    * 绘制边框
    * 默认实现：
-   * 若图形被选中，则会在body周围绘制一个灰色的虚线边框和四个拖拽角图形
-   * 若图形被鼠标悬浮，则会在通过body矩形绘制一个灰色边框
+   * 若图形被选中，则会在以content rect作为基准，绘制一个灰色的虚线边框和四个拖拽角图形
+   * 若图形被鼠标悬浮，则会在以content rect作为基准，只绘制一个高亮虚线
    * 出上述状态外，不进行任何的绘制。
    */
   virtual void onBorderPaint(Painter *);
@@ -48,7 +48,7 @@ protected:
 public:
   /**
    * 绘图
-   * 默认实现：先 onBorderPaint ，再 onBodyPaint
+   * 默认实现：先 onBorderPaint ，再 onContentPaint
    */
   virtual void onPaint(Painter *);
   /**
@@ -61,10 +61,6 @@ public:
    * getter 图形是否被选中
    */
   [[nodiscard]] bool is_selected() const;
-  /**
-   * getter：当前图形的body
-   */
-  [[nodiscard]] Rect &body();
   /**
    * setter：设置是否处于选中状态
    */
@@ -86,13 +82,44 @@ public:
    */
   void setPenWidth(int);
 
+  /**
+   * getter: 开始点
+   */
+  [[nodiscard]] const Point &start_pos() const;
+  /**
+   * setter: 设置开始点
+   */
+  void setStartPos(const Point &);
+  /**
+   * getter: 获取结束点
+   */
+  [[nodiscard]] const Point &end_pos() const;
+  /**
+   * setter: 设置结束点
+   */
+  void setEndPos(const Point &);
+
+  /**
+   * getter: 通过startPos和endPos构造的content矩形
+   */
+  [[nodiscard]] Rect content_rect() const;
+
 protected:
   /**
-   * 每个图形都有一个基于Rect的body，
-   * 若是一个矩形图形，则body就可以作为这个矩形的形状
-   * 若是一个椭圆或圆，则body就是这个椭圆的外切
+   * 每一个图形理论上都会占据一个区域，
+   * 我们使用两个点（startPos和endPos）来表示这个图形所在区域的矩形
+   * 这个区域我们取名为：content_rect，内容矩形区
+   * 例如：
+   * 若图形是一个矩形，那么这两个点所组成的矩形就是这个矩形的位置
+   * 若图形是一个椭圆（圆是特殊椭圆），那么这两个点所组成的矩形就是这个椭圆的外切
+   * 若图形是一个线，那么我们可以直接使用 startPos_ 和 endPos_来代表这个线段
+   * 若图形是一个文字，那么我们使用这个内容矩形区作为文字填充的区域即可。
    */
-  Rect body_ = Rect(10, 10, 300, 300);
+  Point startPos_;
+  /**
+   * 结束点
+   */
+  Point endPos_;
   /**
    * 图形是否被选中
    */
