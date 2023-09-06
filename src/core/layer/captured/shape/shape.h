@@ -2,11 +2,12 @@
 #include "core/base/rect.h"
 #include "core/paint/color.h"
 #include "core/paint/brush.h"
+#include "core/base/point.h"
+#include "shape_config.h"
 
 namespace capi {
 
 class Painter;
-class Point;
 
 /**
  * 触碰区域枚举，checkTouchedArea返回
@@ -26,11 +27,9 @@ class Shape {
 protected:
   /**
    * 构造函数
-   * @param bc 画刷颜色
-   * @param pc 画笔颜色
-   * @param pw 画笔宽度
+   * @param config 图形绘制配置
    */
-  Shape(const Color &bc, const Color &pc, int pw);
+  explicit Shape(const ShapeConfig &config);
   /**
    * 纯虚函数
    * 每一个shape必须实现图形内容的渲染
@@ -69,18 +68,6 @@ public:
    * setter：设置是否处于被鼠标悬浮态
    */
   void setIsHover(bool);
-  /**
-   * setter：设置画刷颜色
-   */
-  void setBrushColor(const Color &);
-  /**
-   * setter：设置画笔颜色
-   */
-  void setPenColor(const Color &);
-  /**
-   * setter：设置笔线宽度
-   */
-  void setPenWidth(int);
 
   /**
    * getter: 开始点
@@ -129,16 +116,8 @@ protected:
    */
   bool is_hover_ = false;
   /**
-   * 画刷颜色
+   * 图形绘制配置
    */
-  Color brush_color_;
-  /**
-   * 画笔颜色
-   */
-  Color pen_color_;
-  /**
-   * 画笔线宽
-   */
-  int pen_width_;
+  ShapeConfig config_;
 };
 }

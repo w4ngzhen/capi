@@ -6,8 +6,7 @@
 
 namespace capi {
 
-Shape::Shape(const Color &bc, const Color &pc, int pw)
-    : brush_color_(bc), pen_color_(pc), pen_width_(pw) {
+Shape::Shape(const ShapeConfig &config) : config_(config) {
 }
 
 TouchedArea Shape::checkTouchedArea(const Point &mousePos) const {
@@ -51,15 +50,7 @@ void Shape::setIsHover(bool isHover) {
 void Shape::setIsSelected(bool isSelected) {
   is_selected_ = isSelected;
 }
-void Shape::setBrushColor(const Color &brush_color) {
-  brush_color_ = brush_color;
-}
-void Shape::setPenColor(const Color &pen_color) {
-  pen_color_ = pen_color;
-}
-void Shape::setPenWidth(int pen_width) {
-  pen_width_ = pen_width;
-}
+
 const Point &Shape::start_pos() const {
   return startPos_;
 }
