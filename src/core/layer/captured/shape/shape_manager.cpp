@@ -1,9 +1,10 @@
 #include "shape_manager.h"
 #include "core/base/point.h"
 #include "rect_shape.h"
+#include "core/utils/math_utils.h"
 namespace capi {
 ShapeManager::ShapeManager() : selected_shape_(nullptr) {}
-void ShapeManager::addShape(ShapeType type, ShapeConfig &config, bool selected) {
+void ShapeManager::addShape(ShapeType type, const ShapeConfig &config, bool selected) {
   Shape *shape = nullptr;
   switch (type) {
     case ShapeType::Rectangle:shape = new RectShape(config);
@@ -46,14 +47,14 @@ void ShapeManager::selectShape(const Point &mousePos) {
   }
 }
 void ShapeManager::hoverShape(const Point &mousePos) {
-  bool hasTouchedContent = false;
+  Shape *lastHoverSp = nullptr;
   for (auto &sp : this->shapes_) {
-    sp->setIsHover(false);
-    if (hasTouchedContent) {
-      continue;
-    }
-    if (sp->checkPart(mousePos) == ShapePart::Body) {
+    if (sp->checkPart(mousePos) == Body) {
+      if (lastHoverSp != nullptr) {
+        lastHoverSp->setIsHover(false);
+      }
       sp->setIsHover(true);
+      lastHoverSp = sp;
     }
   }
 }
@@ -99,22 +100,55 @@ void ShapeManager::moveSelectedShapeTo(int levelIdx) {
   shapes_.insert(shapes_.begin() + targetPos, selectedShape);
 }
 void ShapeManager::onMousePress(const Point &mousePos) {
-
-  if (selected_shape_ == nullptr) {
-    // 没有选择到任何的图形，就进行一遍查找
-    this->selectShape(mousePos);
+  Shape *tempSelectedSp = nullptr;
+  for (auto &sp : this->shapes_) {
+    auto part = sp->checkPart(mousePos);
+    // 如果点击到了Body或四个角，我们就认为点击到了该图形
+    if (part == Body || math_utils::checkIsCornerPart(part)) {
+      selected_shape_dragging_part_ = part;
+      // 点击到了某个图形的body，则该图形此刻要被选中，
+      // 但在选中前，需要先判断是不是已经有了被选中的图形
+      // 如有则先把前面被视为选中的图形置为false
+      if (tempSelectedSp != nullptr) {
+        tempSelectedSp->setIsSelected(false);
+      }
+      sp->setIsSelected(true);
+      tempSelectedSp = sp;
+    } else {
+      sp->setIsSelected(false);
+    }
+  }
+  if (tempSelectedSp == nullptr) {
+    // 没有点击到任何的图形，则清理成员变量 selected_shape_ 的状态，并置为nullptr
+    if (selected_shape_ != nullptr) {
+      selected_shape_->setIsSelected(false);
+      selected_shape_ = nullptr;
+    }
+  } else {
+    // 有点击到某个图形，那么这里不需要对 selected_shape_ 状态清理
+    // 因为上面遍历的流程已经做了，这里只需要赋值即可
+    selected_shape_ = tempSelectedSp;
   }
 }
 void ShapeManager::onMouseMove(const Point &mousePos) {
-  // 记录鼠标上一次位置，并更新当前位置
+
+  // 保存鼠标上一次位置，并记录更新当前位置
   auto lastMousePos = mouse_current_pos_;
   mouse_current_pos_ = mousePos;
 
+  /**
+   * 情况：不处于拖动态，或没有被选择的图形
+   * 不进行任何的拖动操作，只需要更新hover效果
+   */
   if (selected_shape_dragging_part_ == None || selected_shape_ == nullptr) {
-    // 不处于拖动态，或没有被选择的图形，不做任何事情
+    hoverShape(mousePos);
     return;
   }
-  // 有拖动场景，先计算拖动距离
+
+  /**
+   * 情况：且有被选择的图形，且正被拖动
+   */
+  // 先计算拖动距离
   int dx = mouse_current_pos_.x() - lastMousePos.x();
   int dy = mouse_current_pos_.y() - lastMousePos.y();
   // 拖动整个图形，则整体移动
@@ -122,13 +156,50 @@ void ShapeManager::onMouseMove(const Point &mousePos) {
     selected_shape_->movePosition(dx, dy);
     return;
   }
+  // 拖动四个角 或 “线”图形拖动开始、结束节点，就要处理resize
+  auto &sp = selected_shape_->start_pos();
+  auto &ep = selected_shape_->end_pos();
+  auto isLineShape = selected_shape_->is_line_shape();
+
+  //“线”图形，只能拖动开始、结束端点
+  if (isLineShape) {
+    if (selected_shape_dragging_part_ == LineStart) {
+      selected_shape_->setStartPos(Point(sp.x() + dx, sp.y() + dy));
+      return;
+    } else if (selected_shape_dragging_part_ == LineEnd) {
+      selected_shape_->setEndPos(Point(ep.x() + dx, ep.y() + dy));
+      return;
+    }
+    return;
+  }
+  // 处理非“线”图形，譬如矩形、圆等，它们以矩形作为承载，四个角都能移动
+  auto currContentRect = selected_shape_->content_rect();
+  if (math_utils::checkIsCornerPart(selected_shape_dragging_part_)) {
+    // 使用工具方法计算四个角的拖动
+    Rect targetRect;
+    auto calcOk = math_utils::calcCornerDragRect(
+        currContentRect,
+        dx, dy,
+        selected_shape_dragging_part_,
+        &targetRect);
+    if (!calcOk) {
+      return;
+    }
+    auto newStartPos = Point(targetRect.x(), targetRect.y());
+    auto newEndPos = Point(newStartPos.x() + targetRect.w(), newStartPos.y() + targetRect.h());
+    selected_shape_->setStartPos(newStartPos);
+    selected_shape_->setEndPos(newEndPos);
+  }
+
 }
 void ShapeManager::onMouseRelease(const Point &mousePos) {
   // 松开鼠标，则关闭拖动状态
   selected_shape_dragging_part_ = None;
 }
 void ShapeManager::onPaint(Painter *painter) {
-
+  for (auto &sp : shapes_) {
+    sp->onPaint(painter);
+  }
 }
 }
 

@@ -13,10 +13,20 @@ enum ShapeType {
 };
 
 class ShapeManager {
+public:
   /**
    * 构造函数
    */
   ShapeManager();
+  /**
+  * 增加指定类型，指定配置的图形
+  * @param selected 增加后是否立即选中
+  */
+  void addShape(ShapeType, const ShapeConfig &, bool selected);
+  /**
+  * 移除正在选择的图形
+  */
+  void deleteSelectedShape();
   /**
    * 鼠标按下
    */
@@ -34,15 +44,6 @@ class ShapeManager {
    */
   void onPaint(Painter *);
 private:
-  /**
- * 增加指定类型，指定配置的图形
- * @param selected 增加后是否立即选中
- */
-  void addShape(ShapeType, ShapeConfig &, bool selected);
-  /**
- * 移除正在选择的图形
- */
-  void deleteSelectedShape();
   /**
    * 使用鼠标点击选择某个图形
    * @param mousePos
@@ -65,12 +66,12 @@ private:
   /**
    * 存储当前正被选中的图形
    */
-  Shape *selected_shape_;
+  Shape *selected_shape_ = nullptr;
   /**
    * 描述当前被选择图形正被拖动的部分
    * 根据该值决定鼠标按下、移动等操作达到对图形拖动的效果
    */
-  ShapePart selected_shape_dragging_part_;
+  ShapePart selected_shape_dragging_part_ = None;
   /**
    * 记录鼠标按下位置
    */
