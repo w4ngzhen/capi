@@ -19,5 +19,12 @@ Rect getCircleRectByPoint(int x, int y, int radius);
  */
 bool posInEffectiveRect(const Point &pos, const Rect &rect,
                         int borderWidth);
+/**
+ * 将一个矩形扩大一定像素
+ * @param origin
+ * @param extendSize 延伸的尺寸，即整个矩形每一侧都扩大一定尺寸
+ * @return
+ */
+[[maybe_unused]] Rect enlargeRect(const Rect &origin, int extendSize);
 } // namespace capi::math_utils
 

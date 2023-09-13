@@ -1,6 +1,8 @@
 #include "core/base/point.h"
 #include "core/base/rect.h"
 #include "core/base/size.h"
+#include "math_utils.h"
+
 #include <cmath>
 
 namespace capi::math_utils {
@@ -31,6 +33,13 @@ bool posInEffectiveRect(const Point &pos, const Rect &rect,
   Rect _rect(rect.x() + borderWidth, rect.y() + borderWidth,
              rect.w() - borderWidth * 2, rect.h() - borderWidth * 2);
   return _rect.contains(pos);
+}
+Rect math_utils::enlargeRect(const Rect &origin, int extendSize) {
+  auto x = origin.x() - extendSize;
+  auto y = origin.y() - extendSize;
+  auto w = origin.w() + 2 * extendSize;
+  auto h = origin.h() + 2 * extendSize;
+  return {x, y, w, h};
 }
 } // namespace capi::math_utils
 
