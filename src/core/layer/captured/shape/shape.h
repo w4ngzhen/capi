@@ -106,11 +106,11 @@ protected:
    * 若图形是一个线，那么我们可以直接使用 startPos_ 和 endPos_来代表这个线段
    * 若图形是一个文字，那么我们使用这个内容矩形区作为文字填充的区域即可。
    */
-  Point startPos_;
+  Point startPos_ = Point(10, 10);
   /**
    * 结束点
    */
-  Point endPos_;
+  Point endPos_ = Point(100, 100);
   /**
    * 图形是否被选中
    */

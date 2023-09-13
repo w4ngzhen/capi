@@ -13,6 +13,54 @@ Shape::Shape(const ShapeConfig &config) : config_(config) {
 }
 
 ShapePart Shape::checkPart(const Point &mousePos) const {
+  // 首先检查是否点击到了body
+  if (math_utils::posInEffectiveRect(mousePos, this->content_rect(), 10)) {
+    return Body;
+  }
+  auto effectiveRadius = CORNER_CIRCLE_RADIUS * 2;
+  // 线图形场景，起始、终点检查
+  if (this->is_line_shape()) {
+    auto startRect = math_utils::getCircleRectByPoint(startPos_.x() - CORNER_OFFSET,
+                                                      startPos_.y() - CORNER_OFFSET,
+                                                      effectiveRadius);
+    if (startRect.contains(mousePos)) {
+      return LineStart;
+    }
+    auto endRect = math_utils::getCircleRectByPoint(endPos_.x() - CORNER_OFFSET,
+                                                    endPos_.y() - CORNER_OFFSET,
+                                                    effectiveRadius);
+    if (endRect.contains(mousePos)) {
+      return LineEnd;
+    }
+
+    return None;
+  }
+  // 非线图形的四个角检查
+  auto capRect = this->content_rect();
+  auto ltRect = math_utils::getCircleRectByPoint(capRect.x() - CORNER_OFFSET,
+                                                 capRect.y() - CORNER_OFFSET,
+                                                 effectiveRadius);
+  if (ltRect.contains(mousePos)) {
+    return LeftTop;
+  }
+  auto rtRect = math_utils::getCircleRectByPoint(
+      capRect.x() + capRect.w() + CORNER_OFFSET, capRect.y() - CORNER_OFFSET,
+      effectiveRadius);
+  if (rtRect.contains(mousePos)) {
+    return RightTop;
+  }
+  auto lbRect = math_utils::getCircleRectByPoint(
+      capRect.x() - CORNER_OFFSET, capRect.y() + capRect.h() + CORNER_OFFSET,
+      effectiveRadius);
+  if (lbRect.contains(mousePos)) {
+    return LeftBottom;
+  }
+  auto rbRect = math_utils::getCircleRectByPoint(
+      capRect.x() + capRect.w() + CORNER_OFFSET,
+      capRect.y() + capRect.h() + CORNER_OFFSET, effectiveRadius);
+  if (rbRect.contains(mousePos)) {
+    return RightBottom;
+  }
   return None;
 }
 
