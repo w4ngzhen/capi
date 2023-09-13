@@ -7,6 +7,7 @@ namespace capi {
  */
 class ShapeConfig {
 public:
+  ShapeConfig();
   /**
  * 构造函数
  * @param bc 画刷颜色

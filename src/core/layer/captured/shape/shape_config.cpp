@@ -1,7 +1,9 @@
 #include "shape_config.h"
 
 namespace capi {
+ShapeConfig::ShapeConfig() : ShapeConfig(Color(), Color(), 1) {
 
+}
 ShapeConfig::ShapeConfig(const Color &bc, const Color &pc, int pw) : brush_color_(bc), pen_color_(pc), pen_width_(pw) {
 }
 
