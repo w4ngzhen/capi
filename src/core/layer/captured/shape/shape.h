@@ -4,23 +4,11 @@
 #include "core/paint/brush.h"
 #include "core/base/point.h"
 #include "shape_config.h"
+#include "core/layer/captured/captured_layer_common.h"
 
 namespace capi {
 
 class Painter;
-
-/**
- * 触碰区域枚举，checkTouchedArea返回
- * 表明鼠标所在的位置，正处于当前图形的哪个区域
- */
-enum TouchedArea {
-  None = 0,
-  ContentRect,
-  LeftTop,
-  RightTop,
-  LeftBottom,
-  RightBottom,
-};
 
 class Shape {
 
@@ -55,7 +43,7 @@ public:
    * 点不到、点到图形本身（拖动会用到）、点到图像边框四个角（resize会用到）
    * @param mousePos
    */
-  [[nodiscard]] virtual TouchedArea checkTouchedArea(const Point &mousePos) const;
+  [[nodiscard]] virtual ShapePart checkPart(const Point &mousePos) const;
   /**
    * getter 图形是否被选中
    */
@@ -90,6 +78,13 @@ public:
    * getter: 通过startPos和endPos构造的content矩形
    */
   [[nodiscard]] Rect content_rect() const;
+
+  /**
+   * 移动图形的位置
+   * @param dx x的偏移量
+   * @param dy y的偏移量
+   */
+  void movePosition(int dx, int dy);
 
 protected:
   /**

@@ -9,7 +9,7 @@ namespace capi {
 Shape::Shape(const ShapeConfig &config) : config_(config) {
 }
 
-TouchedArea Shape::checkTouchedArea(const Point &mousePos) const {
+ShapePart Shape::checkPart(const Point &mousePos) const {
   return None;
 }
 
@@ -66,6 +66,14 @@ void Shape::setEndPos(const Point &end_pos) {
 Rect Shape::content_rect() const {
   auto contentRect = math_utils::calcRect(startPos_.x(), startPos_.y(), endPos_.x(), endPos_.y());
   return contentRect;
+}
+void Shape::movePosition(int dx, int dy) {
+  auto sp = this->startPos_;
+  auto ep = this->endPos_;
+  this->startPos_.setX(sp.x() + dx);
+  this->startPos_.setY(sp.y() + dy);
+  this->endPos_.setX(ep.x() + dx);
+  this->endPos_.setY(ep.y() + dy);
 }
 
 };

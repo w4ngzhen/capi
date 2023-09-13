@@ -3,6 +3,7 @@
 #include <vector>
 #include <functional>
 #include "shape.h"
+#include "core/global/global.h"
 
 namespace capi {
 
@@ -17,10 +18,27 @@ class ShapeManager {
    */
   ShapeManager();
   /**
-   * 增加一个图形
-   * @param selected 增加后是否立即选中
+   * 鼠标按下
    */
-  void addShape(bool selected);
+  void onMousePress(const Point &);
+  /**
+   * 鼠标移动
+   */
+  void onMouseMove(const Point &);
+  /**
+   * 鼠标释放
+   */
+  void onMouseRelease(const Point &);
+  /**
+   * 绘制
+   */
+  void onPaint(Painter *);
+private:
+  /**
+ * 增加指定类型，指定配置的图形
+ * @param selected 增加后是否立即选中
+ */
+  void addShape(ShapeType, ShapeConfig &, bool selected);
   /**
  * 移除正在选择的图形
  */
@@ -40,13 +58,6 @@ class ShapeManager {
    * @param levelIdx
    */
   void moveSelectedShapeTo(int levelIdx);
-
-  /**
-   * 设置当前正选中元素的内容矩形
-   */
-  void setSelectedShapeContentRect(const Point &start, const Point &end);
-
-private:
   /**
    * 已有的所有图形
    */
@@ -55,5 +66,18 @@ private:
    * 存储当前正被选中的图形
    */
   Shape *selected_shape_;
+  /**
+   * 描述当前被选择图形正被拖动的部分
+   * 根据该值决定鼠标按下、移动等操作达到对图形拖动的效果
+   */
+  ShapePart selected_shape_dragging_part_;
+  /**
+   * 记录鼠标按下位置
+   */
+  Point mouse_press_pos_;
+  /**
+   * 记录鼠标当前移动位置
+   */
+  Point mouse_current_pos_;
 };
 }

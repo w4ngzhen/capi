@@ -10,7 +10,7 @@ const int CORNER_OFFSET = 5;
 const int CORNER_CIRCLE_RADIUS = 3;
 
 CapturedLayer::CapturedLayer(const Size &canvasSize)
-    : Layer(canvasSize), opr_mode_(OperationMode::Normal),
+    : Layer(canvasSize), dragging_part_(ShapePart::None),
       captured_rect_(Rect()) {}
 
 void CapturedLayer::onPaint(Painter *painter) {
@@ -75,7 +75,7 @@ void CapturedLayer::onMousePress(const Point &pos) {
 
   if (math_utils::posInEffectiveRect(mousePos, this->captured_rect_, 10)) {
     // 在有效区域内点击，则拖动rect
-    this->opr_mode_ = DraggingArea;
+    this->dragging_part_ = Body;
     return;
   }
   // 否则，不属于区域拖动
@@ -86,56 +86,57 @@ void CapturedLayer::onMousePress(const Point &pos) {
                                                  capRect.y() - CORNER_OFFSET,
                                                  effectiveRadius);
   if (ltRect.contains(mousePos)) {
-    this->opr_mode_ = DraggingLeftTop;
+    this->dragging_part_ = LeftTop;
     return;
   }
   auto rtRect = math_utils::getCircleRectByPoint(
       capRect.x() + capRect.w() + CORNER_OFFSET, capRect.y() - CORNER_OFFSET,
       effectiveRadius);
   if (rtRect.contains(mousePos)) {
-    this->opr_mode_ = DraggingRightTop;
+    this->dragging_part_ = RightTop;
     return;
   }
   auto lbRect = math_utils::getCircleRectByPoint(
       capRect.x() - CORNER_OFFSET, capRect.y() + capRect.h() + CORNER_OFFSET,
       effectiveRadius);
   if (lbRect.contains(mousePos)) {
-    this->opr_mode_ = DraggingLeftBottom;
+    this->dragging_part_ = LeftBottom;
     return;
   }
   auto rbRect = math_utils::getCircleRectByPoint(
       capRect.x() + capRect.w() + CORNER_OFFSET,
       capRect.y() + capRect.h() + CORNER_OFFSET, effectiveRadius);
   if (rbRect.contains(mousePos)) {
-    this->opr_mode_ = DraggingRightBottom;
+    this->dragging_part_ = RightBottom;
     return;
   }
   // 否则也不是角落点击
-  this->opr_mode_ = Normal;
+  this->dragging_part_ = None;
 }
 void CapturedLayer::onMouseMove(const Point &pos) {
 
   auto lastPos = this->mouse_current_pos_;
-  auto currPos = pos;
-  int dx = currPos.x() - lastPos.x();
-  int dy = currPos.y() - lastPos.y();
-
   // 务必更新鼠标位置
   this->mouse_current_pos_ = pos;
 
-  if (this->opr_mode_ == OperationMode::Normal) {
+  // 计算偏移
+  int dx = pos.x() - lastPos.x();
+  int dy = pos.y() - lastPos.y();
+
+  if (this->dragging_part_ == None) {
     return;
   }
 
   Rect lastCapRect = this->captured_rect_;
-  if (this->opr_mode_ == OperationMode::DraggingArea) {
-    // 移动捕获区域
+
+  if (this->dragging_part_ == Body) {
+    // 移动整个区域
     this->captured_rect_ = Rect(lastCapRect.x() + dx, lastCapRect.y() + dy,
                                 lastCapRect.w(), lastCapRect.h());
-  } else if (this->opr_mode_ == DraggingLeftTop ||
-      this->opr_mode_ == DraggingRightTop ||
-      this->opr_mode_ == DraggingLeftBottom ||
-      this->opr_mode_ == DraggingRightBottom) {
+  } else if (this->dragging_part_ == LeftTop ||
+      this->dragging_part_ == RightTop ||
+      this->dragging_part_ == LeftBottom ||
+      this->dragging_part_ == RightBottom) {
     // 4个角拖动
     auto lt = Point(lastCapRect.x(), lastCapRect.y());
     auto rt = Point(lt.x() + lastCapRect.w(), lt.y());
@@ -143,18 +144,18 @@ void CapturedLayer::onMouseMove(const Point &pos) {
     auto rb = Point(rt.x(), lb.y());
     Point *draggingCor; // 正在拖动的角
     Point *fixedCor;    // 正在拖动角的对角固定不动
-    switch (this->opr_mode_) {
-      case DraggingLeftTop:draggingCor = &lt;
+    switch (this->dragging_part_) {
+      case LeftTop:draggingCor = &lt;
         fixedCor = &rb;
         break;
-      case DraggingRightTop:draggingCor = &rt;
+      case RightTop:draggingCor = &rt;
         fixedCor = &lb;
         break;
-      case DraggingLeftBottom:draggingCor = &lb;
+      case LeftBottom:draggingCor = &lb;
         fixedCor = &rt;
         break;
-      case DraggingRightBottom:
-      default:draggingCor = &rb;
+      case RightBottom:
+      default: draggingCor = &rb;
         fixedCor = &lt;
         break;
     }
@@ -165,17 +166,13 @@ void CapturedLayer::onMouseMove(const Point &pos) {
   }
 }
 void CapturedLayer::onMouseRelease(const Point &pos) {
-  switch (this->opr_mode_) {
-    case Normal:
-    case DraggingArea:
-    case DraggingLeftTop:
-    case DraggingRightTop:
-    case DraggingLeftBottom:
-    case DraggingRightBottom:this->opr_mode_ = Normal;
-      break;
-    case DrawingRect:
-      // 用户绘制矩形以后，松开鼠标，回到启用绘制矩形状态
-      this->opr_mode_ = EnableDrawRect;
+  switch (this->dragging_part_) {
+    case None:
+    case Body:
+    case LeftTop:
+    case RightTop:
+    case LeftBottom:
+    case RightBottom:this->dragging_part_ = None;
       break;
     default:break;
   }
@@ -197,6 +194,7 @@ void CapturedLayer::onKeyPress(Key k, KeyboardModifier m) {
 }
 void CapturedLayer::setCapturedRect(const Rect &rect) {
   this->captured_rect_ = rect;
+  this->dragging_part_ = None;
 }
 
 void CapturedLayer::setLayerEventOnCapturedLayerImageSaveCb(LayerEventOnCapturedLayerImageSaveCb cb) {

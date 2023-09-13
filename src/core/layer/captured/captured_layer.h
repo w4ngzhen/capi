@@ -5,8 +5,8 @@
 #include "core/paint/image.h"
 #include "core/paint/painter.h"
 #include "../layer.h"
-#include "operation_mode.h"
 #include "core/event/captured_image_save_event.h"
+#include "captured_layer_common.h"
 
 namespace capi {
 
@@ -37,8 +37,17 @@ public:
   void setLayerEventOnCapturedLayerImageSaveCb(LayerEventOnCapturedLayerImageSaveCb cb);
 
 private:
+  /**
+   * 捕获的区域
+   */
   Rect captured_rect_;
-  OperationMode opr_mode_;
+  /**
+   * 描述当前正在拖拽 captured_rect_ 哪个位置
+   */
+  ShapePart dragging_part_;
+  /**
+   * 捕获完成、处理后的保存回调
+   */
   LayerEventOnCapturedLayerImageSaveCb layer_event_on_captured_layer_image_save_cb_;
 };
 } // namespace capi

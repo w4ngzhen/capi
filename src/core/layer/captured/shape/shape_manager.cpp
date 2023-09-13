@@ -1,9 +1,23 @@
 #include "shape_manager.h"
 #include "core/base/point.h"
+#include "rect_shape.h"
 namespace capi {
 ShapeManager::ShapeManager() : selected_shape_(nullptr) {}
-void ShapeManager::addShape(bool selected) {
-
+void ShapeManager::addShape(ShapeType type, ShapeConfig &config, bool selected) {
+  Shape *shape = nullptr;
+  switch (type) {
+    case ShapeType::Rectangle:shape = new RectShape(config);
+    case ShapeType::Ellipse:
+    default:break;
+  }
+  if (shape == nullptr) {
+    return;
+  }
+  if (selected) {
+    shape->setIsSelected(true);
+    selected_shape_ = shape;
+  }
+  shapes_.push_back(shape);
 }
 void ShapeManager::deleteSelectedShape() {
   auto itr = std::find_if(
@@ -25,7 +39,7 @@ void ShapeManager::selectShape(const Point &mousePos) {
     if (hasTouchedContent) {
       continue;
     }
-    if (sp->checkTouchedArea(mousePos) == TouchedArea::ContentRect) {
+    if (sp->checkPart(mousePos) == ShapePart::Body) {
       sp->setIsSelected(true);
       selected_shape_ = sp;
     }
@@ -38,7 +52,7 @@ void ShapeManager::hoverShape(const Point &mousePos) {
     if (hasTouchedContent) {
       continue;
     }
-    if (sp->checkTouchedArea(mousePos) == TouchedArea::ContentRect) {
+    if (sp->checkPart(mousePos) == ShapePart::Body) {
       sp->setIsHover(true);
     }
   }
@@ -84,12 +98,37 @@ void ShapeManager::moveSelectedShapeTo(int levelIdx) {
   shapes_.erase(shapes_.begin() + selectedIdx);
   shapes_.insert(shapes_.begin() + targetPos, selectedShape);
 }
-void ShapeManager::setSelectedShapeContentRect(const Point &start, const Point &end) {
+void ShapeManager::onMousePress(const Point &mousePos) {
+
   if (selected_shape_ == nullptr) {
+    // 没有选择到任何的图形，就进行一遍查找
+    this->selectShape(mousePos);
+  }
+}
+void ShapeManager::onMouseMove(const Point &mousePos) {
+  // 记录鼠标上一次位置，并更新当前位置
+  auto lastMousePos = mouse_current_pos_;
+  mouse_current_pos_ = mousePos;
+
+  if (selected_shape_dragging_part_ == None || selected_shape_ == nullptr) {
+    // 不处于拖动态，或没有被选择的图形，不做任何事情
     return;
   }
-  selected_shape_->setStartPos(start);
-  selected_shape_->setEndPos(end);
+  // 有拖动场景，先计算拖动距离
+  int dx = mouse_current_pos_.x() - lastMousePos.x();
+  int dy = mouse_current_pos_.y() - lastMousePos.y();
+  // 拖动整个图形，则整体移动
+  if (selected_shape_dragging_part_ == Body) {
+    selected_shape_->movePosition(dx, dy);
+    return;
+  }
+}
+void ShapeManager::onMouseRelease(const Point &mousePos) {
+  // 松开鼠标，则关闭拖动状态
+  selected_shape_dragging_part_ = None;
+}
+void ShapeManager::onPaint(Painter *painter) {
+
 }
 }
 
