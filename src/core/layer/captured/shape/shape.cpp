@@ -4,6 +4,9 @@
 #include "core/utils/math_utils.h"
 #include "shape.h"
 
+const int CORNER_OFFSET = 5;
+const int CORNER_CIRCLE_RADIUS = 3;
+
 namespace capi {
 
 Shape::Shape(const ShapeConfig &config) : config_(config) {
@@ -24,17 +27,42 @@ void Shape::onBorderPaint(Painter *painter) {
     return;
   }
   painter->save();
-  // 绘制边框
-  Pen pen(1, Color(200, 200, 200), PenStyle::DashLine);
   if (this->is_selected_) {
-    pen.setColor(Color(200, 200, 200));
-  } else {
-    pen.setColor(Color(100, 100, 100));
-  }
-  painter->setPen(pen);
-  painter->drawRect(this->content_rect());
-  if (this->is_selected_) {
-    // todo 若选中，还需绘制四个角
+    // 原本content矩形
+    auto contentR = math_utils::enlargeRect(this->content_rect(), 5);
+    // 我们绘制边框的时候需要比实际大一点，效果会更好
+
+    // 绘制边框
+    Pen pen(1, Color(200, 200, 200), PenStyle::DashLine);
+    painter->setPen(pen);
+    painter->drawRect(contentR);
+    // 如果是非线图形，支持resize，此时需要绘制四个角，允许用户resize图形
+    if (!is_line_shape()) {
+      int rX = contentR.x();
+      int rY = contentR.y();
+      int rW = contentR.w();
+      int rH = contentR.h();
+      const auto lt = math_utils::getCircleRectByPoint(
+          rX - CORNER_OFFSET, rY - CORNER_OFFSET, CORNER_CIRCLE_RADIUS);
+      const auto rt = math_utils::getCircleRectByPoint(
+          rX + rW + CORNER_OFFSET, rY - CORNER_OFFSET, CORNER_CIRCLE_RADIUS);
+      const auto lb = math_utils::getCircleRectByPoint(
+          rX - CORNER_OFFSET, rY + rH + CORNER_OFFSET, CORNER_CIRCLE_RADIUS);
+      const auto rb = math_utils::getCircleRectByPoint(
+          rX + rW + CORNER_OFFSET, rY + rH + CORNER_OFFSET, CORNER_CIRCLE_RADIUS);
+      // 先填充圆
+      painter->setBrush(Brush(Color(0, 111, 222)));
+      painter->drawEllipse(lt);
+      painter->drawEllipse(rt);
+      painter->drawEllipse(lb);
+      painter->drawEllipse(rb);
+      // 在绘制圆的边框
+      painter->setPen(Pen(Color(255, 255, 255)));
+      painter->drawEllipse(lt);
+      painter->drawEllipse(rt);
+      painter->drawEllipse(lb);
+      painter->drawEllipse(rb);
+    }
   }
   painter->restore();
 }
@@ -74,6 +102,9 @@ void Shape::movePosition(int dx, int dy) {
   this->startPos_.setY(sp.y() + dy);
   this->endPos_.setX(ep.x() + dx);
   this->endPos_.setY(ep.y() + dy);
+}
+const bool Shape::is_line_shape() const {
+  return false;
 }
 
 };
