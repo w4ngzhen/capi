@@ -1,6 +1,7 @@
 #pragma once
 
 #include "core/global/global.h"
+#include "core/layer/captured/captured_layer_common.h"
 
 namespace capi::math_utils {
 
@@ -25,6 +26,22 @@ bool posInEffectiveRect(const Point &pos, const Rect &rect,
  * @param extendSize 延伸的尺寸，即整个矩形每一侧都扩大一定尺寸
  * @return
  */
-[[maybe_unused]] Rect enlargeRect(const Rect &origin, int extendSize);
+Rect enlargeRect(const Rect &origin, int extendSize);
+/**
+ * 根据原始矩形，以及拖动偏移值，拖动的对应角位置，计算对应拖动后的矩形数据
+ * @param origin
+ * @param dx
+ * @param dy
+ * @param part
+ * @param targetRect 结果矩形指针，需要外部给入
+ * @return false，计算失败，true，计算成功
+ */
+bool calcCornerDragRect(const Rect &originRect, int dx, int dy, ShapePart part, Rect *targetRect);
+/**
+ * 封装逻辑判断是否是四个角部分
+ * @param part
+ * @return
+ */
+bool checkIsCornerPart(ShapePart part);
 } // namespace capi::math_utils
 
