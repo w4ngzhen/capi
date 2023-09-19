@@ -10,11 +10,12 @@ namespace capi::math_utils {
  */
 Rect calcRect(int x1, int y1, int x2, int y2);
 /**
- * 根据圆心坐标得到指定半径的圆的矩形
+ * 根据坐标得到指定厚度的正方形
  * @param x
  * @param y
+ * @param size 最终的正方形宽度为该 size ，由于存在中心1个像素，建议奇数值
  */
-Rect getCircleRectByPoint(int x, int y, int radius);
+Rect getSquareByPoint(int x, int y, int size);
 /**
  * @brief 判断某点是否出于Rect的有效范围内
  */

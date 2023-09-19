@@ -7,7 +7,7 @@
 namespace capi {
 
 const int CORNER_OFFSET = 5;
-const int CORNER_CIRCLE_RADIUS = 3;
+const int CORNER_CIRCLE_RADIUS = 7;
 
 CapturedLayer::CapturedLayer(const Size &canvasSize)
     : Layer(canvasSize), dragging_part_(ShapePart::None),
@@ -44,13 +44,13 @@ void CapturedLayer::onPaint(Painter *painter) {
   painter->drawRect(this->captured_rect_);
 
   // 2. 绘制四个角的圆点
-  const auto lt = math_utils::getCircleRectByPoint(
+  const auto lt = math_utils::getSquareByPoint(
       rX - CORNER_OFFSET, rY - CORNER_OFFSET, CORNER_CIRCLE_RADIUS);
-  const auto rt = math_utils::getCircleRectByPoint(
+  const auto rt = math_utils::getSquareByPoint(
       rX + rW + CORNER_OFFSET, rY - CORNER_OFFSET, CORNER_CIRCLE_RADIUS);
-  const auto lb = math_utils::getCircleRectByPoint(
+  const auto lb = math_utils::getSquareByPoint(
       rX - CORNER_OFFSET, rY + rH + CORNER_OFFSET, CORNER_CIRCLE_RADIUS);
-  const auto rb = math_utils::getCircleRectByPoint(
+  const auto rb = math_utils::getSquareByPoint(
       rX + rW + CORNER_OFFSET, rY + rH + CORNER_OFFSET, CORNER_CIRCLE_RADIUS);
   // 先填充圆
   painter->setBrush(Brush(color));
@@ -82,28 +82,28 @@ void CapturedLayer::onMousePress(const Point &pos) {
   // 开始判断是否点击到了某个角
   auto effectiveRadius = CORNER_CIRCLE_RADIUS * 2;
   auto capRect = this->captured_rect_;
-  auto ltRect = math_utils::getCircleRectByPoint(capRect.x() - CORNER_OFFSET,
-                                                 capRect.y() - CORNER_OFFSET,
-                                                 effectiveRadius);
+  auto ltRect = math_utils::getSquareByPoint(capRect.x() - CORNER_OFFSET,
+                                             capRect.y() - CORNER_OFFSET,
+                                             effectiveRadius);
   if (ltRect.contains(mousePos)) {
     this->dragging_part_ = LeftTop;
     return;
   }
-  auto rtRect = math_utils::getCircleRectByPoint(
+  auto rtRect = math_utils::getSquareByPoint(
       capRect.x() + capRect.w() + CORNER_OFFSET, capRect.y() - CORNER_OFFSET,
       effectiveRadius);
   if (rtRect.contains(mousePos)) {
     this->dragging_part_ = RightTop;
     return;
   }
-  auto lbRect = math_utils::getCircleRectByPoint(
+  auto lbRect = math_utils::getSquareByPoint(
       capRect.x() - CORNER_OFFSET, capRect.y() + capRect.h() + CORNER_OFFSET,
       effectiveRadius);
   if (lbRect.contains(mousePos)) {
     this->dragging_part_ = LeftBottom;
     return;
   }
-  auto rbRect = math_utils::getCircleRectByPoint(
+  auto rbRect = math_utils::getSquareByPoint(
       capRect.x() + capRect.w() + CORNER_OFFSET,
       capRect.y() + capRect.h() + CORNER_OFFSET, effectiveRadius);
   if (rbRect.contains(mousePos)) {
@@ -133,36 +133,17 @@ void CapturedLayer::onMouseMove(const Point &pos) {
     // 移动整个区域
     this->captured_rect_ = Rect(lastCapRect.x() + dx, lastCapRect.y() + dy,
                                 lastCapRect.w(), lastCapRect.h());
-  } else if (this->dragging_part_ == LeftTop ||
-      this->dragging_part_ == RightTop ||
-      this->dragging_part_ == LeftBottom ||
-      this->dragging_part_ == RightBottom) {
-    // 4个角拖动
-    auto lt = Point(lastCapRect.x(), lastCapRect.y());
-    auto rt = Point(lt.x() + lastCapRect.w(), lt.y());
-    auto lb = Point(lt.x(), lt.y() + lastCapRect.h());
-    auto rb = Point(rt.x(), lb.y());
-    Point *draggingCor; // 正在拖动的角
-    Point *fixedCor;    // 正在拖动角的对角固定不动
-    switch (this->dragging_part_) {
-      case LeftTop:draggingCor = &lt;
-        fixedCor = &rb;
-        break;
-      case RightTop:draggingCor = &rt;
-        fixedCor = &lb;
-        break;
-      case LeftBottom:draggingCor = &lb;
-        fixedCor = &rt;
-        break;
-      case RightBottom:
-      default: draggingCor = &rb;
-        fixedCor = &lt;
-        break;
+    return;
+  }
+  // 在拖动四个角
+  if (math_utils::checkIsCornerPart(this->dragging_part_)) {
+    // 使用工具方法计算四个角的拖动
+    Rect targetRect;
+    auto calcOk = math_utils::calcCornerDragRect(lastCapRect, dx, dy, this->dragging_part_, &targetRect);
+    if (!calcOk) {
+      return;
     }
-    Rect rect =
-        math_utils::calcRect(draggingCor->x() + dx, draggingCor->y() + dy,
-                             fixedCor->x(), fixedCor->y());
-    this->captured_rect_ = rect;
+    this->captured_rect_ = targetRect;
   }
 }
 void CapturedLayer::onMouseRelease(const Point &pos) {

@@ -58,9 +58,11 @@ public:
   void setIsHover(bool);
   /**
    * getter: 是否线图形
+   * 对于图形有一个特例：线（箭头等形式）
+   * 对于线，会有相关不一样的操作，例如无法resize，只能拖动开始、结束点
    * 默认实现return false，如果是“线”类图形，需要单独override，返回true
    */
-  virtual const bool is_line_shape() const;
+  [[nodiscard]] virtual bool is_line_shape() const;
   /**
    * getter: 开始点
    */
@@ -91,11 +93,6 @@ public:
   void movePosition(int dx, int dy);
 
 protected:
-  /**
-   * 对于图形有一个特例：线（箭头等形式）
-   * 对于线，会有相关不一样的操作，例如无法resize，只能拖动开始、结束点
-   */
-  bool is_line_shape_;
   /**
    * 每一个图形理论上都会占据一个区域，
    * 我们使用两个点（startPos和endPos）来表示这个图形所在区域的矩形

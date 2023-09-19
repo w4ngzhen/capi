@@ -16,10 +16,11 @@ Rect calcRect(int x1, int y1, int x2, int y2) {
   return {x, y, w, h};
 }
 
-Rect getCircleRectByPoint(int x, int y, int radius) {
-  int left = x - radius;
-  int top = y - radius;
-  int w = radius * 2 + 1;
+Rect getSquareByPoint(int x, int y, int size) {
+  int thickness = (size - 1) / 2;
+  int left = x - thickness;
+  int top = y - thickness;
+  int w = size;
   int h = w;
   return {left, top, w, h};
 }
