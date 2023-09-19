@@ -14,7 +14,7 @@ public:
  * @param pc 画笔颜色
  * @param pw 画笔宽度
  */
-  ShapeConfig(const Color &bc, const Color &pc, int pw);
+  ShapeConfig(const Color &bc, const Color &pc, int pw, bool isFilled);
   /**
    * 默认构造函数
    */
@@ -60,6 +60,13 @@ private:
    * 画笔线宽
    */
   int pen_width_;
+  /**
+   * 是否填充
+   */
+  bool is_filled_;
+public:
+  bool is_filled() const;
+  void setIsFilled(bool is_filled);
 };
 }
 
