@@ -1,12 +1,13 @@
 #pragma once
 
-#include "core/base/point.h"
-#include "core/base/size.h"
-#include "core/paint/image.h"
-#include "core/paint/painter.h"
-#include "../layer.h"
+#include <vector>
+#include <functional>
+#include "core/global/global.h"
+#include "core/layer/layer.h"
 #include "core/event/captured_image_save_event.h"
+#include "core/layer/captured/shape/shape_config.h"
 #include "captured_layer_common.h"
+#include "core/layer/captured/shape/shape.h"
 
 namespace capi {
 
@@ -17,37 +18,77 @@ namespace capi {
 typedef std::function<void(const CapturedImageSaveEvent *)>
     LayerEventOnCapturedLayerImageSaveCb;
 
+enum ShapeType {
+  Rectangle = 0,
+  Ellipse
+};
+
 class CapturedLayer : public Layer {
-
 public:
-  explicit CapturedLayer(const Size &);
+  /**
+   * 构造函数
+   */
+  explicit CapturedLayer(const Size &canvasSize);
+  /**
+   * 图形管理器状态初始化，可反复调用，主要作用为状态重置
+   * 需要传入最新的被捕获的矩形区域信息，当前鼠标所在位置
+   */
+  void init(const Rect &capturedRect);
+  /**
+  * 增加指定类型，指定配置的图形
+  * @param selected 增加后是否立即选中
+  */
+  void addShape(ShapeType, const ShapeConfig &, bool selected);
+  /**
+  * 移除正在选择的图形
+  */
+  void deleteSelectedShape();
   void onPaint(Painter *) override;
-
   void onMousePress(const Point &) override;
   void onMouseMove(const Point &) override;
   void onMouseRelease(const Point &) override;
   void onMouseDoubleClick(const Point &) override;
   void onKeyPress(Key, KeyboardModifier) override;
-
-  void setCapturedRect(const Rect &);
-
   /**
-   * 设置图片捕获处理后的保存事件
-   */
+  * 设置图片捕获处理后的保存事件
+  */
   void setLayerEventOnCapturedLayerImageSaveCb(LayerEventOnCapturedLayerImageSaveCb cb);
-
 private:
   /**
-   * 捕获的区域
+   * 使用鼠标点击选择某个图形
+   * @param mousePos
    */
-  Rect captured_rect_;
+  void selectShape(const Point &mousePos);
   /**
-   * 描述当前正在拖拽 captured_rect_ 哪个位置
+   * 使用鼠标悬浮到某个图形
+   * @param mousePos
    */
-  ShapePart dragging_part_;
+  void hoverShape(const Point &mousePos);
   /**
-   * 捕获完成、处理后的保存回调
+   * 将正在选择的图形移动到指定图形
+   * 注意：
+   * CapturedShape 始终处于图层索引为0的位置
+   * 无法移动 CapturedShape，以及将任何其他的图形移动到 CapturedShape 的下层
+   *
+   * @param levelIdx
    */
-  LayerEventOnCapturedLayerImageSaveCb layer_event_on_captured_layer_image_save_cb_;
+  void moveSelectedShapeToTargetLevel(int levelIdx);
+  /**
+   * 已有的所有图形
+   */
+  std::vector<Shape *> shapes_;
+  /**
+   * 存储当前正被选中的图形
+   */
+  Shape *selected_shape_ = nullptr;
+  /**
+   * 描述当前被选择图形正被拖动的部分
+   * 根据该值决定鼠标按下、移动等操作达到对图形拖动的效果
+   */
+  ShapePart selected_shape_dragging_part_ = None;
+  /**
+  * 捕获完成、处理后的保存回调
+  */
+  LayerEventOnCapturedLayerImageSaveCb layer_event_on_captured_layer_image_save_cb_ = nullptr;
 };
-} // namespace capi
+}

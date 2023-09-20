@@ -128,10 +128,10 @@ void Canvas::handleLayerEventOnCapturingLayerFinish(bool sizeValid,
                                                     const Rect &capturedRect) {
   if (!sizeValid) {
     this->status_ = CanvasStatus::Explore;
-    this->captured_layer_->setCapturedRect(Rect());
+    this->captured_layer_->init(Rect());
   } else {
     this->status_ = CanvasStatus::Captured;
-    this->captured_layer_->setCapturedRect(capturedRect);
+    this->captured_layer_->init(capturedRect);
   }
 }
 
