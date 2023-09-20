@@ -13,6 +13,7 @@ public:
  * @param bc 画刷颜色
  * @param pc 画笔颜色
  * @param pw 画笔宽度
+ * @param isFilled 图形是否填充
  */
   ShapeConfig(const Color &bc, const Color &pc, int pw, bool isFilled);
   /**
@@ -31,7 +32,11 @@ public:
    * setter：设置笔线宽度
    */
   void setPenWidth(int);
-
+  /**
+   * setter: 设置图形是否填充
+   * @param is_filled
+   */
+  void setIsFilled(bool is_filled);
   /**
    * getter: 画刷颜色
    */
@@ -46,6 +51,12 @@ public:
    * 画笔线条宽度
    */
   [[nodiscard]] int pen_width() const;
+
+  /**
+   * getter: 图形是否填充
+   * @return
+   */
+  [[nodiscard]] bool is_filled() const;
 
 private:
   /**
@@ -64,9 +75,6 @@ private:
    * 是否填充
    */
   bool is_filled_;
-public:
-  bool is_filled() const;
-  void setIsFilled(bool is_filled);
 };
 }
 
