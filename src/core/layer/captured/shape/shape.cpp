@@ -13,6 +13,8 @@ namespace capi {
 Shape::Shape(const ShapeConfig &config) : config_(config) {
 }
 
+Shape::Shape() : config_(ShapeConfig()) {}
+
 ShapePart Shape::checkPart(const Point &mousePos) const {
   // 首先检查是否点击到了body
   if (math_utils::posInEffectiveRect(mousePos, this->content_rect(), 10)) {
@@ -103,7 +105,7 @@ void Shape::onBorderPaint(Painter *painter) {
       corners.push_back(lb);
       corners.push_back(rb);
     }
-    // 得到待绘制的矩形列表后，进行绘制操作
+    // 得到待绘制的锚点列表后，进行绘制操作
     for (const auto &item : corners) {
       // 先填充正方形
       painter->setBrush(Brush(Color(0, 111, 222)));
@@ -155,5 +157,6 @@ void Shape::movePosition(int dx, int dy) {
 bool Shape::is_line_shape() const {
   return false;
 }
+Shape::~Shape() = default;
 
 };

@@ -19,6 +19,10 @@ protected:
    */
   explicit Shape(const ShapeConfig &config);
   /**
+   * 默认配置
+   */
+  explicit Shape();
+  /**
    * 纯虚函数
    * 每一个shape必须实现图形内容的渲染
    */
@@ -33,6 +37,12 @@ protected:
   virtual void onBorderPaint(Painter *);
 
 public:
+  /**
+   * 每一个Shape子类都需要实现type getter
+   * 一般用于某些场景下，对某个Shape的具体子类要进行特别处理的场景
+   * 0xFF01 - 0xFFFF 为保留类型编号
+   */
+  virtual int type() = 0;
   /**
    * 绘图
    * 默认实现：先 onBorderPaint ，再 onContentPaint
@@ -91,6 +101,11 @@ public:
    * @param dy y的偏移量
    */
   void movePosition(int dx, int dy);
+
+  /**
+   * 析构函数
+   */
+  virtual ~Shape();
 
 protected:
   /**

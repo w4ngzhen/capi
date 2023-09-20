@@ -19,6 +19,9 @@ void RectShape::onContentPaint(Painter *painter) {
   painter->drawRect(contentRect);
   painter->restore();
 }
+int RectShape::type() {
+  return 0xF001;
+}
 
 }
 
