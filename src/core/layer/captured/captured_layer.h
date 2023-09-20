@@ -30,10 +30,9 @@ public:
    */
   explicit CapturedLayer(const Size &canvasSize);
   /**
-   * 图形管理器状态初始化，可反复调用，主要作用为状态重置
-   * 需要传入最新的被捕获的矩形区域信息，当前鼠标所在位置
+   * 设置捕获矩形信息给内部的CapturedShape（如有）
    */
-  void init(const Rect &capturedRect);
+  void setCapturedRect(const Rect &capturedRect);
   /**
   * 增加指定类型，指定配置的图形
   * @param selected 增加后是否立即选中
@@ -43,12 +42,17 @@ public:
   * 移除正在选择的图形
   */
   void deleteSelectedShape();
+  /**
+ * 获取CapturedShape
+ */
+  Shape *getCapturedShape();
   void onPaint(Painter *) override;
   void onMousePress(const Point &) override;
   void onMouseMove(const Point &) override;
   void onMouseRelease(const Point &) override;
   void onMouseDoubleClick(const Point &) override;
   void onKeyPress(Key, KeyboardModifier) override;
+  void onCanvasResize(const Size &size) override;
   /**
   * 设置图片捕获处理后的保存事件
   */

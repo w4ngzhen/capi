@@ -4,27 +4,26 @@
 #include "core/layer/captured/shape/captured_shape.h"
 #include "core/layer/captured/shape/rect_shape.h"
 namespace capi {
-CapturedLayer::CapturedLayer(const Size &canvasSize) : Layer(canvasSize), selected_shape_(nullptr) {}
-
-void CapturedLayer::init(const Rect &capturedRect) {
-  // 将每一个元素进行释放
-  for (const auto &item : shapes_) {
-    delete item;
-  }
-  // 清空集合
-  shapes_.clear();
-  // 重置各种状态
+CapturedLayer::CapturedLayer(const Size &canvasSize) : Layer(canvasSize) {
   selected_shape_dragging_part_ = None;
   mouse_press_pos_ = Point();
-  // 根据被捕获的矩形信息，构造一个CapturedShape，设置该Shape的矩形数据并默认选中
+  // 根据被捕获的矩形信息，构造一个CapturedShape，默认选中
   auto capSp = new CapturedShape();
-  auto startPos = capturedRect.pos();
-  auto endPos = Point(capturedRect.x() + capturedRect.w(),
-                      capturedRect.y() + capturedRect.h());
-  capSp->setStartPos(startPos);
-  capSp->setEndPos(endPos);
   shapes_.push_back(capSp);
-  selected_shape_ = capSp;
+}
+
+void CapturedLayer::setCapturedRect(const Rect &capturedRect) {
+  auto capSp = getCapturedShape();
+  if (capSp != nullptr) {
+    auto startPos = capturedRect.pos();
+    auto endPos = Point(capturedRect.x() + capturedRect.w(),
+                        capturedRect.y() + capturedRect.h());
+    capSp->setStartPos(startPos);
+    capSp->setEndPos(endPos);
+    // 并默认选中
+    capSp->setIsSelected(true);
+    selected_shape_ = capSp;
+  }
 }
 
 void CapturedLayer::addShape(ShapeType type, const ShapeConfig &config, bool selected) {
@@ -243,12 +242,11 @@ void CapturedLayer::onMouseDoubleClick(const Point &) {
   // 准备构造captured canvas_image 保存事件
   // 暂时只支持保存到粘贴板
   // 从集合中找到CapturedShape，获取该Shape的矩形数据
-  auto capSp = std::find_if(
-      shapes_.begin(),
-      shapes_.end(),
-      [](Shape *sp) { return sp->type() == 0xFFFF; }
-  );
-  CapturedImageSaveEvent ev((*capSp)->content_rect(), SaveMode::Clipboard);
+  auto capSp = getCapturedShape();
+  if (capSp == nullptr) {
+    return;
+  }
+  CapturedImageSaveEvent ev(capSp->content_rect(), SaveMode::Clipboard);
   this->layer_event_on_captured_layer_image_save_cb_(&ev);
 }
 
@@ -265,6 +263,11 @@ void CapturedLayer::onKeyPress(Key k, KeyboardModifier m) {
     this->layer_event_on_quit_current_layer_cb_();
     return;
   }
+  if (k == Key::Key_Delete) {
+    // 删除操作
+    deleteSelectedShape();
+    return;
+  }
   if (k == Key::Key_A) {
     addShape(Rectangle, ShapeConfig(), true);
     return;
@@ -277,6 +280,26 @@ void CapturedLayer::onKeyPress(Key k, KeyboardModifier m) {
 
 void CapturedLayer::setLayerEventOnCapturedLayerImageSaveCb(LayerEventOnCapturedLayerImageSaveCb cb) {
   this->layer_event_on_captured_layer_image_save_cb_ = std::move(cb);
+}
+void CapturedLayer::onCanvasResize(const Size &size) {
+  Layer::onCanvasResize(size);
+  auto capSp = getCapturedShape();
+  if (capSp != nullptr) {
+    dynamic_cast<CapturedShape *>(capSp)->setCanvasSize(size);
+  }
+}
+Shape *CapturedLayer::getCapturedShape() {
+  auto capSpItr = std::find_if(
+      shapes_.begin(),
+      shapes_.end(),
+      [](Shape *sp) {
+        return sp->type() == 0xFFFF;
+      }
+  );
+  if (capSpItr != shapes_.end()) {
+    return *capSpItr;
+  }
+  return nullptr;
 }
 
 }
