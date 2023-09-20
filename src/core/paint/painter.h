@@ -2,7 +2,7 @@
 
 #include "core/global/global.h"
 #include "core/paint/image.h"
-#include <iostream>
+#include <string>
 
 namespace capi {
 

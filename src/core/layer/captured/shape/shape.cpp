@@ -5,9 +5,6 @@
 #include "shape.h"
 #include <vector>
 
-const int CORNER_OFFSET = 5;
-const int CORNER_SQUARE_SIZE = 7;
-
 namespace capi {
 
 Shape::Shape(const ShapeConfig &config) : config_(config) {
@@ -20,17 +17,17 @@ ShapePart Shape::checkPart(const Point &mousePos) const {
   if (math_utils::posInEffectiveRect(mousePos, this->content_rect(), 10)) {
     return Body;
   }
-  auto effectiveRadius = CORNER_SQUARE_SIZE * 2;
+  auto effectiveRadius = anchor_size_ * 2;
   // 线图形场景，起始、终点检查
   if (this->is_line_shape()) {
-    auto startRect = math_utils::getSquareByPoint(startPos_.x() - CORNER_OFFSET,
-                                                  startPos_.y() - CORNER_OFFSET,
+    auto startRect = math_utils::getSquareByPoint(startPos_.x() - anchor_offset_,
+                                                  startPos_.y() - anchor_offset_,
                                                   effectiveRadius);
     if (startRect.contains(mousePos)) {
       return LineStart;
     }
-    auto endRect = math_utils::getSquareByPoint(endPos_.x() - CORNER_OFFSET,
-                                                endPos_.y() - CORNER_OFFSET,
+    auto endRect = math_utils::getSquareByPoint(endPos_.x() - anchor_offset_,
+                                                endPos_.y() - anchor_offset_,
                                                 effectiveRadius);
     if (endRect.contains(mousePos)) {
       return LineEnd;
@@ -40,27 +37,27 @@ ShapePart Shape::checkPart(const Point &mousePos) const {
   }
   // 非线图形的四个角检查
   auto capRect = this->content_rect();
-  auto ltRect = math_utils::getSquareByPoint(capRect.x() - CORNER_OFFSET,
-                                             capRect.y() - CORNER_OFFSET,
+  auto ltRect = math_utils::getSquareByPoint(capRect.x() - anchor_offset_,
+                                             capRect.y() - anchor_offset_,
                                              effectiveRadius);
   if (ltRect.contains(mousePos)) {
     return LeftTop;
   }
   auto rtRect = math_utils::getSquareByPoint(
-      capRect.x() + capRect.w() + CORNER_OFFSET, capRect.y() - CORNER_OFFSET,
+      capRect.x() + capRect.w() + anchor_offset_, capRect.y() - anchor_offset_,
       effectiveRadius);
   if (rtRect.contains(mousePos)) {
     return RightTop;
   }
   auto lbRect = math_utils::getSquareByPoint(
-      capRect.x() - CORNER_OFFSET, capRect.y() + capRect.h() + CORNER_OFFSET,
+      capRect.x() - anchor_offset_, capRect.y() + capRect.h() + anchor_offset_,
       effectiveRadius);
   if (lbRect.contains(mousePos)) {
     return LeftBottom;
   }
   auto rbRect = math_utils::getSquareByPoint(
-      capRect.x() + capRect.w() + CORNER_OFFSET,
-      capRect.y() + capRect.h() + CORNER_OFFSET, effectiveRadius);
+      capRect.x() + capRect.w() + anchor_offset_,
+      capRect.y() + capRect.h() + anchor_offset_, effectiveRadius);
   if (rbRect.contains(mousePos)) {
     return RightBottom;
   }
@@ -68,23 +65,26 @@ ShapePart Shape::checkPart(const Point &mousePos) const {
 }
 
 void Shape::onPaint(Painter *painter) {
-  onBorderPaint(painter);
+  if (this->is_selected_) {
+    onSelectedStatusAnchorPaint(painter, nullptr);
+  }
   onContentPaint(painter);
 }
 
-void Shape::onBorderPaint(Painter *painter) {
-  // 默认根据当前是否被hover和是否被选中来进行绘制整个图形的边框
+void Shape::onSelectedStatusAnchorPaint(Painter *painter,
+                                        const std::function<void(Painter *, const Rect &)> anchor_shape_paint_cb) {
+// 默认根据当前是否被hover和是否被选中来进行绘制整个图形的边框
   if (!this->is_hover_ && !this->is_selected_) {
     return;
   }
   painter->save();
   if (this->is_selected_) {
-    std::vector<Rect> corners;
+    std::vector<Rect> anchors;
     if (is_line_shape()) {
-      auto startAnchor = math_utils::getSquareByPoint(startPos_.x(), startPos_.y(), CORNER_SQUARE_SIZE);
-      auto endAnchor = math_utils::getSquareByPoint(endPos_.x(), endPos_.y(), CORNER_SQUARE_SIZE);
-      corners.push_back(startAnchor);
-      corners.push_back(endAnchor);
+      auto startAnchor = math_utils::getSquareByPoint(startPos_.x(), startPos_.y(), anchor_size_);
+      auto endAnchor = math_utils::getSquareByPoint(endPos_.x(), endPos_.y(), anchor_size_);
+      anchors.push_back(startAnchor);
+      anchors.push_back(endAnchor);
     } else {
       auto contentR = this->content_rect();
       // 非 “线” 图形，绘制四个角，一定的偏移，效果好点
@@ -93,26 +93,31 @@ void Shape::onBorderPaint(Painter *painter) {
       int rW = contentR.w();
       int rH = contentR.h();
       auto lt = math_utils::getSquareByPoint(
-          rX - CORNER_OFFSET, rY - CORNER_OFFSET, CORNER_SQUARE_SIZE);
+          rX - anchor_offset_, rY - anchor_offset_, anchor_size_);
       auto rt = math_utils::getSquareByPoint(
-          rX + rW + CORNER_OFFSET, rY - CORNER_OFFSET, CORNER_SQUARE_SIZE);
+          rX + rW + anchor_offset_, rY - anchor_offset_, anchor_size_);
       auto lb = math_utils::getSquareByPoint(
-          rX - CORNER_OFFSET, rY + rH + CORNER_OFFSET, CORNER_SQUARE_SIZE);
+          rX - anchor_offset_, rY + rH + anchor_offset_, anchor_size_);
       auto rb = math_utils::getSquareByPoint(
-          rX + rW + CORNER_OFFSET, rY + rH + CORNER_OFFSET, CORNER_SQUARE_SIZE);
-      corners.push_back(lt);
-      corners.push_back(rt);
-      corners.push_back(lb);
-      corners.push_back(rb);
+          rX + rW + anchor_offset_, rY + rH + anchor_offset_, anchor_size_);
+      anchors.push_back(lt);
+      anchors.push_back(rt);
+      anchors.push_back(lb);
+      anchors.push_back(rb);
     }
     // 得到待绘制的锚点列表后，进行绘制操作
-    for (const auto &item : corners) {
-      // 先填充正方形
-      painter->setBrush(Brush(Color(0, 111, 222)));
-      painter->drawRect(item);
-      // 在绘制正方形边框
-      painter->setPen(Pen(Color(255, 255, 255)));
-      painter->drawRect(item);
+    for (const auto &anchor_rect : anchors) {
+      if (anchor_shape_paint_cb == nullptr) {
+        // 如果没有提供锚点图形绘制回调，则使用默认绘制方式
+        // 先填充正方形
+        painter->setBrush(Brush(Color(0, 111, 222)));
+        painter->drawRect(anchor_rect);
+        // 在绘制正方形边框
+        painter->setPen(Pen(Color(255, 255, 255)));
+        painter->drawRect(anchor_rect);
+      } else {
+        anchor_shape_paint_cb(painter, anchor_rect);
+      }
     }
   }
   painter->restore();

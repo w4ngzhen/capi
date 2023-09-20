@@ -44,6 +44,20 @@ void capi::CapturedShape::onContentPaint(Painter *painter) {
 void CapturedShape::setCanvasSize(const Size &canvasSize) {
   canvas_size_ = canvasSize;
 }
+void CapturedShape::onSelectedStatusAnchorPaint(
+    Painter *painter,
+    std::function<void(Painter *, const Rect &)>) {
+  // CapturedShape 的锚点绘制，使用圆形绘制
+  std::function<void(Painter *, const Rect &)> cb = [](auto *p, auto &anchor_rect) {
+    // 先填充正方形
+    p->setBrush(Brush(Color(0, 111, 222)));
+    p->drawEllipse(anchor_rect);
+    // 在绘制正方形边框
+    p->setPen(Pen(Color(255, 255, 255)));
+    p->drawEllipse(anchor_rect);
+  };
+  Shape::onSelectedStatusAnchorPaint(painter, cb);
+}
 
 }
 

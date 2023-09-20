@@ -5,6 +5,7 @@
 #include "core/base/point.h"
 #include "shape_config.h"
 #include "core/layer/captured/captured_layer_common.h"
+#include <functional>
 
 namespace capi {
 
@@ -28,14 +29,14 @@ protected:
    */
   virtual void onContentPaint(Painter *) = 0;
   /**
-   * 绘制边框
-   * 默认实现：
-   * 若图形被选中，则会在以content rect作为基准，绘制一个灰色的虚线边框和四个拖拽角图形
-   * 若图形被鼠标悬浮，则会在以content rect作为基准，只绘制一个高亮虚线
-   * 出上述状态外，不进行任何的绘制。
+   * 当图像处于被选中状态时，拖拽锚点的绘制，和本体渲染区分开发
+   * @param painter
+   * @param anchor_shape_paint_cb 锚点绘制回调，可以通过该回调定制不同Shape单个锚点样式
    */
-  virtual void onBorderPaint(Painter *);
-
+  virtual void onSelectedStatusAnchorPaint(
+      Painter *painter,
+      std::function<void(Painter *, const Rect &)> anchor_shape_paint_cb
+  );
 public:
   /**
    * 每一个Shape子类都需要实现type getter
@@ -131,6 +132,16 @@ protected:
    * 鼠标是否正悬浮在该图形上
    */
   bool is_hover_ = false;
+  /**
+   * 拖拽锚点距离
+   * 非“线”图形，例如矩形，被选中时显示的拖拽锚点在矩形基础上往外扩的偏移
+   * “线”图形，被选中时，锚点就在线两端
+   */
+  int anchor_offset_ = 5;
+  /**
+   * 锚点尺寸
+   */
+  int anchor_size_ = 7;
   /**
    * 图形绘制配置
    */

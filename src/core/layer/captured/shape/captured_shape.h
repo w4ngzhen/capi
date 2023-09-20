@@ -9,6 +9,8 @@ namespace capi {
 class CapturedShape : public Shape {
 protected:
   void onContentPaint(Painter *painter) override;
+  void onSelectedStatusAnchorPaint(Painter *,
+                                   std::function<void(Painter *, const Rect &)>) override;
 public:
   int type() override;
   /**

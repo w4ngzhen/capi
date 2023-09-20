@@ -1,7 +1,7 @@
 #pragma once
 #include "core/base/point.h"
 #include "layer.h"
-#include <iostream>
+#include <functional>
 
 namespace capi {
 
