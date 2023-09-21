@@ -1,31 +1,30 @@
-#include "rect_shape.h"
+#include "ellipse_shape.h"
 #include "shape.h"
 #include "core/paint/painter.h"
 #include "core/paint/pen.h"
 
 namespace capi {
-
 /**
- * 矩形类型为0xFF01
+ * 椭圆type为0xFF02
  * @return
  */
-int RectShape::type() {
-  return 0xFF01;
+int EllipseShape::type() {
+  return 0xFF02;
+}
+EllipseShape::EllipseShape(const ShapeConfig &config) : Shape(config) {
+
 }
 
-RectShape::RectShape(const ShapeConfig &config) : Shape(config) {
-
-}
-
-void RectShape::onContentPaint(Painter *painter) {
+void EllipseShape::onContentPaint(Painter *painter) {
   painter->save();
   const auto &contentRect = this->content_rect();
   auto &configRef = this->config_;
   if (config_.is_filled()) {
-    painter->fillRect(contentRect, Brush(configRef.brush_color()));
+    painter->setBrush(Brush(configRef.brush_color()));
+    painter->drawEllipse(contentRect);
   }
   painter->setPen(Pen(configRef.pen_color(), configRef.pen_width()));
-  painter->drawRect(contentRect);
+  painter->drawEllipse(contentRect);
   painter->restore();
 }
 

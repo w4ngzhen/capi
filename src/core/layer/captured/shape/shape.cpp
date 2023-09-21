@@ -65,59 +65,58 @@ ShapePart Shape::checkPart(const Point &mousePos) const {
 }
 
 void Shape::onPaint(Painter *painter) {
+  onContentPaint(painter);
+  // 由于后绘制的覆盖先绘制的，选中状态下，选中渲染应该“覆盖”在原有图像上
   if (this->is_selected_) {
     onSelectedStatusAnchorPaint(painter, nullptr);
   }
-  onContentPaint(painter);
 }
 
 void Shape::onSelectedStatusAnchorPaint(Painter *painter,
                                         const std::function<void(Painter *, const Rect &)> anchor_shape_paint_cb) {
-// 默认根据当前是否被hover和是否被选中来进行绘制整个图形的边框
-  if (!this->is_hover_ && !this->is_selected_) {
+  // 默认根据当前是否被hover和是否被选中来进行绘制整个图形的边框
+  if (!this->is_selected_) {
     return;
   }
   painter->save();
-  if (this->is_selected_) {
-    std::vector<Rect> anchors;
-    if (is_line_shape()) {
-      auto startAnchor = math_utils::getSquareByPoint(startPos_.x(), startPos_.y(), anchor_size_);
-      auto endAnchor = math_utils::getSquareByPoint(endPos_.x(), endPos_.y(), anchor_size_);
-      anchors.push_back(startAnchor);
-      anchors.push_back(endAnchor);
+  std::vector<Rect> anchors;
+  if (is_line_shape()) {
+    auto startAnchor = math_utils::getSquareByPoint(startPos_.x(), startPos_.y(), anchor_size_);
+    auto endAnchor = math_utils::getSquareByPoint(endPos_.x(), endPos_.y(), anchor_size_);
+    anchors.push_back(startAnchor);
+    anchors.push_back(endAnchor);
+  } else {
+    auto contentR = this->content_rect();
+    // 非 “线” 图形，绘制四个角，一定的偏移，效果好点
+    int rX = contentR.x();
+    int rY = contentR.y();
+    int rW = contentR.w();
+    int rH = contentR.h();
+    auto lt = math_utils::getSquareByPoint(
+        rX - anchor_offset_, rY - anchor_offset_, anchor_size_);
+    auto rt = math_utils::getSquareByPoint(
+        rX + rW + anchor_offset_, rY - anchor_offset_, anchor_size_);
+    auto lb = math_utils::getSquareByPoint(
+        rX - anchor_offset_, rY + rH + anchor_offset_, anchor_size_);
+    auto rb = math_utils::getSquareByPoint(
+        rX + rW + anchor_offset_, rY + rH + anchor_offset_, anchor_size_);
+    anchors.push_back(lt);
+    anchors.push_back(rt);
+    anchors.push_back(lb);
+    anchors.push_back(rb);
+  }
+  // 得到待绘制的锚点列表后，进行绘制操作
+  for (const auto &anchor_rect : anchors) {
+    if (anchor_shape_paint_cb == nullptr) {
+      // 如果没有提供锚点图形绘制回调，则使用默认绘制方式
+      // 先填充正方形
+      painter->setBrush(Brush(Color(0, 111, 222)));
+      painter->drawRect(anchor_rect);
+      // 在绘制正方形边框
+      painter->setPen(Pen(Color(255, 255, 255)));
+      painter->drawRect(anchor_rect);
     } else {
-      auto contentR = this->content_rect();
-      // 非 “线” 图形，绘制四个角，一定的偏移，效果好点
-      int rX = contentR.x();
-      int rY = contentR.y();
-      int rW = contentR.w();
-      int rH = contentR.h();
-      auto lt = math_utils::getSquareByPoint(
-          rX - anchor_offset_, rY - anchor_offset_, anchor_size_);
-      auto rt = math_utils::getSquareByPoint(
-          rX + rW + anchor_offset_, rY - anchor_offset_, anchor_size_);
-      auto lb = math_utils::getSquareByPoint(
-          rX - anchor_offset_, rY + rH + anchor_offset_, anchor_size_);
-      auto rb = math_utils::getSquareByPoint(
-          rX + rW + anchor_offset_, rY + rH + anchor_offset_, anchor_size_);
-      anchors.push_back(lt);
-      anchors.push_back(rt);
-      anchors.push_back(lb);
-      anchors.push_back(rb);
-    }
-    // 得到待绘制的锚点列表后，进行绘制操作
-    for (const auto &anchor_rect : anchors) {
-      if (anchor_shape_paint_cb == nullptr) {
-        // 如果没有提供锚点图形绘制回调，则使用默认绘制方式
-        // 先填充正方形
-        painter->setBrush(Brush(Color(0, 111, 222)));
-        painter->drawRect(anchor_rect);
-        // 在绘制正方形边框
-        painter->setPen(Pen(Color(255, 255, 255)));
-        painter->drawRect(anchor_rect);
-      } else {
-        anchor_shape_paint_cb(painter, anchor_rect);
-      }
+      anchor_shape_paint_cb(painter, anchor_rect);
     }
   }
   painter->restore();
