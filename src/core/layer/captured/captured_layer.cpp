@@ -150,12 +150,14 @@ void CapturedLayer::onMousePress(const Point &mousePos) {
   Shape *tempSelectedSp = nullptr;
   for (auto &sp : this->shapes_) {
     auto part = sp->checkPart(mousePos);
-    // 如果点击到了Body或四个角，我们就认为点击到了该图形
-    if (part == Body || math_utils::checkIsCornerPart(part)) {
+    // 如果点击到了某个区域，我们就认为“碰”到了该图形
+    if (part != None) {
       selected_shape_dragging_part_ = part;
-      // 点击到了某个图形的body，则该图形此刻要被选中，
-      // 但在选中前，需要先判断是不是已经有了被选中的图形
-      // 如有则先把前面被视为选中的图形置为false
+      /**
+       * 点击到了某个图形某个区域，则该图形此刻要被选中，
+       * 但在选中前，需要 先判断是不是已经有了被选中的图形
+       * 如有则先把前面被视为选中的图形置为false
+       */
       if (tempSelectedSp != nullptr) {
         tempSelectedSp->setIsSelected(false);
       }

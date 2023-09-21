@@ -20,16 +20,17 @@ ShapePart Shape::checkPart(const Point &mousePos) const {
   auto effectiveRadius = anchor_size_ * 2;
   // 线图形场景，起始、终点检查
   if (this->is_line_shape()) {
-    auto startRect = math_utils::getSquareByPoint(startPos_.x() - anchor_offset_,
-                                                  startPos_.y() - anchor_offset_,
-                                                  effectiveRadius);
-    if (startRect.contains(mousePos)) {
+    // 线图形锚点不做偏移处理，直接就是两个端点锚点
+    auto start_anchor_rect = math_utils::getSquareByPoint(startPos_.x(),
+                                                          startPos_.y(),
+                                                          effectiveRadius);
+    if (start_anchor_rect.contains(mousePos)) {
       return LineStart;
     }
-    auto endRect = math_utils::getSquareByPoint(endPos_.x() - anchor_offset_,
-                                                endPos_.y() - anchor_offset_,
-                                                effectiveRadius);
-    if (endRect.contains(mousePos)) {
+    auto end_anchor_rect = math_utils::getSquareByPoint(endPos_.x(),
+                                                        endPos_.y(),
+                                                        effectiveRadius);
+    if (end_anchor_rect.contains(mousePos)) {
       return LineEnd;
     }
 
