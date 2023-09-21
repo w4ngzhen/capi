@@ -3,6 +3,8 @@
 #include "core/utils/math_utils.h"
 #include "core/layer/captured/shape/captured_shape.h"
 #include "core/layer/captured/shape/rect_shape.h"
+#include "core/layer/captured/shape/ellipse_shape.h"
+#include "core/layer/captured/shape/line_shape.h"
 namespace capi {
 CapturedLayer::CapturedLayer(const Size &canvasSize) : Layer(canvasSize) {
   selected_shape_dragging_part_ = None;
@@ -30,7 +32,10 @@ void CapturedLayer::addShape(ShapeType type, const ShapeConfig &config, bool sel
   Shape *shape = nullptr;
   switch (type) {
     case ShapeType::Rectangle:shape = new RectShape(config);
-    case ShapeType::Ellipse:
+      break;
+    case ShapeType::Ellipse: shape = new EllipseShape(config);
+      break;
+    case ShapeType::Line: shape = new LineShape(config);
     default:break;
   }
   if (shape == nullptr) {
@@ -268,13 +273,14 @@ void CapturedLayer::onKeyPress(Key k, KeyboardModifier m) {
     deleteSelectedShape();
     return;
   }
-  if (k == Key::Key_A) {
-    addShape(Rectangle, ShapeConfig(), true);
-    return;
-  }
-  if (k == Key::Key_Q) {
-    addShape(Rectangle, ShapeConfig(), false);
-    return;
+  switch (k) {
+    case Key::Key_1:addShape(Rectangle, ShapeConfig(), true);
+      break;
+    case Key::Key_2:addShape(Ellipse, ShapeConfig(), true);
+      break;
+    case Key::Key_3:addShape(Line, ShapeConfig(), true);
+      break;
+    default:break;
   }
 }
 

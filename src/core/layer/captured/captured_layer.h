@@ -19,8 +19,9 @@ typedef std::function<void(const CapturedImageSaveEvent *)>
     LayerEventOnCapturedLayerImageSaveCb;
 
 enum ShapeType {
-  Rectangle = 0,
-  Ellipse
+  Rectangle = 0xFF01,
+  Ellipse = 0xFF02,
+  Line = 0xFF03,
 };
 
 class CapturedLayer : public Layer {
