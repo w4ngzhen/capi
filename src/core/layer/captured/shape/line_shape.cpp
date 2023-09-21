@@ -14,8 +14,8 @@ LineShape::LineShape(const ShapeConfig &config) : Shape(config) {}
 bool LineShape::is_line_shape() const {
   return true;
 }
-void LineShape::onContentPaint(Painter *painter) {
-  painter->setPen(Pen(config_.pen_color(), config_.pen_width()));
-  painter->drawLine(startPos_, endPos_);
+void LineShape::OnContentPaint(Painter *painter) {
+  painter->SetPen(Pen(config_.pen_color(), config_.pen_width()));
+  painter->DrawLine(start_pos_, end_pos_);
 }
 }

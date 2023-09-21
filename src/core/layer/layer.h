@@ -14,16 +14,16 @@ typedef std::function<void()> LayerEventOnQuitCurrentLayerCb;
 
 class Layer {
 public:
-  explicit Layer(const Size &canvasSize);
-  virtual void onMousePress(const Point &);
-  virtual void onMouseMove(const Point &);
-  virtual void onMouseRelease(const Point &);
-  virtual void onMouseDoubleClick(const Point &);
-  virtual void onKeyPress(Key, KeyboardModifier);
-  virtual void onPaint(Painter *) = 0;
+  explicit Layer(const Size &canvas_size);
+  virtual void OnMousePress(const Point &);
+  virtual void OnMouseMove(const Point &);
+  virtual void OnMouseRelease(const Point &);
+  virtual void OnMouseDoubleClick(const Point &);
+  virtual void OnKeyPress(Key, KeyboardModifier);
+  virtual void OnPaint(Painter *) = 0;
 
-  virtual void onCanvasResize(const Size &);
-  virtual void setLayerEventOnQuitCurrentLayerCb(LayerEventOnQuitCurrentLayerCb cb);
+  virtual void OnCanvasResize(const Size &);
+  virtual void SetLayerEventOnQuitCurrentLayerCb(LayerEventOnQuitCurrentLayerCb cb);
 
 protected:
   Point mouse_press_pos_;

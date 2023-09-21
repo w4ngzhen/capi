@@ -31,20 +31,20 @@ public:
   Image *canvas_image();
   Size size();
 
-  void onMouseMove(const Point &);
-  void onMousePress(const Point &);
-  void onMouseRelease(const Point &);
-  void onMouseDoubleClick(const Point &);
-  void onResize(const Size &);
-  void onKeyPress(Key, KeyboardModifier);
-  void onPaint(Painter *);
+  void OnMouseMove(const Point &);
+  void OnMousePress(const Point &);
+  void OnMouseRelease(const Point &);
+  void OnMouseDoubleClick(const Point &);
+  void OnResize(const Size &);
+  void OnKeyPress(Key, KeyboardModifier);
+  void OnPaint(Painter *);
 
-  void handleLayerEventOnCapturingLayerFinish(bool sizeValid, const Rect &capturedRect);
-  void handleLayerEventOnLayerQuitCurrentLayer(CanvasStatus status);
-  void handleLayerEventOnCapturedLayerImageSave(const CapturedImageSaveEvent *);
+  void HandleLayerEventOnCapturingLayerFinish(bool sizeValid, const Rect &capturedRect);
+  void HandleLayerEventOnLayerQuitCurrentLayer(CanvasStatus status);
+  void HandleLayerEventOnCapturedLayerImageSave(const CapturedImageSaveEvent *);
 
-  void setCanvasEventOnQuitCb(CanvasEventOnQuitCb);
-  void setCanvasEventOnImageSaveCb(CanvasEventOnImageSaveCb);
+  void SetCanvasEventOnQuitCb(CanvasEventOnQuitCb);
+  void SetCanvasEventOnImageSaveCb(CanvasEventOnImageSaveCb);
 
   ~Canvas();
 

@@ -9,12 +9,12 @@ class QImage;
 
 class ImageQtImpl : public capi::Image {
 public:
-  capi::Color colorAt(int x, int y) override;
+  capi::Color GetColorAt(int x, int y) override;
   capi::Size size() override;
 
   // impl
   explicit ImageQtImpl(QImage *img);
-  [[nodiscard]] QImage *getQImage() const;
+  [[nodiscard]] QImage *GetQImage() const;
 
 private:
   QImage *qt_img_;

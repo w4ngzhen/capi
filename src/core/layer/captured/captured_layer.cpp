@@ -6,29 +6,29 @@
 #include "core/layer/captured/shape/ellipse_shape.h"
 #include "core/layer/captured/shape/line_shape.h"
 namespace capi {
-CapturedLayer::CapturedLayer(const Size &canvasSize) : Layer(canvasSize) {
+CapturedLayer::CapturedLayer(const Size &canvas_size) : Layer(canvas_size) {
   selected_shape_dragging_part_ = None;
   mouse_press_pos_ = Point();
   // 根据被捕获的矩形信息，构造一个CapturedShape，默认选中
-  auto capSp = new CapturedShape();
-  shapes_.push_back(capSp);
+  auto cap_shape = new CapturedShape();
+  shapes_.push_back(cap_shape);
 }
 
-void CapturedLayer::setCapturedRect(const Rect &capturedRect) {
-  auto capSp = getCapturedShape();
-  if (capSp != nullptr) {
-    auto startPos = capturedRect.pos();
-    auto endPos = Point(capturedRect.x() + capturedRect.w(),
-                        capturedRect.y() + capturedRect.h());
-    capSp->setStartPos(startPos);
-    capSp->setEndPos(endPos);
+void CapturedLayer::SetCapturedRect(const Rect &captured_rect) {
+  auto cap_shape = GetCapturedShape();
+  if (cap_shape != nullptr) {
+    auto start_pos = captured_rect.pos();
+    auto end_pos = Point(captured_rect.x() + captured_rect.w(),
+                         captured_rect.y() + captured_rect.h());
+    cap_shape->SetStartPos(start_pos);
+    cap_shape->SetEndPos(end_pos);
     // 并默认选中
-    capSp->setIsSelected(true);
-    selected_shape_ = capSp;
+    cap_shape->setIsSelected(true);
+    selected_shape_ = cap_shape;
   }
 }
 
-void CapturedLayer::addShape(ShapeType type, const ShapeConfig &config, bool selected) {
+void CapturedLayer::AddShape(ShapeType type, const ShapeConfig &config, bool selected) {
   Shape *shape = nullptr;
   switch (type) {
     case ShapeType::Rectangle:shape = new RectShape(config);
@@ -47,7 +47,7 @@ void CapturedLayer::addShape(ShapeType type, const ShapeConfig &config, bool sel
   }
   shapes_.push_back(shape);
 }
-void CapturedLayer::deleteSelectedShape() {
+void CapturedLayer::DeleteSelectedShape() {
   if (selected_shape_ == nullptr) {
     return;
   }
@@ -65,34 +65,34 @@ void CapturedLayer::deleteSelectedShape() {
     selected_shape_ = nullptr;
   }
 }
-void CapturedLayer::selectShape(const Point &mousePos) {
-  bool hasTouchedContent = false;
+void CapturedLayer::SelectShape(const Point &mouse_pos) {
+  bool has_touched_content = false;
   for (auto sp : shapes_) {
     // 清理所有的shape的被选择状态
     sp->setIsSelected(false);
     // 根据优先级原则，若已经选择到了某个图形，我们就不再进行后面图形的判断
-    if (hasTouchedContent) {
+    if (has_touched_content) {
       continue;
     }
-    if (sp->checkPart(mousePos) == ShapePart::Body) {
+    if (sp->CheckPart(mouse_pos) == ShapePart::Body) {
       sp->setIsSelected(true);
       selected_shape_ = sp;
     }
   }
 }
-void CapturedLayer::hoverShape(const Point &mousePos) {
-  Shape *lastHoverSp = nullptr;
+void CapturedLayer::HoverShape(const Point &mouse_pos) {
+  Shape *last_hover_sp = nullptr;
   for (auto &sp : this->shapes_) {
-    if (sp->checkPart(mousePos) == Body) {
-      if (lastHoverSp != nullptr) {
-        lastHoverSp->setIsHover(false);
+    if (sp->CheckPart(mouse_pos) == Body) {
+      if (last_hover_sp != nullptr) {
+        last_hover_sp->SetIsHover(false);
       }
-      sp->setIsHover(true);
-      lastHoverSp = sp;
+      sp->SetIsHover(true);
+      last_hover_sp = sp;
     }
   }
 }
-void CapturedLayer::moveSelectedShapeToTargetLevel(int levelIdx) {
+void CapturedLayer::MoveSelectedShapeToTargetLevel(int level_idx) {
 
   if (selected_shape_ == nullptr) {
     return;
@@ -102,7 +102,7 @@ void CapturedLayer::moveSelectedShapeToTargetLevel(int levelIdx) {
    * CapturedShape 始终处于图层索引为0的位置
    * 无法移动 CapturedShape，以及将任何其他的图形移动到 CapturedShape 的下层
    */
-  if (levelIdx == 0 || selected_shape_->type() == 0xFFFF) {
+  if (level_idx == 0 || selected_shape_->type() == 0xFFFF) {
     return;
   }
 
@@ -112,44 +112,44 @@ void CapturedLayer::moveSelectedShapeToTargetLevel(int levelIdx) {
   }
 
   // 搜索被选择的图形和其索引
-  int selectedIdx = -1;
-  Shape *selectedShape = nullptr;
+  int selected_idx = -1;
+  Shape *selected_shape = nullptr;
   for (int i = 0; i < size; ++i) {
     auto sp = shapes_[i];
     if (sp->is_selected()) {
-      selectedIdx = i;
-      selectedShape = sp;
+      selected_idx = i;
+      selected_shape = sp;
       break;
     }
   }
 
-  if (selectedIdx < 0) {
+  if (selected_idx < 0) {
     return;
   }
-  long targetPos;
-  if (levelIdx < 0) {
+  long target_pos;
+  if (level_idx < 0) {
     // 小于0，则视为放到首位
-    targetPos = 0;
-  } else if (levelIdx >= size) {
+    target_pos = 0;
+  } else if (level_idx >= size) {
     // 超过size，则视为放到最后一个位置
-    targetPos = static_cast<long>(size - 1);
+    target_pos = static_cast<long>(size - 1);
   } else {
     // 否则就是对应位置
-    targetPos = levelIdx;
+    target_pos = level_idx;
   }
-  if (targetPos == selectedIdx) {
+  if (target_pos == selected_idx) {
     // 位置不变，不发生改变
     return;
   }
   // 准备移动
   // 先移除，再添加到指定位置
-  shapes_.erase(shapes_.begin() + selectedIdx);
-  shapes_.insert(shapes_.begin() + targetPos, selectedShape);
+  shapes_.erase(shapes_.begin() + selected_idx);
+  shapes_.insert(shapes_.begin() + target_pos, selected_shape);
 }
-void CapturedLayer::onMousePress(const Point &mousePos) {
-  Shape *tempSelectedSp = nullptr;
+void CapturedLayer::OnMousePress(const Point &mouse_pos) {
+  Shape *temp_selected_sp = nullptr;
   for (auto &sp : this->shapes_) {
-    auto part = sp->checkPart(mousePos);
+    auto part = sp->CheckPart(mouse_pos);
     // 如果点击到了某个区域，我们就认为“碰”到了该图形
     if (part != None) {
       selected_shape_dragging_part_ = part;
@@ -158,16 +158,16 @@ void CapturedLayer::onMousePress(const Point &mousePos) {
        * 但在选中前，需要 先判断是不是已经有了被选中的图形
        * 如有则先把前面被视为选中的图形置为false
        */
-      if (tempSelectedSp != nullptr) {
-        tempSelectedSp->setIsSelected(false);
+      if (temp_selected_sp != nullptr) {
+        temp_selected_sp->setIsSelected(false);
       }
       sp->setIsSelected(true);
-      tempSelectedSp = sp;
+      temp_selected_sp = sp;
     } else {
       sp->setIsSelected(false);
     }
   }
-  if (tempSelectedSp == nullptr) {
+  if (temp_selected_sp == nullptr) {
     // 没有点击到任何的图形，则清理成员变量 selected_shape_ 的状态，并置为nullptr
     if (selected_shape_ != nullptr) {
       selected_shape_->setIsSelected(false);
@@ -176,21 +176,21 @@ void CapturedLayer::onMousePress(const Point &mousePos) {
   } else {
     // 有点击到某个图形，那么这里不需要对 selected_shape_ 状态清理
     // 因为上面遍历的流程已经做了，这里只需要赋值即可
-    selected_shape_ = tempSelectedSp;
+    selected_shape_ = temp_selected_sp;
   }
 }
-void CapturedLayer::onMouseMove(const Point &mousePos) {
+void CapturedLayer::OnMouseMove(const Point &mouse_pos) {
 
   // 保存鼠标上一次位置，并记录更新当前位置
-  auto lastMousePos = mouse_current_pos_;
-  mouse_current_pos_ = mousePos;
+  auto last_mouse_pos = mouse_current_pos_;
+  mouse_current_pos_ = mouse_pos;
 
   /**
    * 情况：不处于拖动态，或没有被选择的图形
    * 不进行任何的拖动操作，只需要更新hover效果
    */
   if (selected_shape_dragging_part_ == None || selected_shape_ == nullptr) {
-    hoverShape(mousePos);
+    HoverShape(mouse_pos);
     return;
   }
 
@@ -198,73 +198,73 @@ void CapturedLayer::onMouseMove(const Point &mousePos) {
    * 情况：且有被选择的图形，且正被拖动
    */
   // 先计算拖动距离
-  int dx = mouse_current_pos_.x() - lastMousePos.x();
-  int dy = mouse_current_pos_.y() - lastMousePos.y();
+  int dx = mouse_current_pos_.x() - last_mouse_pos.x();
+  int dy = mouse_current_pos_.y() - last_mouse_pos.y();
   // 拖动整个图形，则整体移动
   if (selected_shape_dragging_part_ == Body) {
-    selected_shape_->movePosition(dx, dy);
+    selected_shape_->MovePosition(dx, dy);
     return;
   }
   // 拖动四个角 或 “线”图形拖动开始、结束节点，就要处理resize
   auto &sp = selected_shape_->start_pos();
   auto &ep = selected_shape_->end_pos();
-  auto isLineShape = selected_shape_->is_line_shape();
+  auto is_line_shape = selected_shape_->is_line_shape();
 
   //“线”图形，只能拖动开始、结束端点
-  if (isLineShape) {
+  if (is_line_shape) {
     if (selected_shape_dragging_part_ == LineStart) {
-      selected_shape_->setStartPos(Point(sp.x() + dx, sp.y() + dy));
+      selected_shape_->SetStartPos(Point(sp.x() + dx, sp.y() + dy));
       return;
     } else if (selected_shape_dragging_part_ == LineEnd) {
-      selected_shape_->setEndPos(Point(ep.x() + dx, ep.y() + dy));
+      selected_shape_->SetEndPos(Point(ep.x() + dx, ep.y() + dy));
       return;
     }
     return;
   }
   // 处理非“线”图形，譬如矩形、圆等，它们以矩形作为承载，四个角都能移动
-  auto currContentRect = selected_shape_->content_rect();
-  if (math_utils::checkIsCornerPart(selected_shape_dragging_part_)) {
+  auto curr_content_rect = selected_shape_->content_rect();
+  if (math_utils::CheckIsCornerPart(selected_shape_dragging_part_)) {
     // 使用工具方法计算四个角的拖动
-    Rect targetRect{};
-    auto calcOk = math_utils::calcCornerDragRect(
-        currContentRect,
+    Rect target_rect{};
+    auto is_calc_ok = math_utils::CalcCornerDragRect(
+        curr_content_rect,
         dx, dy,
         selected_shape_dragging_part_,
-        &targetRect);
-    if (!calcOk) {
+        &target_rect);
+    if (!is_calc_ok) {
       return;
     }
-    auto newStartPos = Point(targetRect.x(), targetRect.y());
-    auto newEndPos = Point(newStartPos.x() + targetRect.w(), newStartPos.y() + targetRect.h());
-    selected_shape_->setStartPos(newStartPos);
-    selected_shape_->setEndPos(newEndPos);
+    auto new_start_pos = Point(target_rect.x(), target_rect.y());
+    auto new_end_pos = Point(new_start_pos.x() + target_rect.w(), new_start_pos.y() + target_rect.h());
+    selected_shape_->SetStartPos(new_start_pos);
+    selected_shape_->SetEndPos(new_end_pos);
   }
 
 }
-void CapturedLayer::onMouseRelease(const Point &mousePos) {
+void CapturedLayer::OnMouseRelease(const Point &mouse_pos) {
   // 松开鼠标，则关闭拖动状态
   selected_shape_dragging_part_ = None;
 }
-void CapturedLayer::onMouseDoubleClick(const Point &) {
+void CapturedLayer::OnMouseDoubleClick(const Point &) {
   // 准备构造captured canvas_image 保存事件
   // 暂时只支持保存到粘贴板
   // 从集合中找到CapturedShape，获取该Shape的矩形数据
-  auto capSp = getCapturedShape();
-  if (capSp == nullptr) {
+  auto cap_shape = GetCapturedShape();
+  if (cap_shape == nullptr) {
     return;
   }
-  CapturedImageSaveEvent ev(capSp->content_rect(), SaveMode::Clipboard);
+  CapturedImageSaveEvent ev(cap_shape->content_rect(), SaveMode::Clipboard);
   this->layer_event_on_captured_layer_image_save_cb_(&ev);
 }
 
-void CapturedLayer::onPaint(Painter *painter) {
+void CapturedLayer::OnPaint(Painter *painter) {
   // 将各个图形进行绘制
   for (auto &sp : shapes_) {
-    sp->onPaint(painter);
+    sp->OnPaint(painter);
   }
 }
 
-void CapturedLayer::onKeyPress(Key k, KeyboardModifier m) {
+void CapturedLayer::OnKeyPress(Key k, KeyboardModifier m) {
   // ESC 退出当前层
   if (k == Key::Key_Escape) {
     this->layer_event_on_quit_current_layer_cb_();
@@ -272,40 +272,40 @@ void CapturedLayer::onKeyPress(Key k, KeyboardModifier m) {
   }
   if (k == Key::Key_Delete) {
     // 删除操作
-    deleteSelectedShape();
+    DeleteSelectedShape();
     return;
   }
   switch (k) {
-    case Key::Key_1:addShape(Rectangle, ShapeConfig(), true);
+    case Key::Key_1:AddShape(Rectangle, ShapeConfig(), true);
       break;
-    case Key::Key_2:addShape(Ellipse, ShapeConfig(), true);
+    case Key::Key_2:AddShape(Ellipse, ShapeConfig(), true);
       break;
-    case Key::Key_3:addShape(Line, ShapeConfig(), true);
+    case Key::Key_3:AddShape(Line, ShapeConfig(), true);
       break;
     default:break;
   }
 }
 
-void CapturedLayer::setLayerEventOnCapturedLayerImageSaveCb(LayerEventOnCapturedLayerImageSaveCb cb) {
+void CapturedLayer::SetLayerEventOnCapturedLayerImageSaveCb(LayerEventOnCapturedLayerImageSaveCb cb) {
   this->layer_event_on_captured_layer_image_save_cb_ = std::move(cb);
 }
-void CapturedLayer::onCanvasResize(const Size &size) {
-  Layer::onCanvasResize(size);
-  auto capSp = getCapturedShape();
-  if (capSp != nullptr) {
-    dynamic_cast<CapturedShape *>(capSp)->setCanvasSize(size);
+void CapturedLayer::OnCanvasResize(const Size &size) {
+  Layer::OnCanvasResize(size);
+  auto cap_shape = GetCapturedShape();
+  if (cap_shape != nullptr) {
+    dynamic_cast<CapturedShape *>(cap_shape)->SetCanvasSize(size);
   }
 }
-Shape *CapturedLayer::getCapturedShape() {
-  auto capSpItr = std::find_if(
+Shape *CapturedLayer::GetCapturedShape() {
+  auto cap_shape_itr = std::find_if(
       shapes_.begin(),
       shapes_.end(),
       [](Shape *sp) {
         return sp->type() == 0xFFFF;
       }
   );
-  if (capSpItr != shapes_.end()) {
-    return *capSpItr;
+  if (cap_shape_itr != shapes_.end()) {
+    return *cap_shape_itr;
   }
   return nullptr;
 }

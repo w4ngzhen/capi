@@ -7,6 +7,6 @@ Point::Point(int x, int y) {
 }
 int Point::x() const { return this->x_; }
 int Point::y() const { return this->y_; }
-void Point::setX(int x) { this->x_ = x; }
-void Point::setY(int y) { this->y_ = y; }
+void Point::SetX(int x) { this->x_ = x; }
+void Point::SetY(int y) { this->y_ = y; }
 } // namespace capi

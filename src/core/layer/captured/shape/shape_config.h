@@ -13,9 +13,9 @@ public:
  * @param bc 画刷颜色
  * @param pc 画笔颜色
  * @param pw 画笔宽度
- * @param isFilled 图形是否填充
+ * @param is_filled 图形是否填充
  */
-  ShapeConfig(const Color &bc, const Color &pc, int pw, bool isFilled);
+  ShapeConfig(const Color &bc, const Color &pc, int pw, bool is_filled);
   /**
    * 默认构造函数
    */
@@ -23,20 +23,20 @@ public:
   /**
  * setter：设置画刷颜色
  */
-  void setBrushColor(const Color &);
+  void SetBrushColor(const Color &);
   /**
    * setter：设置画笔颜色
    */
-  void setPenColor(const Color &);
+  void SetPenColor(const Color &);
   /**
    * setter：设置笔线宽度
    */
-  void setPenWidth(int);
+  void SetPenWidth(int);
   /**
    * setter: 设置图形是否填充
    * @param is_filled
    */
-  void setIsFilled(bool is_filled);
+  void SetIsFilled(bool is_filled);
   /**
    * getter: 画刷颜色
    */

@@ -13,8 +13,8 @@ public:
 
   [[nodiscard]] int w() const;
   [[nodiscard]] int h() const;
-  void setW(int);
-  void setH(int);
+  void SetW(int);
+  void SetH(int);
 
 private:
   int w_;

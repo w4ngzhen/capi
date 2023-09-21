@@ -7,7 +7,7 @@
 
 namespace capi::math_utils {
 
-Rect calcRect(int x1, int y1, int x2, int y2) {
+Rect CalcRect(int x1, int y1, int x2, int y2) {
 
   int x = fmin(x1, x2);
   int y = fmin(y1, y2);
@@ -16,7 +16,7 @@ Rect calcRect(int x1, int y1, int x2, int y2) {
   return {x, y, w, h};
 }
 
-Rect getSquareByPoint(int x, int y, int size) {
+Rect GetSquareByPoint(int x, int y, int size) {
   int thickness = (size - 1) / 2;
   int left = x - thickness;
   int top = y - thickness;
@@ -25,62 +25,62 @@ Rect getSquareByPoint(int x, int y, int size) {
   return {left, top, w, h};
 }
 
-bool posInEffectiveRect(const Point &pos, const Rect &rect,
-                        const int borderWidth) {
+bool CheckPosInEffectiveRect(const Point &pos, const Rect &rect,
+                             const int border_width) {
 
-  if (borderWidth <= 0) {
-    return rect.contains(pos);
+  if (border_width <= 0) {
+    return rect.Contains(pos);
   }
-  Rect _rect(rect.x() + borderWidth, rect.y() + borderWidth,
-             rect.w() - borderWidth * 2, rect.h() - borderWidth * 2);
-  return _rect.contains(pos);
+  Rect _rect(rect.x() + border_width, rect.y() + border_width,
+             rect.w() - border_width * 2, rect.h() - border_width * 2);
+  return _rect.Contains(pos);
 }
-Rect enlargeRect(const Rect &origin, int extendSize) {
-  auto x = origin.x() - extendSize;
-  auto y = origin.y() - extendSize;
-  auto w = origin.w() + 2 * extendSize;
-  auto h = origin.h() + 2 * extendSize;
+Rect EnlargeRect(const Rect &origin, int extend_size) {
+  auto x = origin.x() - extend_size;
+  auto y = origin.y() - extend_size;
+  auto w = origin.w() + 2 * extend_size;
+  auto h = origin.h() + 2 * extend_size;
   return {x, y, w, h};
 }
-bool calcCornerDragRect(const Rect &originRect, int dx, int dy, ShapePart part, Rect *targetRect) {
-  if (targetRect == nullptr) {
+bool CalcCornerDragRect(const Rect &origin_rect, int dx, int dy, ShapePart part, Rect *target_rect) {
+  if (target_rect == nullptr) {
     return false;
   }
   // 不满足四个角，直接false
-  if (!checkIsCornerPart(part)) {
+  if (!CheckIsCornerPart(part)) {
     return false;
   }
   // 4个角拖动
-  auto lt = Point(originRect.x(), originRect.y());
-  auto rt = Point(lt.x() + originRect.w(), lt.y());
-  auto lb = Point(lt.x(), lt.y() + originRect.h());
+  auto lt = Point(origin_rect.x(), origin_rect.y());
+  auto rt = Point(lt.x() + origin_rect.w(), lt.y());
+  auto lb = Point(lt.x(), lt.y() + origin_rect.h());
   auto rb = Point(rt.x(), lb.y());
-  Point *draggingCor; // 正在拖动的角
-  Point *fixedCor;    // 正在拖动角的对角固定不动
+  Point *dragging_cor; // 正在拖动的角
+  Point *fixed_cor;    // 正在拖动角的对角固定不动
   switch (part) {
-    case LeftTop:draggingCor = &lt;
-      fixedCor = &rb;
+    case LeftTop:dragging_cor = &lt;
+      fixed_cor = &rb;
       break;
-    case RightTop:draggingCor = &rt;
-      fixedCor = &lb;
+    case RightTop:dragging_cor = &rt;
+      fixed_cor = &lb;
       break;
-    case LeftBottom:draggingCor = &lb;
-      fixedCor = &rt;
+    case LeftBottom:dragging_cor = &lb;
+      fixed_cor = &rt;
       break;
-    case RightBottom: // checkIsCornerPart 判断后，这里只剩 RightBottom
-    default:draggingCor = &rb;
-      fixedCor = &lt;
+    case RightBottom: // CheckIsCornerPart 判断后，这里只剩 RightBottom
+    default:dragging_cor = &rb;
+      fixed_cor = &lt;
       break;
   }
-  Rect rect = calcRect(draggingCor->x() + dx, draggingCor->y() + dy,
-                       fixedCor->x(), fixedCor->y());
-  targetRect->setX(rect.x());
-  targetRect->setY(rect.y());
-  targetRect->setW(rect.w());
-  targetRect->setH(rect.h());
+  Rect rect = CalcRect(dragging_cor->x() + dx, dragging_cor->y() + dy,
+                       fixed_cor->x(), fixed_cor->y());
+  target_rect->SetX(rect.x());
+  target_rect->SetY(rect.y());
+  target_rect->SetW(rect.w());
+  target_rect->SetH(rect.h());
   return true;
 }
-bool checkIsCornerPart(ShapePart part) {
+bool CheckIsCornerPart(ShapePart part) {
   return part == LeftTop || part == RightTop || part == LeftBottom || part == RightBottom;
 }
 } // namespace capi::math_utils

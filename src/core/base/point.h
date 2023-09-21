@@ -13,8 +13,8 @@ public:
 
   [[nodiscard]] int x() const;
   [[nodiscard]] int y() const;
-  void setX(int);
-  void setY(int);
+  void SetX(int);
+  void SetY(int);
 
 private:
   int x_;

@@ -7,7 +7,7 @@
 namespace capi {
 class Image {
 public:
-  virtual Color colorAt(int x, int y) = 0;
+  virtual Color GetColorAt(int x, int y) = 0;
   virtual Size size() = 0;
 };
 } // namespace capi

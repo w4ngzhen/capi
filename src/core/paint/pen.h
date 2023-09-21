@@ -11,9 +11,9 @@ public:
   explicit Pen(const Color &);
   Pen(const Color &, int width);
   Pen(int width, const Color &, PenStyle);
-  void setWidth(int w);
-  void setColor(const Color &);
-  void setPenStyle(PenStyle);
+  void SetWidth(int w);
+  void SetColor(const Color &);
+  void SetPenStyle(PenStyle);
 
   [[nodiscard]] int width() const;
   [[nodiscard]] Color color() const;

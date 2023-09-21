@@ -29,55 +29,55 @@ public:
   /**
    * 构造函数
    */
-  explicit CapturedLayer(const Size &canvasSize);
+  explicit CapturedLayer(const Size &canvas_size);
   /**
    * 设置捕获矩形信息给内部的CapturedShape（如有）
    */
-  void setCapturedRect(const Rect &capturedRect);
+  void SetCapturedRect(const Rect &captured_rect);
   /**
   * 增加指定类型，指定配置的图形
   * @param selected 增加后是否立即选中
   */
-  void addShape(ShapeType, const ShapeConfig &, bool selected);
+  void AddShape(ShapeType, const ShapeConfig &, bool selected);
   /**
   * 移除正在选择的图形
   */
-  void deleteSelectedShape();
+  void DeleteSelectedShape();
   /**
  * 获取CapturedShape
  */
-  Shape *getCapturedShape();
-  void onPaint(Painter *) override;
-  void onMousePress(const Point &) override;
-  void onMouseMove(const Point &) override;
-  void onMouseRelease(const Point &) override;
-  void onMouseDoubleClick(const Point &) override;
-  void onKeyPress(Key, KeyboardModifier) override;
-  void onCanvasResize(const Size &size) override;
+  Shape *GetCapturedShape();
+  void OnPaint(Painter *) override;
+  void OnMousePress(const Point &) override;
+  void OnMouseMove(const Point &) override;
+  void OnMouseRelease(const Point &) override;
+  void OnMouseDoubleClick(const Point &) override;
+  void OnKeyPress(Key, KeyboardModifier) override;
+  void OnCanvasResize(const Size &size) override;
   /**
   * 设置图片捕获处理后的保存事件
   */
-  void setLayerEventOnCapturedLayerImageSaveCb(LayerEventOnCapturedLayerImageSaveCb cb);
+  void SetLayerEventOnCapturedLayerImageSaveCb(LayerEventOnCapturedLayerImageSaveCb cb);
 private:
   /**
    * 使用鼠标点击选择某个图形
-   * @param mousePos
+   * @param mouse_pos
    */
-  void selectShape(const Point &mousePos);
+  void SelectShape(const Point &mouse_pos);
   /**
    * 使用鼠标悬浮到某个图形
-   * @param mousePos
+   * @param mouse_pos
    */
-  void hoverShape(const Point &mousePos);
+  void HoverShape(const Point &mouse_pos);
   /**
    * 将正在选择的图形移动到指定图形
    * 注意：
    * CapturedShape 始终处于图层索引为0的位置
    * 无法移动 CapturedShape，以及将任何其他的图形移动到 CapturedShape 的下层
    *
-   * @param levelIdx
+   * @param level_idx
    */
-  void moveSelectedShapeToTargetLevel(int levelIdx);
+  void MoveSelectedShapeToTargetLevel(int level_idx);
   /**
    * 已有的所有图形
    */

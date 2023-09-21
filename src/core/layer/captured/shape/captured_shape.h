@@ -8,15 +8,15 @@ namespace capi {
  */
 class CapturedShape : public Shape {
 protected:
-  void onContentPaint(Painter *painter) override;
-  void onSelectedStatusAnchorPaint(Painter *,
+  void OnContentPaint(Painter *painter) override;
+  void OnSelectedStatusAnchorPaint(Painter *,
                                    std::function<void(Painter *, const Rect &)>) override;
 public:
   int type() override;
   /**
    * CapturedShape 需要感知画布尺寸，以便绘制捕获区域之外的阴影
    */
-  void setCanvasSize(const Size &);
+  void SetCanvasSize(const Size &);
 private:
   Size canvas_size_;
 };

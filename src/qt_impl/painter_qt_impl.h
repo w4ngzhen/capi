@@ -15,31 +15,32 @@ class PainterQtImpl : public Painter {
 public:
   explicit PainterQtImpl(QPainter *qPainter);
 
-  void drawRect(const Rect &) override;
-  void fillRect(const Rect &, const Brush &) override;
-  void drawEllipse(const Rect &) override;
-  void drawLine(const Point &start, const Point &end) override;
-  void drawLine(int x1, int y1, int x2, int y2) override;
-  void drawText(std::string &, const Rect &, int alignMode) override;
-  void drawText(std::string &, const Point &) override;
-  void drawImage(const Rect &canvasRect, const Image *img) override;
-  void drawImage(const Rect &canvasRect, const Image *img,
-                 const Rect &imgRect) override;
-  void setColorReverse(bool) override;
-  Size measureTextSize(std::string &, std::string fontFamily,
-                       int fontSize) override;
-  void setPen(const Pen &) override;
-  void setBrush(const Brush &) override;
-  void setFont(std::string fontFamily, int fontSize) override;
-  void save() override;
-  void restore() override;
+  void DrawRect(const Rect &) override;
+  void FillRect(const Rect &, const Brush &) override;
+  void DrawEllipse(const Rect &) override;
+  void DrawLine(const Point &start, const Point &end) override;
+  void DrawLine(int x1, int y1, int x2, int y2) override;
+  void DrawText(std::string &, const Rect &, int align_mode) override;
+  void DrawText(std::string &, const Point &) override;
+  void DrawImage(const Rect &canvas_rect, const Image *img) override;
+  void DrawImage(const Rect &canvas_rect, const Image *img,
+                 const Rect &img_rect) override;
+  void SetColorReverse(bool) override;
+  Size MeasureTextSize(std::string &,
+                       std::string font_family,
+                       int font_size) override;
+  void SetPen(const Pen &) override;
+  void SetBrush(const Brush &) override;
+  void SetFont(std::string font_family, int font_size) override;
+  void Save() override;
+  void Restore() override;
 
-  static QSize convert(const Size &);
-  static QPoint convert(const Point &);
-  static QRect convert(const Rect &);
-  static QColor convert(const Color &);
-  QBrush convert(const Brush &);
-  QPen convert(const Pen &);
+  static QSize Convert(const Size &);
+  static QPoint Convert(const Point &);
+  static QRect Convert(const Rect &);
+  static QColor Convert(const Color &);
+  QBrush Convert(const Brush &);
+  QPen Convert(const Pen &);
 
   ~PainterQtImpl() override;
 private:

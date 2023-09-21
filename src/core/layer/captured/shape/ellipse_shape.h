@@ -5,7 +5,7 @@ namespace capi {
 class EllipseShape : public Shape {
 public:
   explicit EllipseShape(const ShapeConfig &);
-  void onContentPaint(Painter *painter) override;
+  void OnContentPaint(Painter *painter) override;
   int type() override;
 };
 }

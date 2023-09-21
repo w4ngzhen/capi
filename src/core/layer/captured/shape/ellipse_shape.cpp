@@ -15,17 +15,17 @@ EllipseShape::EllipseShape(const ShapeConfig &config) : Shape(config) {
 
 }
 
-void EllipseShape::onContentPaint(Painter *painter) {
-  painter->save();
-  const auto &contentRect = this->content_rect();
-  auto &configRef = this->config_;
+void EllipseShape::OnContentPaint(Painter *painter) {
+  painter->Save();
+  const auto &content_rect = this->content_rect();
+  auto &config = this->config_;
   if (config_.is_filled()) {
-    painter->setBrush(Brush(configRef.brush_color()));
-    painter->drawEllipse(contentRect);
+    painter->SetBrush(Brush(config.brush_color()));
+    painter->DrawEllipse(content_rect);
   }
-  painter->setPen(Pen(configRef.pen_color(), configRef.pen_width()));
-  painter->drawEllipse(contentRect);
-  painter->restore();
+  painter->SetPen(Pen(config.pen_color(), config.pen_width()));
+  painter->DrawEllipse(content_rect);
+  painter->Restore();
 }
 
 }

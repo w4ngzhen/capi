@@ -26,8 +26,8 @@ void CanvasWidget::init(QImage *img) {
   auto *pImgQtImpl = new ImageQtImpl(img);
   // pImgQtImpl指针在canvas析构时会被释放
   this->canvas_ = new capi::Canvas(pImgQtImpl);
-  this->canvas_->setCanvasEventOnQuitCb([this] { handleCanvasEventOnQuit(); });
-  this->canvas_->setCanvasEventOnImageSaveCb([this](auto event) {
+  this->canvas_->SetCanvasEventOnQuitCb([this] { handleCanvasEventOnQuit(); });
+  this->canvas_->SetCanvasEventOnImageSaveCb([this](auto event) {
     handleCanvasEventOnImageSave(event);
   });
 }
@@ -55,7 +55,7 @@ void CanvasWidget::handleCanvasEventOnImageSave(const capi::CapturedImageSaveEve
   int realRectH =
       capturedRect.h() * picRealSize.h() / canvasSize.h();
   const QImage pic =
-      implRealImg->getQImage()->copy(realRectX, realRectY, realRectW, realRectH);
+      implRealImg->GetQImage()->copy(realRectX, realRectY, realRectW, realRectH);
   if (event->save_mode() == SaveMode::Clipboard) {
     QClipboard *clipboard = QGuiApplication::clipboard();
     clipboard->setImage(pic);
@@ -73,25 +73,25 @@ void CanvasWidget::paintEvent(QPaintEvent *) {
   qPainter.setRenderHint(QPainter::Antialiasing, true);
 
   Painter *painter = new PainterQtImpl(&qPainter);
-  this->canvas_->onPaint(painter);
+  this->canvas_->OnPaint(painter);
   delete painter;
 }
 
 void CanvasWidget::mousePressEvent(QMouseEvent *event) {
   auto pos = event->pos();
-  this->canvas_->onMousePress(Point(pos.x(), pos.y()));
+  this->canvas_->OnMousePress(Point(pos.x(), pos.y()));
   this->update();
 }
 
 void CanvasWidget::mouseReleaseEvent(QMouseEvent *event) {
   auto pos = event->pos();
-  this->canvas_->onMouseRelease(Point(pos.x(), pos.y()));
+  this->canvas_->OnMouseRelease(Point(pos.x(), pos.y()));
   this->update();
 }
 
 void CanvasWidget::mouseMoveEvent(QMouseEvent *event) {
   auto pos = event->pos();
-  this->canvas_->onMouseMove(Point(pos.x(), pos.y()));
+  this->canvas_->OnMouseMove(Point(pos.x(), pos.y()));
   this->update();
 }
 
@@ -100,17 +100,17 @@ void CanvasWidget::keyReleaseEvent(QKeyEvent *event) { this->update(); }
 void CanvasWidget::keyPressEvent(QKeyEvent *event) {
   auto key = event->key();
   auto keyModifiers = event->modifiers();
-  this->canvas_->onKeyPress((capi::Key) key,
+  this->canvas_->OnKeyPress((capi::Key) key,
                             (capi::KeyboardModifier) keyModifiers.toInt());
   this->update();
 }
 
 void CanvasWidget::mouseDoubleClickEvent(QMouseEvent *event) {
   auto pos = event->pos();
-  this->canvas_->onMouseDoubleClick(Point(pos.x(), pos.y()));
+  this->canvas_->OnMouseDoubleClick(Point(pos.x(), pos.y()));
 }
 
 void CanvasWidget::resizeEvent(QResizeEvent *event) {
   auto size = event->size();
-  this->canvas_->onResize(Size(size.width(), size.height()));
+  this->canvas_->OnResize(Size(size.width(), size.height()));
 }

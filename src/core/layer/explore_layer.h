@@ -10,17 +10,17 @@ namespace capi {
 class ExploreLayer : public Layer {
 
 public:
-  ExploreLayer(Image *img, const Size &canvasSize);
+  ExploreLayer(Image *img, const Size &canvas_size);
   /**
    * 核心绘制
    */
-  void onPaint(Painter *) override;
+  void OnPaint(Painter *) override;
 
-  void onKeyPress(Key, KeyboardModifier) override;
+  void OnKeyPress(Key, KeyboardModifier) override;
 
 private:
-  void paintToolPane(Painter *, int mouseX, int mouseY);
-  void paintToolPaneAt(Painter *, int panelX, int panelY, int mouseX, int mouseY);
+  void paintToolPane(Painter *, int mouse_x, int mouse_y);
+  void paintToolPaneAt(Painter *, int panel_x, int panel_y, int mouse_x, int mouse_y);
 
 private:
   Image *canvas_img_;

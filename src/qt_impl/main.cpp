@@ -8,12 +8,12 @@ int main(int argc, char *argv[]) {
 
   // 获取鼠标所在的屏幕
   QScreen *screen = QApplication::screenAt(QCursor().pos());
-  QImage screenImg = screen->grabWindow(0).toImage();
+  QImage screen_img = screen->grabWindow(0).toImage();
 
   // CanvasWidget内部屏蔽了"屏幕图像"这一概念
   // 只知道将一张图绘制到窗体，然后进行截图操作
   CanvasWidget w;
-  w.init(&screenImg);
+  w.init(&screen_img);
   w.showFullScreen();
 
   auto code = a.exec();

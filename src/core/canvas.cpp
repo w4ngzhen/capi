@@ -12,108 +12,108 @@
 namespace capi {
 
 Canvas::Canvas(Image *canvasImg) : canvas_img_(canvasImg), status_(Explore) {
-  Size initCanvasSize = Size(100, 100);
-  this->explore_layer_ = new ExploreLayer(this->canvas_img_, initCanvasSize);
-  this->capturing_layer_ = new CapturingLayer(initCanvasSize);
-  this->captured_layer_ = new CapturedLayer(initCanvasSize);
+  Size init_canvas_size = Size(100, 100);
+  this->explore_layer_ = new ExploreLayer(this->canvas_img_, init_canvas_size);
+  this->capturing_layer_ = new CapturingLayer(init_canvas_size);
+  this->captured_layer_ = new CapturedLayer(init_canvas_size);
 
   // 注册各种事件
   // 回调事件：layer各层退出事件
-  this->explore_layer_->setLayerEventOnQuitCurrentLayerCb(
-      [this] { handleLayerEventOnLayerQuitCurrentLayer(CanvasStatus::Explore); });
-  this->capturing_layer_->setLayerEventOnQuitCurrentLayerCb(
-      [this] { handleLayerEventOnLayerQuitCurrentLayer(CanvasStatus::Capturing); });
-  this->captured_layer_->setLayerEventOnQuitCurrentLayerCb(
-      [this] { handleLayerEventOnLayerQuitCurrentLayer(CanvasStatus::Captured); });
+  this->explore_layer_->SetLayerEventOnQuitCurrentLayerCb(
+      [this] { HandleLayerEventOnLayerQuitCurrentLayer(CanvasStatus::Explore); });
+  this->capturing_layer_->SetLayerEventOnQuitCurrentLayerCb(
+      [this] { HandleLayerEventOnLayerQuitCurrentLayer(CanvasStatus::Capturing); });
+  this->captured_layer_->SetLayerEventOnQuitCurrentLayerCb(
+      [this] { HandleLayerEventOnLayerQuitCurrentLayer(CanvasStatus::Captured); });
 
   // 回调事件：capturing layer完成区域捕获
-  this->capturing_layer_->setLayerEventOnCapturingLayerFinishCb(
-      [this](auto validSize, auto rect) { handleLayerEventOnCapturingLayerFinish(validSize, rect); });
+  this->capturing_layer_->SetLayerEventOnCapturingLayerFinishCb(
+      [this](auto validSize, auto rect) { HandleLayerEventOnCapturingLayerFinish(validSize, rect); });
 
-  this->captured_layer_->setLayerEventOnCapturedLayerImageSaveCb([this](auto event) {
-    handleLayerEventOnCapturedLayerImageSave(event);
+  this->captured_layer_->SetLayerEventOnCapturedLayerImageSaveCb([this](auto event) {
+    HandleLayerEventOnCapturedLayerImageSave(event);
   });
 }
 
-void Canvas::onPaint(Painter *painter) {
+void Canvas::OnPaint(Painter *painter) {
   // 首先绘制图像
-  painter->drawImage(Rect(Point(0, 0), this->size_), this->canvas_img_);
+  painter->DrawImage(Rect(Point(0, 0), this->size_), this->canvas_img_);
 
   switch (this->status_) {
-    case CanvasStatus::Explore:this->explore_layer_->onPaint(painter);
+    case CanvasStatus::Explore:this->explore_layer_->OnPaint(painter);
       break;
-    case CanvasStatus::Capturing:this->capturing_layer_->onPaint(painter);
+    case CanvasStatus::Capturing:this->capturing_layer_->OnPaint(painter);
       break;
-    case CanvasStatus::Captured:this->captured_layer_->onPaint(painter);
+    case CanvasStatus::Captured:this->captured_layer_->OnPaint(painter);
       break;
     default:break;
   }
 }
 
-void Canvas::onMousePress(const Point &pos) {
+void Canvas::OnMousePress(const Point &pos) {
   switch (this->status_) {
     case CanvasStatus::Explore:
       // explore 按下鼠标，则进入capturing模式
       this->status_ = CanvasStatus::Capturing;
-      this->capturing_layer_->onMousePress(pos);
+      this->capturing_layer_->OnMousePress(pos);
       break;
     case CanvasStatus::Capturing:break;
-    case CanvasStatus::Captured:this->captured_layer_->onMousePress(pos);
+    case CanvasStatus::Captured:this->captured_layer_->OnMousePress(pos);
       break;
     default:break;
   }
 }
 
-void Canvas::onMouseMove(const Point &pos) {
+void Canvas::OnMouseMove(const Point &pos) {
   switch (this->status_) {
-    case CanvasStatus::Explore:this->explore_layer_->onMouseMove(pos);
+    case CanvasStatus::Explore:this->explore_layer_->OnMouseMove(pos);
       break;
-    case CanvasStatus::Capturing:this->capturing_layer_->onMouseMove(pos);
+    case CanvasStatus::Capturing:this->capturing_layer_->OnMouseMove(pos);
       break;
-    case CanvasStatus::Captured:this->captured_layer_->onMouseMove(pos);
+    case CanvasStatus::Captured:this->captured_layer_->OnMouseMove(pos);
       break;
     default:break;
   }
 }
 
-void Canvas::onMouseRelease(const Point &pos) {
+void Canvas::OnMouseRelease(const Point &pos) {
   switch (this->status_) {
-    case CanvasStatus::Explore:this->explore_layer_->onMouseRelease(pos);
+    case CanvasStatus::Explore:this->explore_layer_->OnMouseRelease(pos);
       break;
-    case CanvasStatus::Capturing:this->capturing_layer_->onMouseRelease(pos);
+    case CanvasStatus::Capturing:this->capturing_layer_->OnMouseRelease(pos);
       break;
-    case CanvasStatus::Captured:this->captured_layer_->onMouseRelease(pos);
+    case CanvasStatus::Captured:this->captured_layer_->OnMouseRelease(pos);
       break;
     default:break;
   }
 }
 
-void Canvas::onKeyPress(Key key, KeyboardModifier m) {
+void Canvas::OnKeyPress(Key key, KeyboardModifier m) {
   switch (this->status_) {
-    case CanvasStatus::Explore:this->explore_layer_->onKeyPress(key, m);
+    case CanvasStatus::Explore:this->explore_layer_->OnKeyPress(key, m);
       break;
-    case CanvasStatus::Capturing:this->capturing_layer_->onKeyPress(key, m);
+    case CanvasStatus::Capturing:this->capturing_layer_->OnKeyPress(key, m);
       break;
-    case CanvasStatus::Captured:this->captured_layer_->onKeyPress(key, m);
+    case CanvasStatus::Captured:this->captured_layer_->OnKeyPress(key, m);
       break;
     default:break;
   }
 }
 
-void Canvas::onResize(const Size &size) {
+void Canvas::OnResize(const Size &size) {
   this->size_ = size;
-  this->explore_layer_->onCanvasResize(size);
-  this->capturing_layer_->onCanvasResize(size);
-  this->captured_layer_->onCanvasResize(size);
+  this->explore_layer_->OnCanvasResize(size);
+  this->capturing_layer_->OnCanvasResize(size);
+  this->captured_layer_->OnCanvasResize(size);
 }
 
-void Canvas::onMouseDoubleClick(const Point &pos) {
+void Canvas::OnMouseDoubleClick(const Point &pos) {
   switch (this->status_) {
-    case CanvasStatus::Explore:this->explore_layer_->onMouseDoubleClick(pos);
+    case CanvasStatus::Explore:this->explore_layer_->OnMouseDoubleClick(pos);
       break;
-    case CanvasStatus::Capturing:this->capturing_layer_->onMouseDoubleClick(pos);
+    case CanvasStatus::Capturing:this->capturing_layer_->OnMouseDoubleClick(pos);
       break;
-    case CanvasStatus::Captured:this->captured_layer_->onMouseDoubleClick(pos);
+    case CanvasStatus::Captured:this->captured_layer_->OnMouseDoubleClick(pos);
       break;
     default:break;
   }
@@ -124,14 +124,14 @@ void Canvas::onMouseDoubleClick(const Point &pos) {
  * @param sizeValid
  * @param capturedRect
  */
-void Canvas::handleLayerEventOnCapturingLayerFinish(bool sizeValid,
+void Canvas::HandleLayerEventOnCapturingLayerFinish(bool sizeValid,
                                                     const Rect &capturedRect) {
   if (!sizeValid) {
     this->status_ = CanvasStatus::Explore;
-    this->captured_layer_->setCapturedRect(Rect());
+    this->captured_layer_->SetCapturedRect(Rect());
   } else {
     this->status_ = CanvasStatus::Captured;
-    this->captured_layer_->setCapturedRect(capturedRect);
+    this->captured_layer_->SetCapturedRect(capturedRect);
   }
 }
 
@@ -139,7 +139,7 @@ void Canvas::handleLayerEventOnCapturingLayerFinish(bool sizeValid,
  * 处理通用所有layer的quit current事件，一般会进行切换处理
  * @param status
  */
-void Canvas::handleLayerEventOnLayerQuitCurrentLayer(CanvasStatus status) {
+void Canvas::HandleLayerEventOnLayerQuitCurrentLayer(CanvasStatus status) {
   switch (status) {
     case CanvasStatus::Capturing:
     case CanvasStatus::Captured:
@@ -157,15 +157,15 @@ void Canvas::handleLayerEventOnLayerQuitCurrentLayer(CanvasStatus status) {
  * 处理captured layer 图片保存事件，这里作为canvas canvas_image save事件转发到外部
  * @param event
  */
-void Canvas::handleLayerEventOnCapturedLayerImageSave(const CapturedImageSaveEvent *event) {
+void Canvas::HandleLayerEventOnCapturedLayerImageSave(const CapturedImageSaveEvent *event) {
   this->canvas_event_on_image_save_cb_(event);
 }
 
-void Canvas::setCanvasEventOnQuitCb(CanvasEventOnQuitCb cb) {
+void Canvas::SetCanvasEventOnQuitCb(CanvasEventOnQuitCb cb) {
   this->canvas_event_on_quit_cb_ = std::move(cb);
 }
 
-void Canvas::setCanvasEventOnImageSaveCb(CanvasEventOnImageSaveCb cb) {
+void Canvas::SetCanvasEventOnImageSaveCb(CanvasEventOnImageSaveCb cb) {
   this->canvas_event_on_image_save_cb_ = std::move(cb);
 }
 

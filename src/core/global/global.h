@@ -36,7 +36,7 @@ enum AlignFlag {
   // Note that 0x100 will clash with Qt::TextSingleLine = 0x100 due to what the
   // comment above this enum declaration states. However, since
   // Qt::AlignBaseline is only used by layouts, it doesn't make sense to pass
-  // Qt::AlignBaseline to QPainter::drawText(), so there shouldn't really be any
+  // Qt::AlignBaseline to QPainter::DrawText(), so there shouldn't really be any
   // ambiguity between the two overlapping enum values.
   AlignVertical_Mask = AlignTop | AlignBottom | AlignVCenter | AlignBaseline,
 

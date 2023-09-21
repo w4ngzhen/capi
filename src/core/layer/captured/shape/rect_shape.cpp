@@ -17,16 +17,16 @@ RectShape::RectShape(const ShapeConfig &config) : Shape(config) {
 
 }
 
-void RectShape::onContentPaint(Painter *painter) {
-  painter->save();
-  const auto &contentRect = this->content_rect();
-  auto &configRef = this->config_;
+void RectShape::OnContentPaint(Painter *painter) {
+  painter->Save();
+  const auto &content_rect = this->content_rect();
+  auto &config = this->config_;
   if (config_.is_filled()) {
-    painter->fillRect(contentRect, Brush(configRef.brush_color()));
+    painter->FillRect(content_rect, Brush(config.brush_color()));
   }
-  painter->setPen(Pen(configRef.pen_color(), configRef.pen_width()));
-  painter->drawRect(contentRect);
-  painter->restore();
+  painter->SetPen(Pen(config.pen_color(), config.pen_width()));
+  painter->DrawRect(content_rect);
+  painter->Restore();
 }
 
 }

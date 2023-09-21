@@ -20,16 +20,17 @@ class CapturingLayer : public Layer {
 public:
   explicit CapturingLayer(const Size &);
 
-  void onPaint(Painter *) override;
-  void onMouseRelease(const Point &) override;
-  void onKeyPress(Key, KeyboardModifier) override;
+  void OnPaint(Painter *) override;
+  void OnMouseRelease(const Point &) override;
+  void OnKeyPress(Key, KeyboardModifier) override;
 
-  void setLayerEventOnCapturingLayerFinishCb(LayerEventOnCapturingLayerFinishCb cb);
+  void SetLayerEventOnCapturingLayerFinishCb(LayerEventOnCapturingLayerFinishCb cb);
 
 private:
   // 静态辅助方法，便于绘制捕获过程中捕获的矩形框信息
-  static void drawCaptureRectInfo(Painter *, Point &startPos,
-                                  Point &currentPos);
+  static void DrawCaptureRectInfo(Painter *,
+                                  Point &start_pos,
+                                  Point &current_pos);
 
   /**
    * 存储事件回调函数

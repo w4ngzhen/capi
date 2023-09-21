@@ -9,7 +9,7 @@ public:
   Brush();
 
   explicit Brush(const Color &);
-  void setColor(const Color &);
+  void SetColor(const Color &color);
   [[nodiscard]] Color color() const;
 
 private:

@@ -12,47 +12,47 @@
 using namespace capi;
 
 PainterQtImpl::PainterQtImpl(QPainter *p) {
- this->qt_painter_ = p; 
+  this->qt_painter_ = p;
 }
 
-void PainterQtImpl::drawRect(const Rect &r) {
+void PainterQtImpl::DrawRect(const Rect &r) {
   this->qt_painter_->drawRect(r.x(), r.y(), r.w(), r.h());
 }
-void PainterQtImpl::fillRect(const Rect &r, const Brush &b) {
-  this->qt_painter_->fillRect(r.x(), r.y(), r.w(), r.h(), this->convert(b));
+void PainterQtImpl::FillRect(const Rect &r, const Brush &b) {
+  this->qt_painter_->fillRect(r.x(), r.y(), r.w(), r.h(), this->Convert(b));
 }
-void PainterQtImpl::drawEllipse(const Rect &r) {
+void PainterQtImpl::DrawEllipse(const Rect &r) {
   this->qt_painter_->drawEllipse(r.x(), r.y(), r.w(), r.h());
 }
-void PainterQtImpl::drawLine(const Point &start, const Point &end) {
+void PainterQtImpl::DrawLine(const Point &start, const Point &end) {
   this->qt_painter_->drawLine(start.x(), start.y(), end.x(), end.y());
 }
-void PainterQtImpl::drawLine(int x1, int y1, int x2, int y2) {
+void PainterQtImpl::DrawLine(int x1, int y1, int x2, int y2) {
   this->qt_painter_->drawLine(x1, y1, x2, y2);
 }
-void PainterQtImpl::drawText(std::string &text, const Rect &r, int alignFlag) {
+void PainterQtImpl::DrawText(std::string &text, const Rect &r, int align_mode) {
   QString str = QString::fromStdString(text);
-  this->qt_painter_->drawText(r.x(), r.y(), r.w(), r.h(), alignFlag, str);
+  this->qt_painter_->drawText(r.x(), r.y(), r.w(), r.h(), align_mode, str);
 }
-void PainterQtImpl::drawText(std::string &text, const Point &p) {
+void PainterQtImpl::DrawText(std::string &text, const Point &p) {
   QString str = QString::fromStdString(text);
   this->qt_painter_->drawText(p.x(), p.y(), str);
 }
-void PainterQtImpl::drawImage(const Rect &canvasRect, const Image *img) {
-  auto *pImgQtImpl = (ImageQtImpl *)img;
-  QImage qImg = *pImgQtImpl->getQImage();
-  this->qt_painter_->drawImage(PainterQtImpl::convert(canvasRect), qImg);
+void PainterQtImpl::DrawImage(const Rect &canvas_rect, const Image *img) {
+  auto *p_img_qt_impl = (ImageQtImpl *) img;
+  QImage q_img = *p_img_qt_impl->GetQImage();
+  this->qt_painter_->drawImage(PainterQtImpl::Convert(canvas_rect), q_img);
 }
 
-void PainterQtImpl::drawImage(const Rect &canvasRect, const Image *img,
-                              const Rect &imgRect) {
-  auto *pImgQtImpl = (ImageQtImpl *)img;
-  QImage qImg = *pImgQtImpl->getQImage();
-  this->qt_painter_->drawImage(PainterQtImpl::convert(canvasRect), qImg,
-                               PainterQtImpl::convert(imgRect));
+void PainterQtImpl::DrawImage(const Rect &canvas_rect, const Image *img,
+                              const Rect &img_rect) {
+  auto *p_img_qt_impl = (ImageQtImpl *) img;
+  QImage q_img = *p_img_qt_impl->GetQImage();
+  this->qt_painter_->drawImage(PainterQtImpl::Convert(canvas_rect), q_img,
+                               PainterQtImpl::Convert(img_rect));
 }
 
-void PainterQtImpl::setColorReverse(bool reverse) {
+void PainterQtImpl::SetColorReverse(bool reverse) {
   if (reverse) {
     this->qt_painter_->setPen(QPen(Qt::white));
     this->qt_painter_->setCompositionMode(
@@ -62,60 +62,56 @@ void PainterQtImpl::setColorReverse(bool reverse) {
   }
 }
 
-Size PainterQtImpl::measureTextSize(std::string &text, std::string fontFamily,
-                                    int fontSize) {
+Size PainterQtImpl::MeasureTextSize(std::string &text, std::string font_family,
+                                    int font_size) {
 
-  QString qText = QString::fromStdString(text);
-  QFont font(qText, fontSize);
+  QString q_text = QString::fromStdString(text);
+  QFont font(q_text, font_size);
   QFontMetrics fm(font);
-  const QRect tempRect = fm.boundingRect(qText);
-  return {tempRect.width(), tempRect.height()};
+  const QRect temp_rect = fm.boundingRect(q_text);
+  return {temp_rect.width(), temp_rect.height()};
 }
-void PainterQtImpl::setPen(const Pen &p) {
-  this->qt_painter_->setPen(this->convert(p));
+void PainterQtImpl::SetPen(const Pen &p) {
+  this->qt_painter_->setPen(this->Convert(p));
 }
-void PainterQtImpl::setBrush(const Brush &b) {
-  this->qt_painter_->setBrush(this->convert(b));
+void PainterQtImpl::SetBrush(const Brush &b) {
+  this->qt_painter_->setBrush(this->Convert(b));
 }
-void PainterQtImpl::setFont(std::string fontFamily, int fontSize) {
+void PainterQtImpl::SetFont(std::string font_family, int font_size) {
   this->qt_painter_->setFont(
-      QFont(QString::fromStdString(fontFamily), fontSize));
+      QFont(QString::fromStdString(font_family), font_size));
 }
-void PainterQtImpl::save() { this->qt_painter_->save(); }
-void PainterQtImpl::restore() { this->qt_painter_->restore(); }
+void PainterQtImpl::Save() { this->qt_painter_->save(); }
+void PainterQtImpl::Restore() { this->qt_painter_->restore(); }
 
-QRect PainterQtImpl::convert(const Rect &r) {
+QRect PainterQtImpl::Convert(const Rect &r) {
   return {r.x(), r.y(), r.w(), r.h()};
 }
-QSize PainterQtImpl::convert(const Size &s) { return {s.w(), s.h()}; }
-QPoint PainterQtImpl::convert(const Point &p) { return {p.x(), p.y()}; }
-QColor PainterQtImpl::convert(const Color &c) {
+QSize PainterQtImpl::Convert(const Size &s) { return {s.w(), s.h()}; }
+QPoint PainterQtImpl::Convert(const Point &p) { return {p.x(), p.y()}; }
+QColor PainterQtImpl::Convert(const Color &c) {
   return {c.r(), c.g(), c.b(), c.a()};
 }
-QBrush PainterQtImpl::convert(const Brush &b) {
-  return {this->convert(b.color())};
+QBrush PainterQtImpl::Convert(const Brush &b) {
+  return {this->Convert(b.color())};
 }
-QPen PainterQtImpl::convert(const Pen &p) {
-  Qt::PenStyle qtPenStyle = Qt::SolidLine;
+QPen PainterQtImpl::Convert(const Pen &p) {
+  Qt::PenStyle qt_pen_style = Qt::SolidLine;
   switch (p.pen_style()) {
-  case capi::PenStyle::SolidLine:
-    qtPenStyle = Qt::SolidLine;
-    break;
-  case capi::PenStyle::DotLine:
-    qtPenStyle = Qt::DotLine;
-    break;
-  case capi::PenStyle::DashLine:
-    qtPenStyle = Qt::DashLine;
-    break;
-  default:
-    break;
+    case capi::PenStyle::SolidLine:qt_pen_style = Qt::SolidLine;
+      break;
+    case capi::PenStyle::DotLine:qt_pen_style = Qt::DotLine;
+      break;
+    case capi::PenStyle::DashLine:qt_pen_style = Qt::DashLine;
+      break;
+    default:break;
   }
-  QPen pen(qtPenStyle);
-  pen.setColor(this->convert(p.color()));
+  QPen pen(qt_pen_style);
+  pen.setColor(this->Convert(p.color()));
   pen.setWidth(p.width());
   return pen;
 }
 
 PainterQtImpl::~PainterQtImpl() {
-  this->qt_painter_ = nullptr; 
+  this->qt_painter_ = nullptr;
 }
