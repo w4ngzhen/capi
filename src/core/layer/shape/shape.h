@@ -4,7 +4,7 @@
 #include "core/paint/brush.h"
 #include "core/base/point.h"
 #include "shape_config.h"
-#include "core/layer/captured/captured_layer_common.h"
+#include "core/layer/captured_layer_common.h"
 #include <functional>
 
 namespace capi {

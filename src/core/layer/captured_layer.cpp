@@ -1,10 +1,10 @@
 #include "captured_layer.h"
 #include "core/base/point.h"
 #include "core/utils/math_utils.h"
-#include "core/layer/captured/shape/captured_shape.h"
-#include "core/layer/captured/shape/rect_shape.h"
-#include "core/layer/captured/shape/ellipse_shape.h"
-#include "core/layer/captured/shape/line_shape.h"
+#include "core/layer/shape/captured_shape.h"
+#include "core/layer/shape/rect_shape.h"
+#include "core/layer/shape/ellipse_shape.h"
+#include "core/layer/shape/line_shape.h"
 namespace capi {
 CapturedLayer::CapturedLayer(const Size &canvas_size) : Layer(canvas_size) {
   selected_shape_dragging_part_ = None;

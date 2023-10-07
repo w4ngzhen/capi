@@ -5,9 +5,9 @@
 #include "core/global/global.h"
 #include "core/layer/layer.h"
 #include "core/event/captured_image_save_event.h"
-#include "core/layer/captured/shape/shape_config.h"
+#include "core/layer/shape/shape_config.h"
 #include "captured_layer_common.h"
-#include "core/layer/captured/shape/shape.h"
+#include "core/layer/shape/shape.h"
 
 namespace capi {
 

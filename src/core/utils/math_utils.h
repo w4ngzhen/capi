@@ -1,7 +1,7 @@
 #pragma once
 
 #include "core/global/global.h"
-#include "core/layer/captured/captured_layer_common.h"
+#include "core/layer/captured_layer_common.h"
 
 namespace capi::math_utils {
 

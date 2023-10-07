@@ -4,7 +4,7 @@
 
 #include "./paint/painter.h"
 #include "canvas_status.h"
-#include "layer/captured/captured_layer.h"
+#include "layer/captured_layer.h"
 #include "layer/capturing_layer.h"
 #include "layer/explore_layer.h"
 #include "core/event/captured_image_save_event.h"
