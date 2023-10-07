@@ -131,7 +131,7 @@ void Shape::SetIsHover(bool isHover) {
   is_hover_ = isHover;
 }
 
-void Shape::setIsSelected(bool isSelected) {
+void Shape::SetIsSelected(bool isSelected) {
   is_selected_ = isSelected;
 }
 

@@ -23,7 +23,7 @@ void CapturedLayer::SetCapturedRect(const Rect &captured_rect) {
     cap_shape->SetStartPos(start_pos);
     cap_shape->SetEndPos(end_pos);
     // 并默认选中
-    cap_shape->setIsSelected(true);
+    cap_shape->SetIsSelected(true);
     selected_shape_ = cap_shape;
   }
 }
@@ -42,7 +42,7 @@ void CapturedLayer::AddShape(ShapeType type, const ShapeConfig &config, bool sel
     return;
   }
   if (selected) {
-    shape->setIsSelected(true);
+    shape->SetIsSelected(true);
     selected_shape_ = shape;
   }
   shapes_.push_back(shape);
@@ -69,13 +69,13 @@ void CapturedLayer::SelectShape(const Point &mouse_pos) {
   bool has_touched_content = false;
   for (auto sp : shapes_) {
     // 清理所有的shape的被选择状态
-    sp->setIsSelected(false);
+    sp->SetIsSelected(false);
     // 根据优先级原则，若已经选择到了某个图形，我们就不再进行后面图形的判断
     if (has_touched_content) {
       continue;
     }
     if (sp->CheckPart(mouse_pos) == ShapePart::Body) {
-      sp->setIsSelected(true);
+      sp->SetIsSelected(true);
       selected_shape_ = sp;
     }
   }
@@ -159,18 +159,18 @@ void CapturedLayer::OnMousePress(const Point &mouse_pos) {
        * 如有则先把前面被视为选中的图形置为false
        */
       if (temp_selected_sp != nullptr) {
-        temp_selected_sp->setIsSelected(false);
+        temp_selected_sp->SetIsSelected(false);
       }
-      sp->setIsSelected(true);
+      sp->SetIsSelected(true);
       temp_selected_sp = sp;
     } else {
-      sp->setIsSelected(false);
+      sp->SetIsSelected(false);
     }
   }
   if (temp_selected_sp == nullptr) {
     // 没有点击到任何的图形，则清理成员变量 selected_shape_ 的状态，并置为nullptr
     if (selected_shape_ != nullptr) {
-      selected_shape_->setIsSelected(false);
+      selected_shape_->SetIsSelected(false);
       selected_shape_ = nullptr;
     }
   } else {

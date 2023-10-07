@@ -62,7 +62,7 @@ public:
   /**
    * setter：设置是否处于选中状态
    */
-  void setIsSelected(bool);
+  void SetIsSelected(bool);
   /**
    * setter：设置是否处于被鼠标悬浮态
    */
