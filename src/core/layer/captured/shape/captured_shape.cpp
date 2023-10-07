@@ -30,7 +30,7 @@ void capi::CapturedShape::OnContentPaint(Painter *painter) {
   Rect top_mask_rect(rx, 0, rw, ry);
   Rect bottom_mask_rect(rx, (ry + rh), rw, canvas_h - (ry + rh));
 
-  Brush gray_brush(Color(0, 0, 0, 50)); // 50% Alpha的灰色
+  Brush gray_brush(Color(0, 0, 0, 90)); // 50% Alpha的灰色
   painter->FillRect(left_mask_rect, gray_brush);
   painter->FillRect(right_mask_rect, gray_brush);
   painter->FillRect(top_mask_rect, gray_brush);
