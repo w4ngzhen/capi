@@ -3,6 +3,7 @@
 #include "core/base/point.h"
 #include "core/base/size.h"
 #include "core/paint/painter.h"
+#include <functional>
 
 namespace capi {
 
