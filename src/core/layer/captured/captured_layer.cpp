@@ -258,9 +258,20 @@ void CapturedLayer::OnMouseDoubleClick(const Point &) {
 }
 
 void CapturedLayer::OnPaint(Painter *painter) {
-  // 将各个图形进行绘制
-  for (auto &sp : shapes_) {
-    sp->OnPaint(painter);
+  /**
+   * 绘制图形有一个特殊点，由于 CapturedShape 会有蒙版效果，
+   * 我们总是最后绘制这个 CapturedShape
+   */
+  auto count = shapes_.size();
+  if (count <= 0) {
+    return;
+  }
+  for (int i = 1; i < count; i++) {
+    shapes_[i]->OnPaint(painter);
+  }
+  auto captured_sp = shapes_[0];
+  if (captured_sp != nullptr) {
+    captured_sp->OnPaint(painter);
   }
 }
 
