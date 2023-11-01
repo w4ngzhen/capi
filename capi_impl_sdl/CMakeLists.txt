@@ -4,6 +4,22 @@ project(capi_impl_sdl LANGUAGES CXX)
 find_package(SDL2 REQUIRED COMPONENTS SDL2)
 find_package(SDL2_image REQUIRED COMPONENTS SDL2_image)
 
+# =====  imgui  =====
+# imgui header
+set(IMGUI_HEADER_DIR
+    ../3rdparty/imgui
+    ../3rdparty/imgui/backends)
+# imgui sources
+set(IMGUI_SOURCE_FILES
+    ../3rdparty/imgui/imgui.cpp
+    ../3rdparty/imgui/imgui_demo.cpp
+    ../3rdparty/imgui/imgui_draw.cpp
+    ../3rdparty/imgui/imgui_tables.cpp
+    ../3rdparty/imgui/imgui_widgets.cpp
+    ../3rdparty/imgui/backends/imgui_impl_sdlrenderer2.cpp
+    ../3rdparty/imgui/backends/imgui_impl_sdl2.cpp
+)
+
 if (APPLE)
   set(CMAKE_EXE_LINKER_FLAGS "-framework Cocoa -framework AppKit -framework CoreData -framework Foundation -framework ImageIO")
 endif ()
@@ -13,6 +29,7 @@ add_executable(
     WIN32
     MACOSX_BUNDLE
     main.cpp
+    ${IMGUI_SOURCE_FILES}
 )
 
 target_include_directories(
@@ -20,6 +37,8 @@ target_include_directories(
     PRIVATE
     ./
     ../capi_core/include
+    # imgui header
+    ${IMGUI_HEADER_DIR}
 )
 
 add_dependencies(
