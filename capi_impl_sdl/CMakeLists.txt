@@ -20,6 +20,13 @@ set(IMGUI_SOURCE_FILES
     ../3rdparty/imgui/backends/imgui_impl_sdl2.cpp
 )
 
+# ==== cross_platform_screenshot =====
+add_subdirectory(
+    ../3rdparty/cross_platform_screenshot/cp_screenshot_core
+    cp_screenshot_core
+)
+set(CP_SCREENSHOT_HEADER_DIR ../3rdparty/cross_platform_screenshot/cp_screenshot_core/include)
+
 if (APPLE)
   set(CMAKE_EXE_LINKER_FLAGS "-framework Cocoa -framework AppKit -framework CoreData -framework Foundation -framework ImageIO")
 endif ()
@@ -37,19 +44,23 @@ target_include_directories(
     PRIVATE
     ./
     ../capi_core/include
-    # imgui header
+    # imgui header dir
     ${IMGUI_HEADER_DIR}
+    # cross_platform_screenshot header dir
+    ${CP_SCREENSHOT_HEADER_DIR}
 )
 
 add_dependencies(
     capi_impl_sdl
     capi_core
+    cp_screenshot_core
 )
 
 target_link_libraries(
     capi_impl_sdl
     PRIVATE
     capi_core
+    cp_screenshot_core
     SDL2::SDL2
     SDL2_image::SDL2_image
 )

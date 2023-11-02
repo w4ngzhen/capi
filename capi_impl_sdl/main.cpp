@@ -2,36 +2,12 @@
 #include "imgui.h"
 #include "imgui_impl_sdl2.h"
 #include "imgui_impl_sdlrenderer2.h"
+#include "cp_screenshot/cp_screenshot.h"
 #include <stdio.h>
 #include <SDL.h>
+#include <SDL_image.h>
 
-// Main code
-int main(int, char **) {
-  // Setup SDL
-  if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER | SDL_INIT_GAMECONTROLLER) != 0) {
-    printf("Error: %s\n", SDL_GetError());
-    return -1;
-  }
-
-  SDL_SetHint(SDL_HINT_IME_SHOW_UI, "1");
-
-  // Create window with SDL_Renderer graphics context
-  SDL_WindowFlags window_flags = (SDL_WindowFlags) (SDL_WINDOW_RESIZABLE | SDL_WINDOW_ALLOW_HIGHDPI);
-  SDL_Window *window = SDL_CreateWindow("Dear ImGui SDL2+SDL_Renderer example",
-                                        SDL_WINDOWPOS_CENTERED,
-                                        SDL_WINDOWPOS_CENTERED,
-                                        1280,
-                                        720,
-                                        window_flags);
-  SDL_Renderer *renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_PRESENTVSYNC | SDL_RENDERER_ACCELERATED);
-  if (renderer == nullptr) {
-    SDL_Log("Error creating SDL_Renderer!");
-    return 0;
-  }
-  //SDL_RendererInfo info;
-  //SDL_GetRendererInfo(renderer, &info);
-  //SDL_Log("Current SDL_Renderer: %s", info.name);
-
+void PrepareImGuiContext(SDL_Window *window, SDL_Renderer *renderer) {
   // Setup Dear ImGui context
   IMGUI_CHECKVERSION();
   ImGui::CreateContext();
@@ -63,11 +39,57 @@ int main(int, char **) {
   //io.Fonts->AddFontFromFileTTF("../../misc/fonts/Cousine-Regular.ttf", 15.0f);
   //ImFont* font = io.Fonts->AddFontFromFileTTF("c:\\Windows\\Fonts\\ArialUni.ttf", 18.0f, nullptr, io.Fonts->GetGlyphRangesJapanese());
   //IM_ASSERT(font != nullptr);
+}
+
+// Main code
+int main(int, char **) {
+  // Setup SDL
+  if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER | SDL_INIT_GAMECONTROLLER) != 0) {
+    printf("Error: %s\n", SDL_GetError());
+    return -1;
+  }
+
+  SDL_SetHint(SDL_HINT_IME_SHOW_UI, "1");
+
+  // Create window with SDL_Renderer graphics context
+  SDL_WindowFlags window_flags = (SDL_WindowFlags) (SDL_WINDOW_RESIZABLE | SDL_WINDOW_ALLOW_HIGHDPI);
+  SDL_Window *window = SDL_CreateWindow("Dear ImGui SDL2+SDL_Renderer example",
+                                        SDL_WINDOWPOS_CENTERED,
+                                        SDL_WINDOWPOS_CENTERED,
+                                        1280,
+                                        720,
+                                        window_flags);
+  SDL_Renderer *renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_PRESENTVSYNC | SDL_RENDERER_ACCELERATED);
+  if (renderer == nullptr) {
+    SDL_Log("Error creating SDL_Renderer!");
+    return 0;
+  }
+
+  SDL_RendererInfo info;
+  SDL_GetRendererInfo(renderer, &info);
+  SDL_Log("Current SDL_Renderer: %s", info.name);
+
+  /**
+   * prepare ImGui Context
+   */
+  PrepareImGuiContext(window, renderer);
+
+  /**
+   * get screenshot jpeg byte data
+   */
+  unsigned char *screenshot_bytes;
+  unsigned int width, height, length;
+  cps::GetScreenshotImageByteData(&screenshot_bytes, &width, &height, &length);
+
+  /**
+   * convert screenshot byte data to Texture
+   */
+  auto rw_ops = SDL_RWFromConstMem(screenshot_bytes, length);
+  SDL_Texture *jpeg_texture = IMG_LoadTextureTyped_RW(renderer, rw_ops, 1, "JPEG");
 
   // Our state
   bool show_demo_window = true;
   bool show_another_window = false;
-  auto show_temp_win = true;
 
   ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
 
@@ -88,6 +110,7 @@ int main(int, char **) {
           && event.window.windowID == SDL_GetWindowID(window))
         quit = true;
     }
+    ImGuiIO &io = ImGui::GetIO();
 
     // Start the Dear ImGui frame
     ImGui_ImplSDLRenderer2_NewFrame();
@@ -98,15 +121,6 @@ int main(int, char **) {
     if (show_demo_window) {
       ImGui::ShowDemoWindow(&show_demo_window);
     }
-
-    if (show_temp_win) {
-      ImGui::Begin("Temp Window");   // Pass a pointer to our bool variable (the window will have a closing button that will clear the bool when clicked)
-      ImGui::Text("Hello from another window!");
-      if (ImGui::Button("Close Me"))
-        show_temp_win = false;
-      ImGui::End();
-    }
-
 
     // 2. Show a simple window that we create ourselves. We use a Begin/End pair to create a named window.
     {
@@ -141,15 +155,23 @@ int main(int, char **) {
       ImGui::End();
     }
 
-    // Rendering
+    // ImGui inner render handle
     ImGui::Render();
+
+    // SDL render steps:
+    // 1. settings
     SDL_RenderSetScale(renderer, io.DisplayFramebufferScale.x, io.DisplayFramebufferScale.y);
+    // 2. clear
     SDL_SetRenderDrawColor(renderer,
                            (Uint8) (clear_color.x * 255),
                            (Uint8) (clear_color.y * 255),
                            (Uint8) (clear_color.z * 255),
                            (Uint8) (clear_color.w * 255));
     SDL_RenderClear(renderer);
+
+    // 3. present content
+    SDL_RenderCopy(renderer, jpeg_texture, nullptr, nullptr);
+
     ImGui_ImplSDLRenderer2_RenderDrawData(ImGui::GetDrawData());
     SDL_RenderPresent(renderer);
   }
